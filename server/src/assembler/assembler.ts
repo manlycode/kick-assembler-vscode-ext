@@ -1,6 +1,9 @@
 import { Settings } from "../providers/settingsProvider";
-import { AssemblerInfo } from "./assemblerInfo";
+import { AssemblerInfo } from "./AssemblerInfo";
 import { TextDocumentItem } from "vscode-languageserver";
+import PathUtils from "../utils/pathUtils";
+import { writeFileSync, readFileSync } from "fs";
+import { spawnSync } from "child_process";
 
 /*
     Class: Assembler
@@ -35,16 +38,37 @@ export class Assembler {
 
     public assemble(settings: Settings, textDocument: TextDocumentItem): AssemblerResults | undefined {
 
-        //  assemble the file
+        //  copy file contents into ".source.txt"
+        var path = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(textDocument.uri));
+        var filename = path + "\\.source.txt";
+        writeFileSync(filename, textDocument.text);
 
+        //  setup the asminfo.txt output
+        var asminfo = path + "\\.asminfo.txt";
 
-        //  check for asminfo.txt
+        //  assemble by running java process
+        let java = spawnSync(settings.javaPath, [
+            "-jar", 
+            settings.assemblerPath, 
+            filename, 
+            '-noeval', 
+            '-warningsoff', 
+            '-asminfo', 
+            'all', 
+            '-asminfofile', 
+            asminfo], { cwd: path });
 
-        //  get assembler results
+        //  get contents of asminfo 
+        var asminfo_data = readFileSync(asminfo, 'utf8');
 
+        //  prepare assembler results
         var assemblerResults = <AssemblerResults>{};
-        assemblerResults.assemblerInfo = new AssemblerInfo(textDocument.uri);
-        return undefined;
+        assemblerResults.assemblerInfo = new AssemblerInfo(asminfo_data);
+        assemblerResults.stdout = java.stdout.toString();
+        assemblerResults.stderr = java.stderr.toString();
+        assemblerResults.status = java.status;
+
+        return assemblerResults;
     }
 
 }

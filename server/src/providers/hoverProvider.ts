@@ -1,6 +1,6 @@
 import { 
-    Provider 
-} from "./provider";
+    Provider, ProjectInfoProvider 
+} from "./Provider";
 
 import { 
     IConnection,
@@ -8,6 +8,7 @@ import {
     Hover,
     ResponseError
  } from "vscode-languageserver";
+import Project from "../project/Project";
 
 /*
 
@@ -15,9 +16,9 @@ import {
 
 export default class HoverProvider extends Provider {
 
-    constructor(connection:IConnection) {
+    constructor(connection:IConnection, projectInfo:ProjectInfoProvider) {
 
-        super(connection);
+        super(connection, projectInfo);
         connection.console.log("- hover provider registered")
 
         connection.onHover((textDocumentPosition:TextDocumentPositionParams) => {
@@ -30,7 +31,8 @@ export default class HoverProvider extends Provider {
         this.getConnection().console.log('- processing hover');
         this.getConnection().console.log(textDocumentPosition.toString());
         let contents:string[]|undefined;
-        contents = [ "Hover" ];
+        var lines = this.getProjectInfo().getProject().getAssemblerResults().assemblerInfo.getFiles()[0].uri;
+        contents = [ lines ];
         return { contents };
     }
 }

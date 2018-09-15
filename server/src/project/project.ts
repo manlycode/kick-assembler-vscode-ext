@@ -26,10 +26,12 @@
 */
 
 import Uri from "vscode-uri"; 
-import { AssemblerInfo } from "../assembler/assemblerInfo";
+import { AssemblerInfo } from "../assembler/AssemblerInfo";
 import { Settings } from "../providers/settingsProvider";
 import { TextDocumentItem } from "vscode-languageserver";
-import { Assembler, AssemblerResults } from "../assembler/assembler";
+import { Assembler, AssemblerResults } from "../assembler/Assembler";
+import { ProjectFile } from "./ProjectFile";
+import { print } from "util";
 
 export default class Project {
 
@@ -37,6 +39,7 @@ export default class Project {
     private imports:{};
     private assemblerResults:AssemblerResults;
     private assemblerInfo:AssemblerInfo;
+    private projectFiles:ProjectFile[];
 
     constructor() {
     }
@@ -44,5 +47,16 @@ export default class Project {
     public assemble(settings:Settings, textDocument:TextDocumentItem) {
         let assembler = new Assembler();
         this.assemblerResults = assembler.assemble(settings, textDocument);
+        for (var file of this.assemblerResults.assemblerInfo.getFiles()) {
+            var projectFile = new ProjectFile(file.uri, "")
+        }
+    }
+
+    public getAssemblerInfo():AssemblerInfo {
+        return this.assemblerInfo;
+    }
+
+    public getAssemblerResults():AssemblerResults {
+        return this.assemblerResults;
     }
 }

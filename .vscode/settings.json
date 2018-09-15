@@ -9,7 +9,7 @@
 	"typescript.tsc.autoDetect": "off",
 	"npm.exclude": ["**/client", "**/server"],
 	"npm.enableScriptExplorer": true,
-	"debug.node.autoAttach": "on",
+	"debug.node.autoAttach": "off",
 	"cSpell.words": [
 		"asminfo"
 	]

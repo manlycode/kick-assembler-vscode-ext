@@ -1,11 +1,12 @@
 import { 
-    Provider 
-} from "./provider";
+    Provider, ProjectInfoProvider 
+} from "./Provider";
 
 import { 
     IConnection,
     DidChangeConfigurationParams
  } from "vscode-languageserver";
+import Project from "../project/Project";
 
 /*
 
@@ -25,9 +26,9 @@ export default class SettingsProvider extends Provider {
 
     private settings:Settings;
 
-    constructor(connection:IConnection) {
+    constructor(connection:IConnection, projectInfo:ProjectInfoProvider) {
 
-        super(connection);
+        super(connection, projectInfo);
         connection.console.log("- settings provider registered")
 
         connection.onDidChangeConfiguration((change:DidChangeConfigurationParams) => {

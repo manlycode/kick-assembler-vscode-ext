@@ -19,12 +19,15 @@ import {
     InitializeParams,
     InitializedParams,
     DidChangeTextDocumentParams,
-    DidOpenTextDocumentParams, 
+    DidOpenTextDocumentParams,
+    DidSaveTextDocumentParams,
+    DidChangeWatchedFilesParams, 
 } from "vscode-languageserver";
 
-import SettingsProvider from "../providers/settingsProvider";
-import HoverProvider from "../providers/hoverProvider";
-import Project from "./project";
+import SettingsProvider, { Settings } from "../providers/SettingsProvider";
+import HoverProvider from "../providers/HoverProvider";
+import Project from "./Project";
+import { ProjectInfoProvider } from "../providers/Provider";
 
 export default class ProjectManager {
 
@@ -45,8 +48,14 @@ export default class ProjectManager {
         this.documents = new TextDocuments();
         this.documents.listen(this.connection);
 
-        this.settingsProvider = new SettingsProvider(connection);
-        this.hoverProvider = new HoverProvider(connection);
+        //  setup project information provider
+        const projectInfoProvider:ProjectInfoProvider = {
+            getProject: this.getProject.bind(this),
+            getSettings: this.getSettings.bind(this)
+        }
+
+        this.settingsProvider = new SettingsProvider(connection, projectInfoProvider);
+        this.hoverProvider = new HoverProvider(connection, projectInfoProvider);
 
         connection.onInitialize((params:InitializeParams):InitializeResult => {
             connection.console.log("[projectManager.onInitialize");
@@ -74,6 +83,14 @@ export default class ProjectManager {
             connection.console.log("[projectManager.onDidChangeTextDocument");
         });
 
+        connection.onDidSaveTextDocument((params:DidSaveTextDocumentParams) => {
+            connection.console.log("[projectManager.onDidSaveTextDocument");
+        });
+
+        connection.onDidChangeWatchedFiles((params:DidChangeWatchedFilesParams) => {
+            connection.console.log("[projectManager.onDidChangeWatchedFiles");
+        })
+
     }
 
     public start() {
@@ -82,8 +99,12 @@ export default class ProjectManager {
         this.connection.console.log('- server started')
     }
 
-    public getSettingsProvider():SettingsProvider {
-        return this.settingsProvider;
+    // public getSettingsProvider():SettingsProvider {
+    //     return this.settingsProvider;
+    // }
+
+    public getSettings():Settings {
+        return this.settingsProvider.getSettings();
     }
 
     public getHoverProvider():HoverProvider {

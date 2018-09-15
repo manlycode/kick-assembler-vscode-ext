@@ -2,7 +2,7 @@
 /*
     Class: ProjectFile
 
-        Represents on File in the Project
+        Represents one File in the Project
 
     Remarks:
 
@@ -20,25 +20,28 @@
 */
 
 import URI from "vscode-uri";
+import StringUtils from "../utils/StringUtils";
 
 export class ProjectFile {
 
-    //  the location of the file
+    //  the uri of the document
     private uri:URI;
 
-    //  has it been changed? - we should probably compile again
-    private isDirty:boolean;
+    //  the text of the document
+    private text:string;
 
-    //  is this the main file in a project?
-    private isMain:boolean;
+    public constructor(uri:string, text:string) {
+        this.uri = URI.parse(uri);
+        this.text = text;
+    }
 
     //  returns the source code as one large string
     public getSource():string|undefined {
-        return undefined;
+        return this.text;
     }
 
-    //  returns the source code as an array of strings or rows
+    //  returns the source code as an array of strings(rows)
     public getSourceLines():string[]|undefined {
-        return undefined;
+        return StringUtils.splitIntoLines(this.text);
     }
 }

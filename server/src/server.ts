@@ -14,7 +14,7 @@ import {
 	ProposedFeatures,
 } from "vscode-languageserver";
 
-import ProjectManager from "./project/projectManager";
+import ProjectManager from "./project/ProjectManager";
 
 const connection:IConnection = createConnection(ProposedFeatures.all);
 const projectManager = new ProjectManager(connection);
