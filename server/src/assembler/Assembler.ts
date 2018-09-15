@@ -1,7 +1,7 @@
-import { Settings } from "../providers/settingsProvider";
+import { Settings } from "../providers/SettingsProvider";
 import { AssemblerInfo } from "./AssemblerInfo";
 import { TextDocumentItem } from "vscode-languageserver";
-import PathUtils from "../utils/pathUtils";
+import PathUtils from "../utils/PathUtils";
 import { writeFileSync, readFileSync } from "fs";
 import { spawnSync } from "child_process";
 

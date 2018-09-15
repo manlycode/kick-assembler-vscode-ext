@@ -27,7 +27,7 @@
 
 import Uri from "vscode-uri"; 
 import { AssemblerInfo } from "../assembler/AssemblerInfo";
-import { Settings } from "../providers/settingsProvider";
+import { Settings } from "../providers/SettingsProvider";
 import { TextDocumentItem } from "vscode-languageserver";
 import { Assembler, AssemblerResults } from "../assembler/Assembler";
 import { ProjectFile } from "./ProjectFile";
