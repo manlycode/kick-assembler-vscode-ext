@@ -16,4 +16,32 @@ export default class NumberUtils {
 		return "$" + value.toString(16);
 	}
 
+	/**
+	 * Takes a String and Tries to convert it
+	 * to a Decimal value.
+	 * 
+	 * @param value the String to Convert
+	 */
+	public static toDecimal(value:string):number {
+		if (value.substr(0, 2) == "#$") {
+			var num = parseInt(value.substr(2), 16);
+			return num;
+		}
+
+		if (value.substr(0, 1) == "$") {
+			var num = parseInt(value.substr(1), 16);
+			return num;
+		}
+
+		if (value.substr(0, 1) == "#") {
+			var num = parseInt(value.substr(1), 10);
+			return num;
+		}
+
+		if (value.substr(0, 1) == "%") {
+			var num = parseInt(value.substr(1), 2);
+			return num;
+		}
+	}
+
 }

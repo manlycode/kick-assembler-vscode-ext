@@ -76,7 +76,7 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`(${tokenMatch.type.toString()}) \`${tokenMatch.name}\`: ${tokenMatch.description}`,
+				`(${tokenMatch.type.toString()}) \`${tokenMatch.name}\`: ${tokenMatch.value}`,
 			];
 		}
 	}

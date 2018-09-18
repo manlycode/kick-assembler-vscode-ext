@@ -3,6 +3,7 @@ import {
 	Range,
 } from "vscode-languageserver";
 import StringUtils from "./StringUtils";
+import { Line } from "../project/Project";
 
 interface TokenPosition {
 	start: number;
@@ -11,6 +12,42 @@ interface TokenPosition {
 }
 
 export default class LineUtils {
+
+	/**
+	 * Given a Starting Line Number Read Backwards looking for
+	 * Remarks 
+	 * @param lines 
+	 */
+	public static getRemarksAboveLine(lines:Line[], lineNumber:number):string|undefined {
+
+		var found = false;
+		var remark = undefined;
+		var beg;
+		var end;
+
+		while (!found) {
+			
+			lineNumber -= 1;
+			
+			if (lineNumber < 1)
+				break;
+			
+			end = lines[lineNumber].text.indexOf("*/");
+			beg = lines[lineNumber].text.indexOf("/**");
+			
+			if (beg && end)
+				found = true;
+		}
+
+		if (found) {
+			remark = "";
+			for (var i = beg + 1; i < end; i++) {
+				remark += this.removeComments( lines[i].text) + "\r";
+			}
+		}
+
+		return remark;
+	}
 
 	public static getTokenAtSourcePosition2(sourceLines: string[] | undefined, line: number, column: number): string | undefined {
 		if (sourceLines && sourceLines.length > line) {

@@ -6,14 +6,12 @@
 
     Remarks:
 
-        The Manager will be responsible for
+        The Manager is responsible for
         the handling of providers that are
         available on the Client.
 
 */
-
 import {
-    IConnection,
     InitializeResult,
     TextDocuments,
     InitializeParams,
@@ -21,7 +19,6 @@ import {
     DidChangeTextDocumentParams,
     DidOpenTextDocumentParams,
     DidSaveTextDocumentParams,
-    DidChangeWatchedFilesParams,
     Connection,
     DidCloseTextDocumentParams,
 } from "vscode-languageserver";
@@ -36,8 +33,6 @@ import PathUtils from "../utils/PathUtils";
 import { createHash } from "crypto";
 
 export default class ProjectManager {
-
-    //private currentProject: Project;
 
     private projects: Project[];
 
@@ -133,10 +128,6 @@ export default class ProjectManager {
         this.connection.listen();
         this.connection.console.log('- server started')
     }
-
-    // public getSettingsProvider():SettingsProvider {
-    //     return this.settingsProvider;
-    // }
 
     public getSettings(): Settings {
         return this.settingsProvider.getSettings();

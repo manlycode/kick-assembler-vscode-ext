@@ -36,6 +36,8 @@ import { readFileSync } from "fs";
 import { KickInternalSymbols } from "../definition/KickInternalSymbols";
 import { createHash } from "crypto";
 import { CompletionItemKind } from "vscode-languageserver";
+import NumberUtils from "../utils/NumberUtils";
+import LineUtils from "../utils/LineUtils";
 
 export interface Line {
     number: number;
@@ -188,12 +190,12 @@ export default class Project {
 		}
 
 		if (type == "directive") {
-			//symbol = this.createFromDirective(sourceRange, text);
+			symbol = this.createFromDirective(range, text);
 		}
 
         if (symbol) {
-            symbol.isExternal = true;
-            symbol.line = line;
+            // symbol.isExternal = true;
+            // symbol.line = line;
             return symbol;
         }
     }
@@ -206,7 +208,46 @@ export default class Project {
         symbol.kind = CompletionItemKind.Reference;
         //symbol.scope = this._kickAssemblerResults.sourceFiles[sourceRange.fileIndex].lines[sourceRange.startLine].scope;
 		return symbol;
-	}
+    }
+    
+    private createFromDirective(sourceRange:AssemblerSourceRange, text:string):Symbol {
 
+        const name = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition);
+
+        if (name.toLowerCase() == ".var") {
+
+        }
+
+        if (name.toLowerCase() == ".const") {
+			var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+            symbol.kind = CompletionItemKind.Value;
+            symbol.type = SymbolType.Constant;
+            symbol.description = LineUtils.getRemarksAboveLine(this.projectFiles[sourceRange.fileIndex].getLines(), sourceRange.startLine);
+            //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
+			return symbol;
+        }
+
+        if (name.toLowerCase() == ".label") {
+
+        }
+    }
+
+	private createFromSimpleValue(text:string):Symbol {
+
+        var symbol = <Symbol>{};
+
+        if (text.indexOf("=") >= 0) {
+            let parms = text.split("=");
+            let name = parms[0].trim();
+            let value = parms[1].trim();
+            symbol.name = name;
+            symbol.value = NumberUtils.toDecimal(value);
+        } else {
+            symbol.name = text.trim();
+        }
+
+		return symbol;
+    }
+    
 
 }
