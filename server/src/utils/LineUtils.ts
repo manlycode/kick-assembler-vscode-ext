@@ -2,6 +2,7 @@ import {
 	Position,
 	Range,
 } from "vscode-languageserver";
+import StringUtils from "./StringUtils";
 
 interface TokenPosition {
 	start: number;
@@ -11,10 +12,37 @@ interface TokenPosition {
 
 export default class LineUtils {
 
+	public static getTokenAtSourcePosition2(sourceLines: string[] | undefined, line: number, column: number): string | undefined {
+		if (sourceLines && sourceLines.length > line) {
+			// Find the char and the surrounding symbol it relates to
+			const sourceLine = LineUtils.removeComments(sourceLines[line]);
+			return LineUtils.getTokenAtLinePosition(sourceLine, column);
+		}
+	}
+
+	public static getTokenAtLinePosition2(sourceLine: string | undefined, column: number): string | undefined {
+
+		const tokens = StringUtils.splitIntoTokens(sourceLine);
+
+		if (!tokens)
+			return;
+
+		if (tokens.length == 1)
+			return tokens[0];
+
+		for (var i = 0; i < tokens.length; i++) {
+			var pos = sourceLine.indexOf(tokens[i]);
+			if (pos > column)
+				return tokens[i - 1];
+		}
+
+		return tokens[tokens.length - 1];
+	}
+
 	/**
 	 * Given a list of lines, returns what is the assumed symbol/label/value at a specific position
 	 */
-	public static getTokenAtSourcePosition(sourceLines:string[]|undefined, line:number, column:number):string|undefined {
+	public static getTokenAtSourcePosition(sourceLines: string[] | undefined, line: number, column: number): string | undefined {
 		if (sourceLines && sourceLines.length > line) {
 			// Find the char and the surrounding symbol it relates to
 			const sourceLine = LineUtils.removeComments(sourceLines[line]);
@@ -27,7 +55,7 @@ export default class LineUtils {
 	/**
 	 * Given a line, returns what is the assumed symbol/label/value at a specific position
 	 */
-	public static getTokenAtLinePosition(sourceLine:string|undefined, column:number):string|undefined {
+	public static getTokenAtLinePosition(sourceLine: string | undefined, column: number): string | undefined {
 		if (sourceLine && column <= sourceLine.length) {
 			let targetRegex = new RegExp("^.{0," + Math.max(column, 0) + "}\\b([\\w.]*)\\b.*$");
 			let targetMatch = sourceLine.match(targetRegex);
@@ -50,7 +78,7 @@ export default class LineUtils {
 	 * Given a line and a token, returns the location in that line (start and end) that the token is in
 	 * A `character` parameter can be used when the token needs to be in that position
 	 */
-	public static getTokenPosition(line:string, token:string, character:number = -1):TokenPosition|undefined {
+	public static getTokenPosition(line: string, token: string, character: number = -1): TokenPosition | undefined {
 		const len = token.length;
 		let pos = line.indexOf(token);
 		while (pos > -1) {
@@ -65,7 +93,7 @@ export default class LineUtils {
 	/**
 	 * Given a line and a token, returns all the location in that line (start and end) that the token is in
 	 */
-	public static getTokenPositions(line:string, token:string):TokenPosition[] {
+	public static getTokenPositions(line: string, token: string): TokenPosition[] {
 		const len = token.length;
 		let pos = line.indexOf(token);
 		const positions = [];
@@ -79,7 +107,7 @@ export default class LineUtils {
 	/**
 	 * Same as getTokenPosition(), but returning a range of a specific line
 	 */
-	public static getTokenRange(line:string, token:string, lineNumber:number, character:number = -1):Range|undefined {
+	public static getTokenRange(line: string, token: string, lineNumber: number, character: number = -1): Range | undefined {
 		const pos = LineUtils.getTokenPosition(line, token, character);
 		if (pos) {
 			return Range.create(Position.create(lineNumber, pos.start), Position.create(lineNumber, pos.end));
@@ -90,7 +118,7 @@ export default class LineUtils {
 	/**
 	 * Returns a line without comments
 	 */
-	public static removeComments(line:string):string|undefined {
+	public static removeComments(line: string): string | undefined {
 		const removeCommentsRegex = /^(.+?)(;.+|)$/;
 		const sourceLineNoCommentsMatch = line.match(removeCommentsRegex);
 		if (sourceLineNoCommentsMatch && sourceLineNoCommentsMatch[1]) {

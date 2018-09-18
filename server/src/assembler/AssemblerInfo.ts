@@ -10,16 +10,16 @@ import StringUtils from "../utils/StringUtils";
     Remarks:
 
         When Kick Assembler is run with the -asminfo option, it will
-        produce a file called 'asminfo.txt'.
+        produce a AssemblerFile called 'asminfo.txt'.
 
-        This file contains important information about the 
-        build of the assembled source files. It is used by
+        This AssemblerFile contains important information about the 
+        build of the assembled source AssemblerFiles. It is used by
         the Server to return information back to the Client
-        like Errors. But it can also be useful when parsing
+        like AssemblerErrors. But it can also be useful when parsing
         the symbols in the Code.
 */
 
-export interface SourceRange {
+export interface AssemblerSourceRange {
     startLine:number;
     startPosition:number;
     endLine:number;
@@ -27,100 +27,99 @@ export interface SourceRange {
     fileIndex:number;
 }
 
-export enum Sections {
+export enum AssemblerSections {
     Libraries,
-    Directives,
+    AssemblerDirectives,
     Preprocessor,
-    Files,
-    Syntax,
-    Errors,
+    AssemblerFiles,
+    AssemblerSyntax,
+    AssemblerErrors,
 }
 
-export enum EntryType {
+export enum AssemblerEntryType {
     Constant,
     Function,
 }
 
-export interface Library {
+export interface AssemblerLibrary {
     name:string;
-    entryType:EntryType;
+    AssemblerEntryType:AssemblerEntryType;
     data:{};
 }
 
-export interface Directive {
+export interface AssemblerDirective {
     name:string;
     example:string;
     description:string;
 }
 
-export interface PPDirective {
+export interface AssemblerPreProcessorDirective {
     name:string;
     example:string;
     description:string;
 }
 
-export interface File {
+export interface AssemblerFile {
     index:number;
     system:boolean;
     uri:string;
 }
 
-export interface Syntax {
+export interface AssemblerSyntax {
     type:string;
-    sourceRange:SourceRange
+    range:AssemblerSourceRange
     line:number;
     scope:number;
+    fileIndex:number;
 }
 
-export interface Error {
+export interface AssemblerError {
 	level: string;
-	range: SourceRange;
+	range: AssemblerSourceRange;
 	message: string;
 }
 
 export class AssemblerInfo {
 
-    private libraries:Library[] = [];
-    private directives:Directive[] = [];
-    private ppdirectives:PPDirective[] = [];
-    private files:File[] = [];
-    private syntax:Syntax[] = [];
-    private errors:Error[] = [];
+    private libraries:AssemblerLibrary[] = [];
+    private AssemblerDirectives:AssemblerDirective[] = [];
+    private AssemblerPreProcessorDirectives:AssemblerPreProcessorDirective[] = [];
+    private AssemblerFiles:AssemblerFile[] = [];
+    private AssemblerSyntax:AssemblerSyntax[] = [];
+    private AssemblerErrors:AssemblerError[] = [];
 
     constructor(data:string) {
-
-        //  process the contents of the asminfo file
-        this.processData(data);
+        this.processData(data); 
     }
 
-    public getLibraries():Library[] {
+    public getLibraries():AssemblerLibrary[] {
         return this.libraries;
     }
 
-    public getDirectives():Directive[] {
-        return this.directives;
+    public getAssemblerDirectives():AssemblerDirective[] {
+        return this.AssemblerDirectives;
     }
 
-    public getPPDirectives():PPDirective[] {
-        return this.ppdirectives;
+    public getAssemblerPreProcessorDirectives():AssemblerPreProcessorDirective[] {
+        return this.AssemblerPreProcessorDirectives;
     }
 
-    public getFiles():File[] {
-        return this.files;
+    public getAssemblerFiles():AssemblerFile[] {
+        return this.AssemblerFiles;
     }
 
-    public getSyntax():Syntax[] {
-        return this.syntax;
+    public getAssemblerSyntax():AssemblerSyntax[] {
+        return this.AssemblerSyntax;
     }
 
-    public getErrors():Error[] {
-        return this.errors;
+    public getAssemblerErrors():AssemblerError[] {
+        return this.AssemblerErrors;
     }
 
     private processData(data:string) {
 
         var lines = StringUtils.splitIntoLines(data); 
-        var section:Sections;
+        var section:AssemblerSections;
 
         for (var i = 0; i < lines.length; i++) {
 
@@ -130,126 +129,126 @@ export class AssemblerInfo {
                 continue;
 
             if (line.toLowerCase() == "[libraries]") {
-                section = Sections.Libraries;
+                section = AssemblerSections.Libraries;
                 continue;
             }
 
             if (line.toLowerCase() == "[directives]") {
-                section = Sections.Directives;
+                section = AssemblerSections.AssemblerDirectives;
                 continue;
             }
 
             if (line.toLowerCase() == "[ppdirectives]") {
-                section = Sections.Preprocessor;
+                section = AssemblerSections.Preprocessor;
                 continue;
             }
 
-            if (line.toLowerCase() == "[errors]") {
-                section = Sections.Errors;
+           if (line.toLowerCase() == "[errors]") {
+                section = AssemblerSections.AssemblerErrors;
                 continue;
             }
 
-            if (line.toLowerCase() == "[syntax]") {
-                section = Sections.Syntax;
+           if (line.toLowerCase() == "[syntax]") {
+                section = AssemblerSections.AssemblerSyntax;
                 continue;
             }
 
-            if (line.toLowerCase() == "[files]") {
-                section = Sections.Files;
+           if (line.toLowerCase() == "[files]") {
+                section = AssemblerSections.AssemblerFiles;
                 continue;
             }
 
             switch(section) {
 
-                case Sections.Libraries: 
-                    this.addLibrary(line);
+                case AssemblerSections.Libraries: 
+                    this.addAssemblerLibrary(line);
                     break;
 
-                case Sections.Directives:
-                    this.addDirective(line);
+                case AssemblerSections.AssemblerDirectives:
+                    this.addAssemblerDirective(line);
                     break;
 
-                case Sections.Preprocessor:
+                case AssemblerSections.Preprocessor:
                     this.addPreprocessor(line);
                     break;
 
-                case Sections.Errors:
-                    this.addError(line);
+                case AssemblerSections.AssemblerErrors:
+                    this.addAssemblerError(line);
                     break;
 
-                case Sections.Syntax:
-                    this.addSyntax(line);
+                case AssemblerSections.AssemblerSyntax:
+                    this.addAssemblerSyntax(line);
                     break;
 
-                case Sections.Files:
-                    this.addFile(line);
+                case AssemblerSections.AssemblerFiles:
+                    this.addAssemblerFile(line);
                     break;
             }
 
         }
     }
 
-    private addLibrary(line:string) {
+    private addAssemblerLibrary(line:string) {
         var parms = line.split(";");
-        var library = <Library>{};
-        library.name = parms[0];
-        library.entryType = parms[1].toLowerCase() == "constant" ? EntryType.Constant : EntryType.Function;
-        library.data = parms[2];
-        this.libraries.push(library);
+        var assemblerLibrary = <AssemblerLibrary>{};
+        assemblerLibrary.name = parms[0];
+        assemblerLibrary.AssemblerEntryType = parms[1].toLowerCase() == "constant" ? AssemblerEntryType.Constant : AssemblerEntryType.Function;
+        assemblerLibrary.data = parms[2];
+        this.libraries.push(assemblerLibrary);
     }
 
-    private addDirective(line:string) {
+    private addAssemblerDirective(line:string) {
         var parms = line.split(";");
-        let directive = <Directive>{};
-        directive.name = parms[0];
-        directive.example = parms[1];
-        directive.description = parms[2];
-        this.directives.push(directive);
+        let assemblerDirective = <AssemblerDirective>{};
+        assemblerDirective.name = parms[0];
+        assemblerDirective.example = parms[1];
+        assemblerDirective.description = parms[2];
+        this.AssemblerDirectives.push(assemblerDirective);
     }
 
     private addPreprocessor(line:string) {
         var parms = line.split(";");
-        let ppdirective = <PPDirective>{};
-        ppdirective.name = parms[0];
-        ppdirective.example = parms[1];
-        ppdirective.description = parms[2];
-        this.ppdirectives.push(ppdirective);
+        let assemblerPreProcessorDirective = <AssemblerPreProcessorDirective>{};
+        assemblerPreProcessorDirective.name = parms[0];
+        assemblerPreProcessorDirective.example = parms[1];
+        assemblerPreProcessorDirective.description = parms[2];
+        this.AssemblerPreProcessorDirectives.push(assemblerPreProcessorDirective);
     }
     
-    private addError(line:string) {
+    private addAssemblerError(line:string) {
         var parms = line.split(";");
-        let error = <Error>{};
-        error.level = parms[0];
-        error.range = this.parseRange(parms[1]);
-        error.message = parms[2];
-        this.errors.push(error);
+        let assemblerError = <AssemblerError>{};
+        assemblerError.level = parms[0];
+        assemblerError.range = this.parseRange(parms[1]);
+        assemblerError.message = parms[2];
+        this.AssemblerErrors.push(assemblerError);
     }
     
-    private addSyntax(line:string) {
+    private addAssemblerSyntax(line:string) {
         var parms = line.split(";");
-        let syntax = <Syntax>{};
-        syntax.type = parms[0];
-        syntax.sourceRange = this.parseRange(parms[1]);
-        syntax.line = syntax.sourceRange.startLine;
-        this.syntax.push(syntax);
+        let assemblerSyntax = <AssemblerSyntax>{};
+        assemblerSyntax.type = parms[0];
+        assemblerSyntax.range = this.parseRange(parms[1]);
+        assemblerSyntax.line = assemblerSyntax.range.startLine;
+        this.AssemblerSyntax.push(assemblerSyntax);
     }
     
-    private addFile(line:string) {
+    private addAssemblerFile(line:string) {
         var parms = line.split(";");
-        let file = <File> {};
-        file.index = parseInt(parms[0]);
-        file.uri = parms[1];
+        let assemblerFile = <AssemblerFile> {};
+        assemblerFile.index = parseInt(parms[0]);
+        assemblerFile.uri = parms[1];
 
-        //  don't include the kick autoinclude file
-        if (file.uri.indexOf('autoinclude') > 0)
-            return;
+        //  don't include the kick autoinclude AssemblerFile
+        if (assemblerFile.uri.indexOf('autoinclude') > 0)
+            assemblerFile.system = true;
 
-        this.files.push(file);
+        this.AssemblerFiles.push(assemblerFile);
     }
     
-    private parseRange(text:string):SourceRange {
+    private parseRange(text:string):AssemblerSourceRange {
         let parms = text.split(",");
-        let range = <SourceRange>{};
+        let range = <AssemblerSourceRange>{};
         range.startLine = Number(parms[0]) - 1;
         range.startPosition = Number(parms[1]) - 1;
         range.endLine = Number(parms[2]) - 1;

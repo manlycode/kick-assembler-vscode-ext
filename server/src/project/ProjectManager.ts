@@ -12,35 +12,45 @@
 
 */
 
-import { 
-    IConnection, 
-    InitializeResult, 
+import {
+    IConnection,
+    InitializeResult,
     TextDocuments,
     InitializeParams,
     InitializedParams,
     DidChangeTextDocumentParams,
     DidOpenTextDocumentParams,
     DidSaveTextDocumentParams,
-    DidChangeWatchedFilesParams, 
+    DidChangeWatchedFilesParams,
+    Connection,
+    DidCloseTextDocumentParams,
 } from "vscode-languageserver";
 
 import SettingsProvider, { Settings } from "../providers/SettingsProvider";
 import HoverProvider from "../providers/HoverProvider";
 import Project from "./Project";
 import { ProjectInfoProvider } from "../providers/Provider";
+import DiagnosticProvider from "../providers/DiagnosticProvider";
+import { readFileSync } from "fs";
+import PathUtils from "../utils/PathUtils";
+import { createHash } from "crypto";
 
 export default class ProjectManager {
 
-    private project:Project;
-    private projectCache:{};
+    //private currentProject: Project;
 
-    private connection:IConnection;
+    private projects: Project[];
 
-    private documents:TextDocuments;
-    private settingsProvider:SettingsProvider;
-    private hoverProvider:HoverProvider;
+    private connection: Connection;
 
-    constructor(connection:IConnection) {
+    private documents: TextDocuments;
+    private settingsProvider: SettingsProvider;
+    private hoverProvider: HoverProvider;
+    private diagnosticProvider: DiagnosticProvider;
+
+    constructor(connection: Connection) {
+
+        this.projects = [];
 
         this.connection = connection;
 
@@ -49,48 +59,73 @@ export default class ProjectManager {
         this.documents.listen(this.connection);
 
         //  setup project information provider
-        const projectInfoProvider:ProjectInfoProvider = {
+        const projectInfoProvider: ProjectInfoProvider = {
             getProject: this.getProject.bind(this),
             getSettings: this.getSettings.bind(this)
         }
 
         this.settingsProvider = new SettingsProvider(connection, projectInfoProvider);
         this.hoverProvider = new HoverProvider(connection, projectInfoProvider);
+        this.diagnosticProvider = new DiagnosticProvider(connection, projectInfoProvider);
 
-        connection.onInitialize((params:InitializeParams):InitializeResult => {
-            connection.console.log("[projectManager.onInitialize");
+        connection.onInitialize((params: InitializeParams): InitializeResult => {
             return {
                 capabilities: {
                     textDocumentSync: this.documents.syncKind,
                     hoverProvider: true,
-                    
+
                 }
             };
         });
 
-        connection.onInitialized((params:InitializedParams) => {
-            connection.console.log("[projectManager.onInitialized");
+        connection.onInitialized((params: InitializedParams) => {
             connection.console.log(params.toString());
         });
 
-        connection.onDidOpenTextDocument((open:DidOpenTextDocumentParams) => {
-            connection.console.log("[projectManager.onDidOpenTextDocument");
-            this.project = new Project();
-            this.project.assemble(this.settingsProvider.getSettings(), open.textDocument);
+        connection.onDidOpenTextDocument((open: DidOpenTextDocumentParams) => {
+            var project = new Project(open.textDocument.uri);
+            this.projects.push(project);
+            project.assemble(this.settingsProvider.getSettings(), open.textDocument.text);
+            this.diagnosticProvider.process(open.textDocument.uri);
         });
 
-        connection.onDidChangeTextDocument((change:DidChangeTextDocumentParams) => {
-            connection.console.log("[projectManager.onDidChangeTextDocument");
+        connection.onDidChangeTextDocument((change: DidChangeTextDocumentParams) => {
+            var project = this.findProject(change.textDocument.uri);
+            var file = readFileSync(PathUtils.uriToPlatformPath(change.textDocument.uri), 'utf8');
+            project.assemble(this.settingsProvider.getSettings(), file);
+            this.diagnosticProvider.process(change.textDocument.uri);
         });
 
-        connection.onDidSaveTextDocument((params:DidSaveTextDocumentParams) => {
-            connection.console.log("[projectManager.onDidSaveTextDocument");
+        connection.onDidSaveTextDocument((change: DidSaveTextDocumentParams) => {
+            var project = this.findProject(change.textDocument.uri);
+            var file = readFileSync(PathUtils.uriToPlatformPath(change.textDocument.uri), 'utf8');
+            project.assemble(this.settingsProvider.getSettings(), file);
+            this.diagnosticProvider.process(change.textDocument.uri);
         });
 
-        connection.onDidChangeWatchedFiles((params:DidChangeWatchedFilesParams) => {
-            connection.console.log("[projectManager.onDidChangeWatchedFiles");
-        })
+        connection.onDidCloseTextDocument((close: DidCloseTextDocumentParams) => {
+            this.removeProject(close.textDocument.uri);
+        });
+    }
 
+    private findProject(uri: string): Project | undefined {
+        var hash = createHash('md5').update(uri).digest('hex');
+        for (var project of this.projects) {
+            if (hash == project.getId()) {
+                return project;
+            }
+        }
+    }
+
+    private removeProject(uri: string) {
+        var pos = 0;
+        var hash = createHash('md5').update(uri).digest('hex');
+        for (var project of this.projects) {
+            if (hash == project.getId()) {
+                this.projects.splice(pos, 1);
+            }
+            pos += 1;
+        }
     }
 
     public start() {
@@ -103,16 +138,16 @@ export default class ProjectManager {
     //     return this.settingsProvider;
     // }
 
-    public getSettings():Settings {
+    public getSettings(): Settings {
         return this.settingsProvider.getSettings();
     }
 
-    public getHoverProvider():HoverProvider {
+    public getHoverProvider(): HoverProvider {
         return this.hoverProvider;
     }
 
-    public getProject():Project {
-        return this.project;
+    public getProject(uri: string): Project {
+        return this.findProject(uri);
     }
 
 }

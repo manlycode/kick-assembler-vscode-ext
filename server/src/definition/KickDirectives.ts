@@ -5,10 +5,15 @@ export interface Directive {
 	insertLabel: string;
 	otherNames: string[];
 	description: string;
+	example: string;
 	documentation: string[];
 	parameters: Parameter[];
 	relatedTo: string[];
 }
 
+export class KickDirectives {
 
-export const Directives:Directive[] = [];
+	public static createFromDirective() {
+
+	}
+}

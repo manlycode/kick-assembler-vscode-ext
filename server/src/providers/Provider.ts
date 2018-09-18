@@ -7,27 +7,27 @@
 
 */
 import {
-    IConnection
+    IConnection, Connection
 } from "vscode-languageserver";
 import { Settings } from "./SettingsProvider";
 import Project from "../project/Project";
 
 export interface ProjectInfoProvider {
-	getProject:() => Project;
-	getSettings:() => Settings;
+	getProject:(uri:string) => Project;
+    getSettings:() => Settings;
 }
 
 export class Provider {
 
-        private connection:IConnection;
+        private connection:Connection;
         private projectInfo:ProjectInfoProvider;
 
-        constructor(connection:IConnection, projectInfo:ProjectInfoProvider) {
+        constructor(connection:Connection, projectInfo:ProjectInfoProvider) {
             this.connection = connection;
             this.projectInfo = projectInfo;
         }
 
-        public getConnection():IConnection {
+        public getConnection():Connection {
             return this.connection;
         }
 

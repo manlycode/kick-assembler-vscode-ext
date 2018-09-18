@@ -36,12 +36,12 @@ export class Assembler {
     constructor() {
     }
 
-    public assemble(settings: Settings, textDocument: TextDocumentItem): AssemblerResults | undefined {
+    public assemble(settings: Settings, uri:string, text: string): AssemblerResults | undefined {
 
         //  copy file contents into ".source.txt"
-        var path = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(textDocument.uri));
+        var path = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));
         var filename = path + "\\.source.txt";
-        writeFileSync(filename, textDocument.text);
+        writeFileSync(filename, text);
 
         //  setup the asminfo.txt output
         var asminfo = path + "\\.asminfo.txt";

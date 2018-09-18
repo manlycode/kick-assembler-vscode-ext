@@ -3,14 +3,12 @@ import { Instructions, Instruction } from "./KickInstructions";
 import { PseudoOps, PseudoOp } from "./KickPseudoOps";
 import { Extensions } from "./KickExtensions";
 import { PreProcessors, PreProcessor } from "./KickPreprocessors";
-import { Directives, Directive } from "./KickDirectives";
 
 export interface KickLanguageDefinition {
 	Instructions: Instruction[];
 	PseudoOps: PseudoOp[];
 	Extensions: {[key: string]:string[]};
 	PreProcessors: PreProcessor[];
-	Directives: Directive[];
 }
 
 export const KickLanguage:KickLanguageDefinition = {
@@ -18,5 +16,4 @@ export const KickLanguage:KickLanguageDefinition = {
     PseudoOps,
     Extensions,
     PreProcessors,
-    Directives
 }
