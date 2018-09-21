@@ -1,4 +1,3 @@
-
 /*
     Class:  Project
 
@@ -54,6 +53,7 @@ export enum SymbolType {
     PseudoCommand,
     Variable,
     Namespace,
+    Parameter,
 }
 
 export interface Symbol {
@@ -167,69 +167,113 @@ export default class Project {
 
         for (var syntax of this.getAssemblerResults().assemblerInfo.getAssemblerSyntax()) {
             if (syntax.range.fileIndex != autoIncludeFileIndex) {
-                var symbol = this.createSymbol(syntax, this.projectFiles[syntax.range.fileIndex].getLines());
-                if (symbol)
-                    symbols.push(symbol);
+                var new_symbols = this.createSymbol(syntax, this.projectFiles[syntax.range.fileIndex].getLines());
+                if (new_symbols) {
+                    for (var symbol of new_symbols) {
+                        symbols.push(symbol);
+                    }
+                }
             }
         }
 
         return symbols;
     }
 
-    private createSymbol(syntax:AssemblerSyntax, lines:Line[]):Symbol|undefined {
+    private createSymbol(syntax:AssemblerSyntax, lines:Line[]):Symbol[]|undefined {
 
 		var type = syntax.type.toLowerCase();
         var range = syntax.range;
         var line = lines[syntax.range.startLine];
         var text = line.text;
         
-        var symbol:Symbol;
+        var symbols:Symbol[];
         
 		if (type == "label") {
-			symbol = this.createFromLabel(range, text);
+			symbols = this.createFromLabel(range, text);
 		}
 
 		if (type == "directive") {
-			symbol = this.createFromDirective(range, text);
+			symbols = this.createFromDirective(range, text);
 		}
 
-        if (symbol) {
+        if (symbols) {
             // symbol.isExternal = true;
             // symbol.line = line;
-            return symbol;
+            return symbols;
         }
     }
 
-	private createFromLabel(sourceRange:AssemblerSourceRange, text:string):Symbol {
+	private createFromLabel(sourceRange:AssemblerSourceRange, text:string):Symbol[] {
         var name = text.substr(sourceRange.startPosition, (sourceRange.endPosition - 1) - sourceRange.startPosition);
         var symbol = <Symbol>{};
         symbol.name = name;
         symbol.type = SymbolType.Label;
         symbol.kind = CompletionItemKind.Reference;
         //symbol.scope = this._kickAssemblerResults.sourceFiles[sourceRange.fileIndex].lines[sourceRange.startLine].scope;
-		return symbol;
+		return [symbol];
     }
     
-    private createFromDirective(sourceRange:AssemblerSourceRange, text:string):Symbol {
+    private createFromDirective(sourceRange:AssemblerSourceRange, text:string):Symbol[] {
 
-        const name = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition);
+        const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition);
 
-        if (name.toLowerCase() == ".var") {
+        if (directive.toLowerCase() == ".var") {
 
         }
 
-        if (name.toLowerCase() == ".const") {
+        if (directive.toLowerCase() == ".const") {
 			var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
             symbol.kind = CompletionItemKind.Value;
             symbol.type = SymbolType.Constant;
             symbol.description = LineUtils.getRemarksAboveLine(this.projectFiles[sourceRange.fileIndex].getLines(), sourceRange.startLine);
             //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
-			return symbol;
+			return [symbol];
         }
 
-        if (name.toLowerCase() == ".label") {
+        if (directive.toLowerCase() == ".label") {
 
         }
+        
+		if (directive.toLowerCase() == ".macro") {
+            
+            var symbols = [];
+			var split = StringUtils.splitFunction(text);
+            
+            if (split.length > 0) {
+                var name = split[1];
+                var symbol = <Symbol>{};
+                symbol.type = SymbolType.Macro;
+                symbol.kind = CompletionItemKind.Snippet;
+                symbol.name = name;
+                symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
+                var parms = [];
+                
+                for (var i = 2; i < split.length; i++) {
+                    var parm = { "name": split[i] };
+                    parms.push(parm);
+
+                    var parm_symbol = <Symbol>{};
+                    parm_symbol.name = split[i];
+                    parm_symbol.type = SymbolType.Parameter;
+                    parm_symbol.kind = CompletionItemKind.TypeParameter
+                    parm_symbol.scope = symbol.scope;
+                    symbols.push(parm_symbol);
+                }
+                
+                symbol.data = { "parms": parms };
+                
+                if (symbol.name.substr(0,1) == "@") {
+                    symbol.scope = 0;
+                    symbol.name = symbol.name.substr(1);
+                    symbol.isGlobal = true;
+                }
+                
+                symbols.push(symbol);
+
+
+				return symbols;
+			}
+		}
     }
 
 	private createFromSimpleValue(text:string):Symbol {

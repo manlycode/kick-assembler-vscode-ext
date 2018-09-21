@@ -1,3 +1,7 @@
+/*
+
+*/
+
 import {
 	Provider, ProjectInfoProvider
 } from "./Provider";
@@ -8,14 +12,10 @@ import {
 	Hover,
 	ResponseError
 } from "vscode-languageserver";
+
 import Project, { SymbolType } from "../project/Project";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
-import NumberUtils from "../utils/NumberUtils";
-
-/*
-
-*/
 
 export default class HoverProvider extends Provider {
 
@@ -71,13 +71,15 @@ export default class HoverProvider extends Provider {
 	}
 
 	private getSymbolOrLabel(token: string): string[] | undefined {
+		var symbols = this.project.getSymbols();
 		const tokenMatch = this.project.getSymbols().find((match) => {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
 		if (tokenMatch) {
-			return [
-				`(${tokenMatch.type.toString()}) \`${tokenMatch.name}\`: ${tokenMatch.value}`,
-			];
+			// return [
+			// 	`(${SymbolType[tokenMatch.type].toString()}) \`${tokenMatch.name}\`: ${tokenMatch.value}\nParm1\nParm2\nParm3`,
+			// ];
+			return ["```\n###Hello World\n```"];
 		}
 	}
 
