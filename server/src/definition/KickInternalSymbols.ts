@@ -23,6 +23,8 @@ export class KickInternalSymbols {
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
+                isMain: false,
+                comments: undefined,
                 data: undefined
             },
             {
@@ -35,6 +37,8 @@ export class KickInternalSymbols {
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
+                isMain: false,
+                comments: undefined,
                 data: undefined
             },
             {
@@ -47,6 +51,8 @@ export class KickInternalSymbols {
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
+                isMain: false,
+                comments: undefined,
                 data: undefined
             },
             /*
@@ -62,6 +68,8 @@ export class KickInternalSymbols {
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
+                isMain: false,
+                comments: undefined,
                 data: undefined
             },
             {
@@ -74,6 +82,8 @@ export class KickInternalSymbols {
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
+                isMain: false,
+                comments: undefined,
                 data: undefined
             }
         ];

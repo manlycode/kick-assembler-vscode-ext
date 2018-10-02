@@ -61,7 +61,8 @@ export interface AssemblerPreProcessorDirective {
 
 export interface AssemblerFile {
     index:number;
-    system:boolean;
+    system:boolean;     //  is this an internal system file?
+    main:boolean;    //  is this the main project file?
     uri:string;
 }
 
@@ -242,6 +243,10 @@ export class AssemblerInfo {
         //  don't include the kick autoinclude AssemblerFile
         if (assemblerFile.uri.indexOf('autoinclude') > 0)
             assemblerFile.system = true;
+
+        //  is this the main project file?
+        if (assemblerFile.uri.indexOf('.source.txt') > 0)
+            assemblerFile.main = true;
 
         this.AssemblerFiles.push(assemblerFile);
     }

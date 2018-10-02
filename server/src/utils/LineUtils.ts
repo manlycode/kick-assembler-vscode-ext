@@ -22,20 +22,32 @@ export default class LineUtils {
 
 		var found = false;
 		var remark = undefined;
-		var beg;
-		var end;
+		var beg = -1;
+		var end = -1;
 
 		while (!found) {
 			
 			lineNumber -= 1;
+
+			if (lines[lineNumber].text.trim().length == 0)
+				break;
 			
 			if (lineNumber < 1)
 				break;
 			
-			end = lines[lineNumber].text.indexOf("*/");
-			beg = lines[lineNumber].text.indexOf("/**");
+			if (end < 0) {
+				var e = lines[lineNumber].text.indexOf("*/");
+				if (e >= 0)
+					end = lineNumber;
+			}
+
+			if (beg < 0) {
+				var b = lines[lineNumber].text.indexOf("/**");
+				if (b >= 0)
+					beg = lineNumber;
+			}
 			
-			if (beg && end)
+			if (beg > 0 && end > 0)
 				found = true;
 		}
 

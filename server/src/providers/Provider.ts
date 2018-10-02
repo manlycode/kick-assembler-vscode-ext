@@ -13,7 +13,8 @@ import { Settings } from "./SettingsProvider";
 import Project from "../project/Project";
 
 export interface ProjectInfoProvider {
-	getProject:(uri:string) => Project;
+    getProject:(uri:string) => Project;
+    getCurrentProject:() => Project;
     getSettings:() => Settings;
 }
 

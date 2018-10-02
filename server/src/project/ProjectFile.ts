@@ -32,12 +32,17 @@ export class ProjectFile {
     //  the text of the document
     private text: string;
 
+    //  lines of text
     private lines:Line[];
 
-    public constructor(uri: string, text: string) {
+    //  is the main project file
+    private main:boolean;
+
+    public constructor(uri: string, text: string, main: boolean) {
         this.uri = URI.parse(uri);
         this.text = text;
         this.lines = this.createLines(text);
+        this.main = main;
     }
 
     //  returns the source code as one large string
@@ -52,6 +57,14 @@ export class ProjectFile {
 
     public getLines(): Line[]|undefined {
         return this.lines;
+    }
+
+    public isMain(): boolean {
+        return this.main;
+    }
+
+    public getUri(): string {
+        return this.uri.toString();
     }
 
     private createLines(source:string):Line[] {

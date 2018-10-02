@@ -34,7 +34,7 @@ import { Directive } from "../definition/KickDirectives";
 import { readFileSync } from "fs";
 import { KickInternalSymbols } from "../definition/KickInternalSymbols";
 import { createHash } from "crypto";
-import { CompletionItemKind } from "vscode-languageserver";
+import { CompletionItemKind, SymbolKind, Location } from "vscode-languageserver";
 import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 
@@ -61,12 +61,14 @@ export interface Symbol {
     name: string;
     description: string;
     value: number;
-    kind: CompletionItemKind;
+    kind: SymbolKind;
     line: Line;
     scope: number;
+    comments: string;
     isExternal: boolean;
-    isGlobal: boolean;
-    data: {};
+    isGlobal: boolean;      //  is this a global symbol?
+    isMain: boolean;        //  is this a main project symbol?
+    data: any;
 };
 
 export default class Project {
@@ -97,7 +99,7 @@ export default class Project {
 
         for (var file of this.assemblerResults.assemblerInfo.getAssemblerFiles()) {
             if (!file.system) {
-                const projectFile = new ProjectFile(file.uri, readFileSync(file.uri, 'utf8'));
+                const projectFile = new ProjectFile(file.uri, readFileSync(file.uri, 'utf8'), file.main);
                 this.projectFiles[file.index] = projectFile;
             }
         }
@@ -126,14 +128,26 @@ export default class Project {
         return this.uri;
     }
 
+    /**
+     * Returns the Assembler Information
+     * 
+     * @param test the number
+     * 
+     */
     public getAssemblerInfo(): AssemblerInfo {
         return this.assemblerInfo;
     }
 
+    /**
+     * Returns the Assembler Results
+     */
     public getAssemblerResults(): AssemblerResults {
         return this.assemblerResults;
     }
 
+    /**
+     * Does not return a comment
+     */
     public getSource(): string {
         return this.source;
     }
@@ -167,11 +181,9 @@ export default class Project {
 
         for (var syntax of this.getAssemblerResults().assemblerInfo.getAssemblerSyntax()) {
             if (syntax.range.fileIndex != autoIncludeFileIndex) {
-                var new_symbols = this.createSymbol(syntax, this.projectFiles[syntax.range.fileIndex].getLines());
-                if (new_symbols) {
-                    for (var symbol of new_symbols) {
-                        symbols.push(symbol);
-                    }
+                var symbol = this.createSymbol(syntax, this.projectFiles[syntax.range.fileIndex]);
+                if (symbol) {
+                    symbols.push(symbol);
                 }
             }
         }
@@ -179,41 +191,49 @@ export default class Project {
         return symbols;
     }
 
-    private createSymbol(syntax:AssemblerSyntax, lines:Line[]):Symbol[]|undefined {
+    private createSymbol(syntax:AssemblerSyntax, projectFile:ProjectFile):Symbol|undefined {
 
 		var type = syntax.type.toLowerCase();
         var range = syntax.range;
+        var lines = projectFile.getSourceLines();
         var line = lines[syntax.range.startLine];
-        var text = line.text;
+        var text = line;
         
-        var symbols:Symbol[];
+        var symbol:Symbol;
         
 		if (type == "label") {
-			symbols = this.createFromLabel(range, text);
+			symbol = this.createFromLabel(range, text, projectFile.isMain());
 		}
 
 		if (type == "directive") {
-			symbols = this.createFromDirective(range, text);
+			symbol = this.createFromDirective(range, text, projectFile.isMain());
 		}
 
-        if (symbols) {
-            // symbol.isExternal = true;
-            // symbol.line = line;
-            return symbols;
+        if (symbol) {
+
+            if (!symbol.data)
+                symbol.data = {};
+                
+            symbol.data["uri"] = projectFile.getUri();
+
+            symbol.line = projectFile.getLines()[syntax.range.startLine];
+            symbol.comments = this.getComments(range, projectFile.getLines());
+            return symbol;
         }
     }
 
-	private createFromLabel(sourceRange:AssemblerSourceRange, text:string):Symbol[] {
+	private createFromLabel(sourceRange:AssemblerSourceRange, text:string, main:boolean):Symbol {
         var name = text.substr(sourceRange.startPosition, (sourceRange.endPosition - 1) - sourceRange.startPosition);
         var symbol = <Symbol>{};
         symbol.name = name;
         symbol.type = SymbolType.Label;
-        symbol.kind = CompletionItemKind.Reference;
+        symbol.kind = SymbolKind.String;
+        symbol.isMain = main;
         //symbol.scope = this._kickAssemblerResults.sourceFiles[sourceRange.fileIndex].lines[sourceRange.startLine].scope;
-		return [symbol];
+		return symbol;
     }
     
-    private createFromDirective(sourceRange:AssemblerSourceRange, text:string):Symbol[] {
+    private createFromDirective(sourceRange:AssemblerSourceRange, text:string, main:boolean):Symbol {
 
         const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition);
 
@@ -223,29 +243,30 @@ export default class Project {
 
         if (directive.toLowerCase() == ".const") {
 			var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
-            symbol.kind = CompletionItemKind.Value;
+            symbol.kind = SymbolKind.Constant;
             symbol.type = SymbolType.Constant;
             symbol.description = LineUtils.getRemarksAboveLine(this.projectFiles[sourceRange.fileIndex].getLines(), sourceRange.startLine);
+            symbol.isMain = main;
             //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
-			return [symbol];
+			return symbol;
         }
 
         if (directive.toLowerCase() == ".label") {
-
+            return this.createFromLabel(sourceRange, text, main);
         }
         
 		if (directive.toLowerCase() == ".macro") {
             
-            var symbols = [];
 			var split = StringUtils.splitFunction(text);
             
             if (split.length > 0) {
                 var name = split[1];
                 var symbol = <Symbol>{};
                 symbol.type = SymbolType.Macro;
-                symbol.kind = CompletionItemKind.Snippet;
+                symbol.kind = SymbolKind.Method;
                 symbol.name = name;
                 symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
+                symbol.isMain = main;
                 var parms = [];
                 
                 for (var i = 2; i < split.length; i++) {
@@ -255,9 +276,9 @@ export default class Project {
                     var parm_symbol = <Symbol>{};
                     parm_symbol.name = split[i];
                     parm_symbol.type = SymbolType.Parameter;
-                    parm_symbol.kind = CompletionItemKind.TypeParameter
+                    parm_symbol.kind = SymbolKind.Variable;
                     parm_symbol.scope = symbol.scope;
-                    symbols.push(parm_symbol);
+                    parm_symbol.isMain = main;
                 }
                 
                 symbol.data = { "parms": parms };
@@ -267,11 +288,8 @@ export default class Project {
                     symbol.name = symbol.name.substr(1);
                     symbol.isGlobal = true;
                 }
-                
-                symbols.push(symbol);
 
-
-				return symbols;
+				return symbol;
 			}
 		}
     }
@@ -285,12 +303,23 @@ export default class Project {
             let name = parms[0].trim();
             let value = parms[1].trim();
             symbol.name = name;
+            symbol.type = SymbolType.Variable;
             symbol.value = NumberUtils.toDecimal(value);
         } else {
             symbol.name = text.trim();
         }
 
 		return symbol;
+    }
+
+    /**
+     * Given a Range and Text return the comments above the Line.
+     * 
+     * @param range 
+     * @param text 
+     */
+    private getComments(range:AssemblerSourceRange, lines:Line[]):string|undefined {
+        return LineUtils.getRemarksAboveLine(lines, range.startLine);
     }
     
 

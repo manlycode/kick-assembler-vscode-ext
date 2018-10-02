@@ -31,10 +31,12 @@ import DiagnosticProvider from "../providers/DiagnosticProvider";
 import { readFileSync } from "fs";
 import PathUtils from "../utils/PathUtils";
 import { createHash } from "crypto";
+import DocumentSymbolProvider from "../providers/DocumentSymbolProvider";
 
 export default class ProjectManager {
 
     private projects: Project[];
+    private currentProject: Project;
 
     private connection: Connection;
 
@@ -42,6 +44,7 @@ export default class ProjectManager {
     private settingsProvider: SettingsProvider;
     private hoverProvider: HoverProvider;
     private diagnosticProvider: DiagnosticProvider;
+    private documentSymbolProvider: DocumentSymbolProvider;
 
     constructor(connection: Connection) {
 
@@ -56,18 +59,21 @@ export default class ProjectManager {
         //  setup project information provider
         const projectInfoProvider: ProjectInfoProvider = {
             getProject: this.getProject.bind(this),
+            getCurrentProject: this.getCurrentProject.bind(this),
             getSettings: this.getSettings.bind(this)
         }
 
         this.settingsProvider = new SettingsProvider(connection, projectInfoProvider);
         this.hoverProvider = new HoverProvider(connection, projectInfoProvider);
         this.diagnosticProvider = new DiagnosticProvider(connection, projectInfoProvider);
+        this.documentSymbolProvider = new DocumentSymbolProvider(connection, projectInfoProvider);
 
         connection.onInitialize((params: InitializeParams): InitializeResult => {
             return {
                 capabilities: {
                     textDocumentSync: this.documents.syncKind,
                     hoverProvider: true,
+                    documentSymbolProvider: true,
 
                 }
             };
@@ -78,7 +84,9 @@ export default class ProjectManager {
         });
 
         connection.onDidOpenTextDocument((open: DidOpenTextDocumentParams) => {
+            connection.console.log("hello there");
             var project = new Project(open.textDocument.uri);
+            this.currentProject = project;
             this.projects.push(project);
             project.assemble(this.settingsProvider.getSettings(), open.textDocument.text);
             this.diagnosticProvider.process(open.textDocument.uri);
@@ -86,6 +94,7 @@ export default class ProjectManager {
 
         connection.onDidChangeTextDocument((change: DidChangeTextDocumentParams) => {
             var project = this.findProject(change.textDocument.uri);
+            this.currentProject = project;
             var file = readFileSync(PathUtils.uriToPlatformPath(change.textDocument.uri), 'utf8');
             project.assemble(this.settingsProvider.getSettings(), file);
             this.diagnosticProvider.process(change.textDocument.uri);
@@ -93,6 +102,7 @@ export default class ProjectManager {
 
         connection.onDidSaveTextDocument((change: DidSaveTextDocumentParams) => {
             var project = this.findProject(change.textDocument.uri);
+            this.currentProject = project;
             var file = readFileSync(PathUtils.uriToPlatformPath(change.textDocument.uri), 'utf8');
             project.assemble(this.settingsProvider.getSettings(), file);
             this.diagnosticProvider.process(change.textDocument.uri);
@@ -139,6 +149,10 @@ export default class ProjectManager {
 
     public getProject(uri: string): Project {
         return this.findProject(uri);
+    }
+
+    public getCurrentProject(): Project {
+        return this.currentProject;
     }
 
 }

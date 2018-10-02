@@ -10,7 +10,8 @@ import {
 	IConnection,
 	TextDocumentPositionParams,
 	Hover,
-	ResponseError
+	ResponseError,
+	MarkedString
 } from "vscode-languageserver";
 
 import Project, { SymbolType } from "../project/Project";
@@ -20,6 +21,8 @@ import { KickLanguage } from "../definition/KickLanguage";
 export default class HoverProvider extends Provider {
 
 	private project: Project;
+
+	private lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur sodales magna, ac accumsan nibh venenatis in. Duis malesuada lectus laoreet, egestas ligula quis, vestibulum enim. Proin dictum velit orci, in sagittis neque rhoncus id.`;
 
 	constructor(connection: IConnection, projectInfo: ProjectInfoProvider) {
 
@@ -46,13 +49,14 @@ export default class HoverProvider extends Provider {
 		var line = this.project.getSourceLines()[textDocumentPosition.position.line];
 		//  get token under cursor
 		var token = LineUtils.getTokenAtLinePosition2(line, textDocumentPosition.position.character);
-		//  search for match
+		//  search for matching token
 		if (!contents) contents = this.getInstructionMatch(token);
 		if (!contents) contents = this.getPseudoOpsMatch(token);
 		if (!contents) contents = this.getPreProcessorMatch(token);
 		if (!contents) contents = this.getDirectiveHover(token);
 		if (!contents) contents = this.getLiteralHover(token);
 
+		//	no match so far, try stright symbols
 		token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
 		if (!contents) contents = this.getBuiltInSymbolHover(token);
 		if (!contents) contents = this.getSymbolOrLabel(token);
@@ -76,10 +80,16 @@ export default class HoverProvider extends Provider {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
 		if (tokenMatch) {
+			return [
+				`*(${SymbolType[tokenMatch.type].toString()})* **${tokenMatch.name}** : ${tokenMatch.value} : ${tokenMatch.data["uri"]}\n\n`,
+				tokenMatch.comments == null ? "" : tokenMatch.comments
+			];
+
 			// return [
-			// 	`(${SymbolType[tokenMatch.type].toString()}) \`${tokenMatch.name}\`: ${tokenMatch.value}\nParm1\nParm2\nParm3`,
+			// 	`# Header1 \n## Header2 \n### Header3 \nLink [example link](http://example.com/) \n***\n    lda #$01\n    sta $d021\n*emphasis*\n\n**strong**\n* Item1\n* Item2\n\n***\n` ,
+			// 	`![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")\n\n\n\nSome More Text`, 
+			// 	`<h1>raw html</h1>`,
 			// ];
-			return ["```\n###Hello World\n```"];
 		}
 	}
 
@@ -89,7 +99,8 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`(directive) \`${tokenMatch.name}\`: ${tokenMatch.description}`,
+				`*(directive)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`,
+				this.lorem
 			];
 		}
 	}
@@ -100,7 +111,8 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`(instruction) \`${tokenMatch.name}\`: ${tokenMatch.description}`,
+				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`,
+				this.lorem				
 			];
 		}
 	}
