@@ -17,6 +17,7 @@ import {
 import Project, { SymbolType } from "../project/Project";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
+import URI from "vscode-uri";
 
 export default class HoverProvider extends Provider {
 
@@ -80,10 +81,28 @@ export default class HoverProvider extends Provider {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
 		if (tokenMatch) {
-			return [
-				`*(${SymbolType[tokenMatch.type].toString()})* **${tokenMatch.name}** : ${tokenMatch.value} : ${tokenMatch.data["uri"]}\n\n`,
-				tokenMatch.comments == null ? "" : tokenMatch.comments
-			];
+			
+			var uri = tokenMatch.data["uri"];
+			var filename = URI.parse(uri);
+			var path = require('path');
+			var file:string = path.parse(filename.path).base;
+			if (file.indexOf(".source.txt") >= 0) {
+				file = undefined;
+			}
+
+			var hover = [];
+
+			if (file) {
+				hover.push(`#### ${file}`);
+			}
+
+			hover.push(`*(${SymbolType[tokenMatch.type].toString()})* **${tokenMatch.name}** : ${tokenMatch.value}\n\n`);
+
+			if (tokenMatch.comments) {
+				hover.push(tokenMatch.comments);
+			}
+
+			return hover;
 
 			// return [
 			// 	`# Header1 \n## Header2 \n### Header3 \nLink [example link](http://example.com/) \n***\n    lda #$01\n    sta $d021\n*emphasis*\n\n**strong**\n* Item1\n* Item2\n\n***\n` ,
