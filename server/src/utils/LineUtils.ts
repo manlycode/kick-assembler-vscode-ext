@@ -14,8 +14,8 @@ interface TokenPosition {
 export default class LineUtils {
 
 	/**
-	 * Given a Starting Line Number Read Backwards looking for
-	 * Remarks 
+	 * Given a Starting Line Number Read Backwards looking for Remarks
+	 * 
 	 * @param lines 
 	 */
 	public static getRemarksAboveLine(lines:Line[], lineNumber:number):string|undefined {
@@ -29,8 +29,8 @@ export default class LineUtils {
 			
 			lineNumber -= 1;
 
-			if (lines[lineNumber].text.trim().length == 0)
-				break;
+			// if (lines[lineNumber].text.trim().length == 0)
+			// 	break;
 			
 			if (lineNumber < 1)
 				break;

@@ -37,6 +37,7 @@ import { createHash } from "crypto";
 import { CompletionItemKind, SymbolKind, Location } from "vscode-languageserver";
 import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
+import { Parameter } from "../definition/KickPreprocessors";
 
 export interface Line {
     number: number;
@@ -57,18 +58,20 @@ export enum SymbolType {
 }
 
 export interface Symbol {
-    type: SymbolType;
     name: string;
-    description: string;
+    type: SymbolType;
+    library?: string;
+    description?: string;
     value: number;
-    kind: SymbolKind;
-    line: Line;
-    scope: number;
-    comments: string;
-    isExternal: boolean;
-    isGlobal: boolean;      //  is this a global symbol?
-    isMain: boolean;        //  is this a main project symbol?
-    data: any;
+    kind?: SymbolKind;
+    line?: Line;
+    scope?: number;
+    comments?: string;
+    parameters?: Parameter[];
+    isExternal?: boolean;
+    isGlobal?: boolean;      //  is this a global symbol?
+    isMain?: boolean;        //  is this a main project symbol?
+    data?: any;
 };
 
 export default class Project {
@@ -83,7 +86,7 @@ export default class Project {
     private directives: Directive[];
     private symbols: Symbol[];
 
-    constructor(uri:string) {
+    constructor(uri: string) {
         this.uri = uri;
         this.id = createHash('md5').update(uri).digest('hex');
     }
@@ -120,11 +123,11 @@ export default class Project {
         }
     }
 
-    public getId():string {
+    public getId(): string {
         return this.id;
     }
 
-    public getUri():string {
+    public getUri(): string {
         return this.uri;
     }
 
@@ -164,7 +167,7 @@ export default class Project {
         return this.symbols;
     }
 
-    public getBuiltInSymbols():Symbol[] {
+    public getBuiltInSymbols(): Symbol[] {
         return KickInternalSymbols.getBuiltInSymbols();
     }
 
@@ -191,29 +194,29 @@ export default class Project {
         return symbols;
     }
 
-    private createSymbol(syntax:AssemblerSyntax, projectFile:ProjectFile):Symbol|undefined {
+    private createSymbol(syntax: AssemblerSyntax, projectFile: ProjectFile): Symbol | undefined {
 
-		var type = syntax.type.toLowerCase();
+        var type = syntax.type.toLowerCase();
         var range = syntax.range;
         var lines = projectFile.getSourceLines();
         var line = lines[syntax.range.startLine];
         var text = line;
-        
-        var symbol:Symbol;
-        
-		if (type == "label") {
-			symbol = this.createFromLabel(range, text, projectFile.isMain());
-		}
 
-		if (type == "directive") {
-			symbol = this.createFromDirective(range, text, projectFile.isMain());
-		}
+        var symbol: Symbol;
+
+        if (type == "label") {
+            symbol = this.createFromLabel(range, text, projectFile.isMain());
+        }
+
+        if (type == "directive") {
+            symbol = this.createFromDirective(range, text, projectFile.isMain());
+        }
 
         if (symbol) {
 
             if (!symbol.data)
                 symbol.data = {};
-                
+
             symbol.data["uri"] = projectFile.getUri();
 
             symbol.line = projectFile.getLines()[syntax.range.startLine];
@@ -222,7 +225,7 @@ export default class Project {
         }
     }
 
-	private createFromLabel(sourceRange:AssemblerSourceRange, text:string, main:boolean):Symbol {
+    private createFromLabel(sourceRange: AssemblerSourceRange, text: string, main: boolean): Symbol {
         var name = text.substr(sourceRange.startPosition, (sourceRange.endPosition - 1) - sourceRange.startPosition);
         var symbol = <Symbol>{};
         symbol.name = name;
@@ -230,10 +233,10 @@ export default class Project {
         symbol.kind = SymbolKind.String;
         symbol.isMain = main;
         //symbol.scope = this._kickAssemblerResults.sourceFiles[sourceRange.fileIndex].lines[sourceRange.startLine].scope;
-		return symbol;
+        return symbol;
     }
-    
-    private createFromDirective(sourceRange:AssemblerSourceRange, text:string, main:boolean):Symbol {
+
+    private createFromDirective(sourceRange: AssemblerSourceRange, text: string, main: boolean): Symbol {
 
         const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition);
 
@@ -242,23 +245,22 @@ export default class Project {
         }
 
         if (directive.toLowerCase() == ".const") {
-			var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+            var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
             symbol.kind = SymbolKind.Constant;
             symbol.type = SymbolType.Constant;
-            symbol.description = LineUtils.getRemarksAboveLine(this.projectFiles[sourceRange.fileIndex].getLines(), sourceRange.startLine);
             symbol.isMain = main;
             //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
-			return symbol;
+            return symbol;
         }
 
         if (directive.toLowerCase() == ".label") {
             return this.createFromLabel(sourceRange, text, main);
         }
-        
-		if (directive.toLowerCase() == ".macro") {
-            
-			var split = StringUtils.splitFunction(text);
-            
+
+        if (directive.toLowerCase() == ".macro") {
+
+            var split = StringUtils.splitFunction(text);
+
             if (split.length > 0) {
                 var name = split[1];
                 var symbol = <Symbol>{};
@@ -268,7 +270,7 @@ export default class Project {
                 symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
                 symbol.isMain = main;
                 var parms = [];
-                
+
                 for (var i = 2; i < split.length; i++) {
                     var parm = { "name": split[i] };
                     parms.push(parm);
@@ -280,21 +282,21 @@ export default class Project {
                     parm_symbol.scope = symbol.scope;
                     parm_symbol.isMain = main;
                 }
-                
+
                 symbol.data = { "parms": parms };
-                
-                if (symbol.name.substr(0,1) == "@") {
+
+                if (symbol.name.substr(0, 1) == "@") {
                     symbol.scope = 0;
                     symbol.name = symbol.name.substr(1);
                     symbol.isGlobal = true;
                 }
 
-				return symbol;
-			}
-		}
+                return symbol;
+            }
+        }
     }
 
-	private createFromSimpleValue(text:string):Symbol {
+    private createFromSimpleValue(text: string): Symbol {
 
         var symbol = <Symbol>{};
 
@@ -309,7 +311,7 @@ export default class Project {
             symbol.name = text.trim();
         }
 
-		return symbol;
+        return symbol;
     }
 
     /**
@@ -318,9 +320,9 @@ export default class Project {
      * @param range 
      * @param text 
      */
-    private getComments(range:AssemblerSourceRange, lines:Line[]):string|undefined {
+    private getComments(range: AssemblerSourceRange, lines: Line[]): string | undefined {
         return LineUtils.getRemarksAboveLine(lines, range.startLine);
     }
-    
+
 
 }

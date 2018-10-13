@@ -55,8 +55,14 @@
 		"languages": [
 			{
 				"id": "kickassembler",
-				"aliases": [ "Kick", "Assembly", "6502"],
-				"extensions": [".asm"],
+				"aliases": [
+					"Kick",
+					"Assembly",
+					"6502"
+				],
+				"extensions": [
+					".asm"
+				],
 				"configuration": "./client/syntaxes/language-configuration.json"
 			}
 		],

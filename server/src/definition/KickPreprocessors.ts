@@ -3,6 +3,7 @@ export interface Parameter {
 	name: string;
 	type: "string" | "value" | "enum" | "label";
 	values?: string[];
+	description?: string;
 }
 
 export interface PreProcessor {

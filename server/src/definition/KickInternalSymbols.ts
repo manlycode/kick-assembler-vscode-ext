@@ -1,5 +1,6 @@
 import { Symbol, SymbolType } from "../project/Project";
-import { CompletionItemKind } from "vscode-languageserver";
+import { CompletionItemKind, ParameterInformation } from "vscode-languageserver";
+import { Parameter } from "./KickPreprocessors";
 
 export class KickInternalSymbols {
 
@@ -19,13 +20,10 @@ export class KickInternalSymbols {
                 description: "The Color BLACK",
                 value: 0,
                 kind: CompletionItemKind.Color,
-                line: undefined,
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                comments: undefined,
-                data: undefined
             },
             {
                 type: SymbolType.Constant,
@@ -33,13 +31,10 @@ export class KickInternalSymbols {
                 description: "The Color WHITE",
                 value: 1,
                 kind: CompletionItemKind.Color,
-                line: undefined,
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                comments: undefined,
-                data: undefined
             },
             {
                 type: SymbolType.Constant,
@@ -47,13 +42,10 @@ export class KickInternalSymbols {
                 description: "The Color RED",
                 value: 1,
                 kind: CompletionItemKind.Color,
-                line: undefined,
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                comments: undefined,
-                data: undefined
             },
             /*
                 MACROS
@@ -64,13 +56,10 @@ export class KickInternalSymbols {
                 description: "Creates a BASIC Program at the Address Specified.",
                 value: 1,
                 kind: CompletionItemKind.Function,
-                line: undefined,
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                comments: undefined,
-                data: undefined
             },
             {
                 type: SymbolType.Macro,
@@ -78,14 +67,39 @@ export class KickInternalSymbols {
                 description: "Creates a BASIC Program at the Address Specified.",
                 value: 1,
                 kind: CompletionItemKind.Function,
-                line: undefined,
                 scope: 0,
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                comments: undefined,
-                data: undefined
-            }
-        ];
+                parameters: [
+                    <Parameter> {
+                        name: "start",
+                        type: "string",
+                        description: "The Label that locates the Start of the Program."
+                    }
+                ]
+            },
+            /*
+                MATH LIB
+            */
+           {
+                type: SymbolType.Function,
+                name: "abs",
+                description: "Returns the Absolute (positive) value of X. For example, the Absolute value of -2 is 2.",
+                value: 1,
+                kind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                parameters: [
+                    <Parameter> {
+                        name: "x",
+                        type: "value",
+                        description: "Numeric Expression for which the Absolute Value is needed."
+                    }
+                ]
+            },
+    ];
     }
 }

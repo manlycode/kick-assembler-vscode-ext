@@ -11,7 +11,8 @@ import {
 	TextDocumentPositionParams,
 	Hover,
 	ResponseError,
-	MarkedString
+	MarkedString,
+	VersionedTextDocumentIdentifier
 } from "vscode-languageserver";
 
 import Project, { SymbolType } from "../project/Project";
@@ -39,12 +40,15 @@ export default class HoverProvider extends Provider {
      * @param textDocumentPosition 
      */
 	private process(textDocumentPosition: TextDocumentPositionParams): Hover | ResponseError<void> {
+		
 		this.project = this.getProjectInfo().getProject(textDocumentPosition.textDocument.uri);
 		let contents = this.createHover(textDocumentPosition);
+		
 		return { contents };
 	}
 
 	private createHover(textDocumentPosition: TextDocumentPositionParams): string[] | undefined {
+
 		var contents: string[] | undefined;
 		//  get line
 		var line = this.project.getSourceLines()[textDocumentPosition.position.line];
@@ -61,7 +65,8 @@ export default class HoverProvider extends Provider {
 		token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
 		if (!contents) contents = this.getBuiltInSymbolHover(token);
 		if (!contents) contents = this.getSymbolOrLabel(token);
-		return contents;
+
+		return contents; 
 	}
 
 	private getBuiltInSymbolHover(token: string): string[] | undefined {
@@ -85,30 +90,56 @@ export default class HoverProvider extends Provider {
 			var uri = tokenMatch.data["uri"];
 			var filename = URI.parse(uri);
 			var path = require('path');
-			var file:string = path.parse(filename.path).base;
-			if (file.indexOf(".source.txt") >= 0) {
-				file = undefined;
+			var file:string = path.parse(filename.path).name + " :: ";
+			if (file.indexOf(".source") >= 0) {
+				file = "";
 			}
 
-			var hover = [];
+			// var hover = [];
 
-			if (file) {
-				hover.push(`#### ${file}`);
-			}
+			// if (file) {
+			// 	hover.push(`#### ${file}\n\n`);
+			// }
 
-			hover.push(`*(${SymbolType[tokenMatch.type].toString()})* **${tokenMatch.name}** : ${tokenMatch.value}\n\n`);
+			// hover.push(`*(${SymbolType[tokenMatch.type].toString()})* **${tokenMatch.name}** : ${tokenMatch.value}\n\n`);
 
-			if (tokenMatch.comments) {
-				hover.push(tokenMatch.comments);
-			}
+			// if (tokenMatch.comments) {
+			// 	hover.push(tokenMatch.comments);
+			// }
 
-			return hover;
+			// return hover;
 
 			// return [
 			// 	`# Header1 \n## Header2 \n### Header3 \nLink [example link](http://example.com/) \n***\n    lda #$01\n    sta $d021\n*emphasis*\n\n**strong**\n* Item1\n* Item2\n\n***\n` ,
 			// 	`![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")\n\n\n\nSome More Text`, 
 			// 	`<h1>raw html</h1>`,
 			// ];
+
+			if (tokenMatch.type == SymbolType.Constant) {
+
+				var description = tokenMatch.comments;
+
+				return [ 
+					`(constant) ${file}${tokenMatch.name} = ${tokenMatch.value}`,
+					`\n\n*${description.trim()}*`,
+					this.getFormattedValue(tokenMatch.value)
+				 ];
+	
+			}
+
+			if (tokenMatch.type == SymbolType.Macro) {
+
+				var description = tokenMatch.comments;
+
+				return [ 
+					`(macro) ${file}${tokenMatch.name} (p1, p2)`,
+					`\n\n*${description.trim()}*`,
+				 ];
+	
+			}
+
+			
+			return undefined;
 		}
 	}
 
@@ -185,10 +216,11 @@ export default class HoverProvider extends Provider {
 	}
 
 	private getFormattedValue(value: number): string {
-		return `* Dec: \`${value.toString(10)}\`\n\n` +
-			`* Bin: \`\%${value.toString(2)}\`\n\n` +
-			`* Oct: \`${value.toString(8)}\`\n\n` +
-			`* Hex: \`\$${value.toString(16)}\`\n\n`;
+		return '\n' +
+			`\n* Dec: \`${value.toString(10)}\`` +
+			`\n* Bin: \`\%${value.toString(2)}\`` +
+			// `\n* Oct: \`${value.toString(8)}\`` +
+			`\n* Hex: \`\$${value.toString(16)}\``;
 	}
 
 }
