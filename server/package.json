@@ -1,0 +1,18 @@
+{
+	"name": "kick-assembler-vscode-ext-server",
+	"description": "Kick Assembler Extension for Visual Studio Code - Server",
+	"version": "0.1.0",
+	"author": "Paul Hocker",
+	"license": "MIT",
+	"engines": {
+		"node": "*"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://gitlab.com/retro-coder/kick-assembler-vscode-ext"
+	},
+	"dependencies": {
+		"vscode-languageserver": "^4.1.3"
+	},
+	"scripts": {}
+}
