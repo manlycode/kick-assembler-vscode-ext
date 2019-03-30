@@ -47,9 +47,9 @@ export class Assembler {
         var asminfo = path + "\\.asminfo.txt";
 
         //  assemble by running java process
-        let java = spawnSync(settings.javaPath, [
+        let java = spawnSync(settings.javaRuntime, [
             "-jar", 
-            settings.assemblerPath, 
+            settings.assemblerJar, 
             filename, 
             '-noeval', 
             '-warningsoff', 

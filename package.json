@@ -25,19 +25,57 @@
 	],
 	"main": "./client/out/extension",
 	"contributes": {
+		"keybindings": [
+			{
+			  "command": "kickassembler.buildandrun",
+			  "key": "f5"
+			},
+			{
+			  "command": "kickassembler.buildanddebug",
+			  "key": "f6"
+			},
+			{
+			  "command": "kickassembler.run",
+			  "key": "ctrl+f5"
+			},
+			{
+			  "command": "kickassembler.build",
+			  "key": "ctrl+shift+b"
+			}
+		],
 		"configuration": {
 			"type": "object",
 			"title": "Kick Assembler Extension Configuration",
 			"properties": {
-				"kickassembler.assemblerPath": {
+				"kickassembler.assemblerJar": {
 					"type": "string",
 					"default": "kickass.jar",
 					"description": "Full Path to Kick Assembler JAR"
 				},
-				"kickassembler.javaPath": {
+				"kickassembler.javaRuntime": {
 					"type": "string",
 					"default": "java.exe",
-					"description": "Full Path to Java Binary"
+					"description": "Full Path to Java Runtime"
+				},
+				"kickassembler.emulatorRuntime": {
+					"type": "string",
+					"default": "",
+					"description": "Full Path to Emulator Runtime"
+				},
+				"kickassembler.emulatorOptions": {
+					"type": "string",
+					"default": "-a",
+					"description": "Runtime Options for Emulator"
+				},
+				"kickassembler.debuggerRuntime": {
+					"type": "string",
+					"default": "",
+					"description": "Full Path to C64 Debugger Runtime"
+				},
+				"kickassembler.debuggerOptions": {
+					"type": "string",
+					"default": "",
+					"description": "Runtime Options for C64 Debugger"
 				},
 				"kickassembler.trace.server": {
 					"scope": "window",

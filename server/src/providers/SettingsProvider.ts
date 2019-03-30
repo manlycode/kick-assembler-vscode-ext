@@ -17,9 +17,15 @@ interface GlobalSettings {
 }
 
 export interface Settings {
-    assemblerPath:string
-    javaPath:string;
+    assemblerJar:string
+    javaRuntime:string;
+    javaOptions:string;
     valid:boolean;
+    emulatorRuntime:string;
+    emulatorOptions:string;
+    debuggerRuntime:string;
+    debuggerOptions:string;
+
 }
 
 export default class SettingsProvider extends Provider {
