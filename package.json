@@ -3,7 +3,7 @@
 	"description": "Kick Assembler Extension for Visual Studio Code",
 	"author": "Paul Hocker",
 	"license": "MIT",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"repository": {
 		"type": "git",
 		"url": "https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext"
@@ -27,20 +27,20 @@
 	"contributes": {
 		"keybindings": [
 			{
-			  "command": "kickassembler.buildandrun",
-			  "key": "f5"
+				"command": "kickassembler.buildandrun",
+				"key": "f5"
 			},
 			{
-			  "command": "kickassembler.buildanddebug",
-			  "key": "f6"
+				"command": "kickassembler.buildanddebug",
+				"key": "f6"
 			},
 			{
-			  "command": "kickassembler.run",
-			  "key": "ctrl+f5"
+				"command": "kickassembler.run",
+				"key": "ctrl+f5"
 			},
 			{
-			  "command": "kickassembler.build",
-			  "key": "ctrl+shift+b"
+				"command": "kickassembler.build",
+				"key": "ctrl+shift+b"
 			}
 		],
 		"configuration": {
