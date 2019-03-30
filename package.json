@@ -1,14 +1,14 @@
 {
 	"name": "kick-assembler-vscode-ext",
 	"description": "Kick Assembler Extension for Visual Studio Code",
-	"author": "Microsoft Corporation",
+	"author": "Paul Hocker",
 	"license": "MIT",
 	"version": "0.1.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
+		"url": "https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext"
 	},
-	"publisher": "vscode",
+	"publisher": "paulhocker",
 	"categories": [
 		"Programming Languages"
 	],
