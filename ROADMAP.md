@@ -11,6 +11,7 @@ This extension is a work in progress, there is much left to be done.
 * auto-completion support from all imports
 * refactoring support
 * basic support for VICE
+* breakpoints and watches
 
 ### Completed
 * ~~syntax highlighting~~
