@@ -11,10 +11,6 @@ Features:
 ## Features
 The following features are currently working relatively well.
 
-### Build, Run and Debug Commands
-
-### Support for VICE and C64Debugger
-
 ### Basic Syntax Highlighting
 ![Syntax Highlighting](/images/ka-syntax-highlighting.png)
 
