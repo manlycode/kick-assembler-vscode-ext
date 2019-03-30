@@ -28,10 +28,10 @@ Hover support for literals.
 
 
 ## TODO
-See [the Roadmap](ROADMAP.md)
+See [the Roadmap](/ROADMAP.md)
 
 ## Release Notes
-See [the Release Notes](RELEASE.md)
+See [the Release Notes](/RELEASE.md)
 
 ## Acknowledgements
 Thanks to [SWOFFA](https://csdb.dk/scener/?id=984) for his work on the tmLanguage file for syntax highlighting from his [Sublime Package](https://github.com/Swoffa/SublimeKickAssemblerC64).
