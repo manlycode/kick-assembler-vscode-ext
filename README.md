@@ -39,7 +39,8 @@ Thanks to [SWOFFA](https://csdb.dk/scener/?id=984) for his work on the tmLanguag
 I would also like to recognize [Thomas Conté]() for his work on the original [vscode-kickassembler](https://github.com/tomconte/vscode-kickassembler) extension for VSCode that inspired me to start this project.
 
 ### Known Issues
-It might randomly stop working. You have been warned.
+- **!! It might randomly stop working. You have been warned !!**
+- text editor must have focus when using build, run or debug commands
 
 ### Contributing
 Bug reports, fixes, and other changes are welcomed. The [repository](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext) is on [GitLab](https://gitlab.com), and issues and pull requests are accepted. Check the [contribute](CONTRIBUTE.md) file on information of what the project needs, and how to run the extension locally for development and testing
