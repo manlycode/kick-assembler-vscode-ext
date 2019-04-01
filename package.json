@@ -39,6 +39,10 @@
 				"key": "ctrl+f5"
 			},
 			{
+				"command": "kickassembler.debug",
+				"key": "ctrl+f6"
+			},
+			{
 				"command": "kickassembler.build",
 				"key": "ctrl+shift+b"
 			}

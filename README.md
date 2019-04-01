@@ -5,7 +5,7 @@ A [Kick Assembler](http://www.theweb.dk/KickAssembler/Main.html#frontpage) exten
 
 Features:
 * build, run and debug commands
-* support for VICE and C64Debugger
+* support for emulators like [VICE](http://vice-emu.sourceforge.net/) and the [C64Debugger](https://csdb.dk/release/?id=170893)
 
 
 ## Features

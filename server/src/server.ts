@@ -19,4 +19,4 @@ import ProjectManager from "./project/ProjectManager";
 const connection:IConnection = createConnection(ProposedFeatures.all);
 const projectManager = new ProjectManager(connection);
 projectManager.start();
-connection.console.log('- server started');
+connection.console.log('- kick-assembler-vscode-ext server has started');
