@@ -81,10 +81,13 @@ export default class HoverProvider extends Provider {
 	}
 
 	private getSymbolOrLabel(token: string): string[] | undefined {
+
 		var symbols = this.project.getSymbols();
+
 		const tokenMatch = this.project.getSymbols().find((match) => {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
+
 		if (tokenMatch) {
 			
 			var uri = tokenMatch.data["uri"];

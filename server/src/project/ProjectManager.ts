@@ -95,8 +95,7 @@ export default class ProjectManager {
         connection.onDidChangeTextDocument((change: DidChangeTextDocumentParams) => {
             var project = this.findProject(change.textDocument.uri);
             this.currentProject = project;
-            var file = readFileSync(PathUtils.uriToPlatformPath(change.textDocument.uri), 'utf8');
-            project.assemble(this.settingsProvider.getSettings(), file);
+            project.assemble(this.settingsProvider.getSettings(), change.contentChanges[0].text);
             this.diagnosticProvider.process(change.textDocument.uri);
         });
 
