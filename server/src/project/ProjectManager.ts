@@ -84,7 +84,6 @@ export default class ProjectManager {
         });
 
         connection.onDidOpenTextDocument((open: DidOpenTextDocumentParams) => {
-            connection.console.log("hello there");
             var project = new Project(open.textDocument.uri);
             this.currentProject = project;
             this.projects.push(project);

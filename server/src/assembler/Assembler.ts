@@ -4,6 +4,8 @@ import { TextDocumentItem } from "vscode-languageserver";
 import PathUtils from "../utils/PathUtils";
 import { writeFileSync, readFileSync } from "fs";
 import { spawnSync } from "child_process";
+import * as path from 'path';
+
 
 /*
     Class: Assembler
@@ -39,26 +41,26 @@ export class Assembler {
     public assemble(settings: Settings, uri:string, text: string): AssemblerResults | undefined {
 
         //  copy file contents into ".source.txt"
-        var path = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));
-        var filename = path + "\\.source.txt";
+        var basePath = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));
+        var filename = path.join(basePath, ".source.txt");
         writeFileSync(filename, text);
 
         //  setup the asminfo.txt output
-        var asminfo = path + "\\.asminfo.txt";
+        var asminfo = path.join(basePath, ".asminfo.txt");
 
         //  assemble by running java process
         let java = spawnSync(settings.javaRuntime, [
-            "-jar", 
-            settings.assemblerJar, 
-            filename, 
-            '-noeval', 
-            '-warningsoff', 
-            '-asminfo', 
-            'all', 
-            '-asminfofile', 
-            asminfo], { cwd: path });
+            "-jar",
+            settings.assemblerJar,
+            filename,
+            '-noeval',
+            '-warningsoff',
+            '-asminfo',
+            'all',
+            '-asminfofile',
+            asminfo], { cwd: basePath });
 
-        //  get contents of asminfo 
+        //  get contents of asminfo
         var asminfo_data = readFileSync(asminfo, 'utf8');
 
         //  prepare assembler results
