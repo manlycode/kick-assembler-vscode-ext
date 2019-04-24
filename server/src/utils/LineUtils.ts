@@ -15,8 +15,8 @@ export default class LineUtils {
 
 	/**
 	 * Given a Starting Line Number Read Backwards looking for Remarks
-	 * 
-	 * @param lines 
+	 *
+	 * @param lines
 	 */
 	public static getRemarksAboveLine(lines:Line[], lineNumber:number):string|undefined {
 
@@ -26,15 +26,15 @@ export default class LineUtils {
 		var end = -1;
 
 		while (!found) {
-			
+
 			lineNumber -= 1;
 
 			// if (lines[lineNumber].text.trim().length == 0)
 			// 	break;
-			
+
 			if (lineNumber < 1)
 				break;
-			
+
 			if (end < 0) {
 				var e = lines[lineNumber].text.indexOf("*/");
 				if (e >= 0)
@@ -46,7 +46,7 @@ export default class LineUtils {
 				if (b >= 0)
 					beg = lineNumber;
 			}
-			
+
 			if (beg > 0 && end > 0)
 				found = true;
 		}
@@ -61,7 +61,7 @@ export default class LineUtils {
 		return remark;
 	}
 
-	public static getTokenAtSourcePosition2(sourceLines: string[] | undefined, line: number, column: number): string | undefined {
+	public static getTokenAtSourcePosition2(sourceLines: string[] | undefined, line: number, column: number): string {
 		if (sourceLines && sourceLines.length > line) {
 			// Find the char and the surrounding symbol it relates to
 			const sourceLine = LineUtils.removeComments(sourceLines[line]);
@@ -69,12 +69,12 @@ export default class LineUtils {
 		}
 	}
 
-	public static getTokenAtLinePosition2(sourceLine: string | undefined, column: number): string | undefined {
+	public static getTokenAtLinePosition2(sourceLine: string | undefined, column: number): string {
 
 		const tokens = StringUtils.splitIntoTokens(sourceLine);
 
 		if (!tokens)
-			return;
+			return "";
 
 		if (tokens.length == 1)
 			return tokens[0];

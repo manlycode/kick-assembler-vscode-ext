@@ -31,19 +31,20 @@ export default class HoverProvider extends Provider {
 		super(connection, projectInfo);
 
 		connection.onHover((textDocumentPosition: TextDocumentPositionParams) => {
-			return this.process(textDocumentPosition);
+			let result =  this.process(textDocumentPosition);
+			return result;
 		});
 	}
 
     /**
      * Does Something
-     * @param textDocumentPosition 
+     * @param textDocumentPosition
      */
 	private process(textDocumentPosition: TextDocumentPositionParams): Hover | ResponseError<void> {
-		
+
 		this.project = this.getProjectInfo().getProject(textDocumentPosition.textDocument.uri);
 		let contents = this.createHover(textDocumentPosition);
-		
+
 		return { contents };
 	}
 
@@ -63,10 +64,10 @@ export default class HoverProvider extends Provider {
 
 		//	no match so far, try stright symbols
 		token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
-		if (!contents) contents = this.getBuiltInSymbolHover(token);
+		//if (!contents) contents = this.getBuiltInSymbolHover(token);
 		if (!contents) contents = this.getSymbolOrLabel(token);
-
-		return contents; 
+		if (!contents) contents = [];
+		return contents;
 	}
 
 	private getBuiltInSymbolHover(token: string): string[] | undefined {
@@ -84,12 +85,12 @@ export default class HoverProvider extends Provider {
 
 		var symbols = this.project.getSymbols();
 
-		const tokenMatch = this.project.getSymbols().find((match) => {
+		const tokenMatch = symbols.find((match) => {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
 
 		if (tokenMatch) {
-			
+
 			var uri = tokenMatch.data["uri"];
 			var filename = URI.parse(uri);
 			var path = require('path');
@@ -114,34 +115,34 @@ export default class HoverProvider extends Provider {
 
 			// return [
 			// 	`# Header1 \n## Header2 \n### Header3 \nLink [example link](http://example.com/) \n***\n    lda #$01\n    sta $d021\n*emphasis*\n\n**strong**\n* Item1\n* Item2\n\n***\n` ,
-			// 	`![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")\n\n\n\nSome More Text`, 
+			// 	`![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")\n\n\n\nSome More Text`,
 			// 	`<h1>raw html</h1>`,
 			// ];
 
 			if (tokenMatch.type == SymbolType.Constant) {
 
-				var description = tokenMatch.comments;
+				var description = tokenMatch.comments || "";
 
-				return [ 
+				return [
 					`(constant) ${file}${tokenMatch.name} = ${tokenMatch.value}`,
 					`\n\n*${description.trim()}*`,
 					this.getFormattedValue(tokenMatch.value)
 				 ];
-	
+
 			}
 
 			if (tokenMatch.type == SymbolType.Macro) {
 
-				var description = tokenMatch.comments;
+				var description = tokenMatch.comments || "";
 
-				return [ 
+				return [
 					`(macro) ${file}${tokenMatch.name} (p1, p2)`,
 					`\n\n*${description.trim()}*`,
 				 ];
-	
+
 			}
 
-			
+
 			return undefined;
 		}
 	}
@@ -165,7 +166,7 @@ export default class HoverProvider extends Provider {
 		if (tokenMatch) {
 			return [
 				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`,
-				this.lorem				
+				this.lorem
 			];
 		}
 	}
