@@ -31,8 +31,7 @@ export default class HoverProvider extends Provider {
 		super(connection, projectInfo);
 
 		connection.onHover((textDocumentPosition: TextDocumentPositionParams) => {
-			let result =  this.process(textDocumentPosition);
-			return result;
+			return this.process(textDocumentPosition);
 		});
 	}
 
@@ -64,7 +63,7 @@ export default class HoverProvider extends Provider {
 
 		//	no match so far, try stright symbols
 		token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
-		//if (!contents) contents = this.getBuiltInSymbolHover(token);
+		if (!contents) contents = this.getBuiltInSymbolHover(token);
 		if (!contents) contents = this.getSymbolOrLabel(token);
 		if (!contents) contents = [];
 		return contents;
