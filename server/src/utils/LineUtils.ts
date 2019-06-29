@@ -29,8 +29,11 @@ export default class LineUtils {
 
 			lineNumber -= 1;
 
-			// if (lines[lineNumber].text.trim().length == 0)
-			// 	break;
+			if (lines[lineNumber].text.trim() == "}")
+				break;
+
+			if (lines[lineNumber].text.trim() == "//")
+				break;
 
 			if (lineNumber < 1)
 				break;

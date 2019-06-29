@@ -162,4 +162,5 @@ function commandDebug(context: ExtensionContext, output: vscode.OutputChannel) {
 }
 
 function configChanged() {
+	ConfigUtils.validateBuildSettings();
 }
