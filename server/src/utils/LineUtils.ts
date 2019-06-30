@@ -28,8 +28,10 @@ export default class LineUtils {
 		while (!found) {
 
 			lineNumber -= 1;
+			var _line = lines[lineNumber].text.trim()
 
-			if (lines[lineNumber].text.trim() == "}")
+			// last character on line is }
+			if (_line[_line.length - 1] == "}")
 				break;
 
 			if (lines[lineNumber].text.trim() == "//")

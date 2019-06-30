@@ -26,14 +26,16 @@ export class CommandBuild {
         let assemblerJar:string = this._configuration.get("assemblerJar");
 
         //  locate file, does it exist?
+        console.log(`- activeTextEditor ${window.activeTextEditor}`);
         let doc = window.activeTextEditor.document;
+        console.log(`- doc ${doc}`);
         let file = PathUtils.uriToFileSystemPath(doc.uri.toString());
         console.log(`- looking for file ${file}`);
 
         //  create new output channel
         //let outputChannel = window.createOutputChannel('Kick Assembler Build');
         output.clear();
-        output.show();
+        output.show(true);
 
         //  spawn new child process
         let java = spawnSync(javaRuntime, ["-jar", assemblerJar, file]);

@@ -93,9 +93,19 @@ export function activate(context: ExtensionContext) {
 		commandBuildDebug(context, _outputChannel);
 	});
 
+	let cmdRun = commands.registerCommand("kickassembler.run", function () {
+		commandRun(context, _outputChannel);
+	});
+
+	let cmdDebug = commands.registerCommand("kickassembler.debug", function () {
+		commandDebug(context, _outputChannel);
+	});
+
 	context.subscriptions.push(cmdBuild);
 	context.subscriptions.push(cmdBuildRun);
 	context.subscriptions.push(cmdBuildDebug);
+	context.subscriptions.push(cmdRun);
+	context.subscriptions.push(cmdDebug);
 
 	console.log("- kick-assembler-vscode-ext client has started")
 }
