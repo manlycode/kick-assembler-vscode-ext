@@ -1,5 +1,5 @@
 # Kick Assembler Visual Studio Code Extension
-## v0.1.11 Release Notes
+## v0.1.12 Release Notes
 ### Changed
 * added command to run last build (ctrl+f5)
 * added command to debug last build (ctrl+f6)
