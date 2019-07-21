@@ -171,6 +171,10 @@ export default class Project {
         return KickInternalSymbols.getBuiltInSymbols();
     }
 
+    public getSourceFiles(): ProjectFile[] {
+        return this.projectFiles;
+    }
+
     private createSymbols(): Symbol[] | undefined {
 
         var symbols = []

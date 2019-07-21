@@ -79,7 +79,7 @@ export default class ProjectManager {
                     documentSymbolProvider: true,
                     completionProvider: {
                         resolveProvider: true,
-                        triggerCharacters: ["#", ".", " "],
+                        triggerCharacters: ["#", ".", "$", " "],
                     },
 
                 }

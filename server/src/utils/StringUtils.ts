@@ -1,3 +1,4 @@
+import { stringify } from "querystring";
 
 export default class StringUtils {
 
@@ -88,6 +89,80 @@ export default class StringUtils {
 		}
 
 		return _values;
+	}
+
+	/**
+	 * Returns a Word at a given position in a line.
+	 * 
+	 * @param text 
+	 * @param position 
+	 */
+	public static GetWordAt(text:string, position:number):string {
+		// make pos point to a character of the word
+		while (text[position] == " ") position--;
+		// find the space before that word
+		// (add 1 to be at the begining of that word)
+		// (note that it works even if there is no space before that word)
+		position = text.lastIndexOf(" ", position) + 1;
+		// find the end of the word
+		var end = text.indexOf(" ", position);
+		if (end == -1) end = text.length; // set to length if it was the last word
+		// return the result
+		return text.substring(position, end);
+	  }
+
+	/**
+	 * Returns the Words Before a position on a line.
+	 * 
+	 * For example:
+	 * 
+	 * 		var str = The Quick Brown Fox
+	 * 
+	 * 		var words = GetWordsBefore(str, 11)
+	 * 
+	 * 		words = ['The', 'Quick']
+	 * 
+	 * @param text 
+	 * @param position 
+	 */
+	public static GetWordsBefore(text:string, position:number):string[] {
+
+		var index = text.lastIndexOf(" ", position) + 1;
+
+		if (index < 0)
+			return;
+
+		var workText = text.substring(0, index);
+		var workText = workText.trim();
+		var words = workText.split(" ");
+		return words;
+	}
+
+	/**
+	 * Returns the Words After a position on a line.
+	 * 
+	 * For example:
+	 * 
+	 * 		var str = The Quick Brown Fox
+	 * 
+	 * 		var words = GetWordsBefore(str, 5)
+	 * 
+	 * 		words = ['Brown', 'Fox']
+	 * 
+	 * @param text 
+	 * @param position 
+	 */
+	public static GetWordsAfter(text:string, position:number):string[] {
+
+		var index = text.indexOf(" ", position);
+		
+		if (index < 0) 
+			return;
+
+		var workText = text.substring(index);
+		var workText = workText.trim();
+		var words = workText.split(" ");
+		return words;
 	}
 
 }
