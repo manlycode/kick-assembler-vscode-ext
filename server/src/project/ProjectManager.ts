@@ -94,23 +94,29 @@ export default class ProjectManager {
             var project = new Project(open.textDocument.uri);
             this.currentProject = project;
             this.projects.push(project);
-            project.assemble(this.settingsProvider.getSettings(), open.textDocument.text);
-            this.diagnosticProvider.process(open.textDocument.uri);
+            if (this.settingsProvider.getSettings().valid) {
+                project.assemble(this.settingsProvider.getSettings(), open.textDocument.text);
+                this.diagnosticProvider.process(open.textDocument.uri);
+            }
         });
 
         connection.onDidChangeTextDocument((change: DidChangeTextDocumentParams) => {
             var project = this.findProject(change.textDocument.uri);
             this.currentProject = project;
-            project.assemble(this.settingsProvider.getSettings(), change.contentChanges[0].text);
-            this.diagnosticProvider.process(change.textDocument.uri);
+            if (this.settingsProvider.getSettings().valid) {
+                project.assemble(this.settingsProvider.getSettings(), change.contentChanges[0].text);
+                this.diagnosticProvider.process(change.textDocument.uri);
+            }
         });
 
         connection.onDidSaveTextDocument((change: DidSaveTextDocumentParams) => {
             var project = this.findProject(change.textDocument.uri);
             this.currentProject = project;
             var file = readFileSync(PathUtils.uriToPlatformPath(change.textDocument.uri), 'utf8');
-            project.assemble(this.settingsProvider.getSettings(), file);
-            this.diagnosticProvider.process(change.textDocument.uri);
+            if (this.settingsProvider.getSettings().valid) {
+                project.assemble(this.settingsProvider.getSettings(), file);
+                this.diagnosticProvider.process(change.textDocument.uri);
+            }
         });
 
         connection.onDidCloseTextDocument((close: DidCloseTextDocumentParams) => {

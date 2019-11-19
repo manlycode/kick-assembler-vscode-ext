@@ -53,13 +53,17 @@ export default class CompletionProvider extends Provider {
 
 		// 	show the initial list of items
 		connection.onCompletion((textDocumentPosition:TextDocumentPositionParams): CompletionItem[] => {
-			this.documentPosition = textDocumentPosition;
-            return this.createCompletionItems();
+			if (projectInfo.getSettings().valid) {
+				this.documentPosition = textDocumentPosition;
+				return this.createCompletionItems();
+			}
 		});
 
 		//	request for more details of a particular item
 		connection.onCompletionResolve((item:CompletionItem):CompletionItem => {
-            return this.resolveItem(item);
+			if (projectInfo.getSettings().valid) {
+				return this.resolveItem(item);
+			}
 		});
     }
     
@@ -90,6 +94,9 @@ export default class CompletionProvider extends Provider {
 		var items:CompletionItem[] = [];
 		
 		const settings = this.getProjectInfo().getSettings();
+
+		if (!settings.valid) return;
+
 		const assemblerResults:AssemblerResults = this.getProjectInfo().getCurrentProject().getAssemblerResults()
 
 		var loaded:boolean;

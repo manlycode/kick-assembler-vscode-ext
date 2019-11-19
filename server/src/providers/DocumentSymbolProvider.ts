@@ -9,6 +9,7 @@ import {
     Range,
     Position,
  } from "vscode-languageserver";
+import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from "constants";
 
 /**
  * Provides a List of Symbols in the Document
@@ -21,43 +22,9 @@ export default class DocumentSymbolProvider extends Provider {
 
         super(connection, projectInfo);
 
-        /*
         connection.onDocumentSymbol((request:DocumentSymbolParams) => {
 
-            var symbols:SymbolInformation[];
-            symbols = [];
-
-            var s1 = SymbolInformation.create(
-                "Parent",
-                SymbolKind.Method,
-                Range.create(
-                    Position.create(1,1),
-                    Position.create(1,20)
-                ),
-                "",
-                "container"
-            
-            );
-
-            var s2 = SymbolInformation.create(
-                "Child",
-                SymbolKind.TypeParameter,
-                Range.create(
-                    Position.create(2,1),
-                    Position.create(2,20)
-                ),
-                "",
-                "container"
-            );
-
-            symbols.push(s1);
-            symbols.push(s2);
-
-            return symbols;
-        });
-        */
-
-        connection.onDocumentSymbol((request:DocumentSymbolParams) => {
+            if (!projectInfo.getSettings().valid) return;
 
             var symbols: SymbolInformation[];
             symbols = [];
@@ -80,12 +47,8 @@ export default class DocumentSymbolProvider extends Provider {
 
                     symbols.push(s1);
                 }
-
             }
-
             return symbols;
-
         });
     }
-
 }

@@ -31,7 +31,9 @@ export default class HoverProvider extends Provider {
 		super(connection, projectInfo);
 
 		connection.onHover((textDocumentPosition: TextDocumentPositionParams) => {
-			return this.process(textDocumentPosition);
+			if (projectInfo.getSettings().valid) {
+				return this.process(textDocumentPosition);
+			}
 		});
 	}
 

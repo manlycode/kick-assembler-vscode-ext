@@ -93,6 +93,8 @@ export default class Project {
 
     public assemble(settings: Settings, text: string) {
 
+        if (!settings.valid) return;
+
         let assembler = new Assembler();
         this.assemblerResults = assembler.assemble(settings, this.uri, text);
         this.assemblerInfo = this.assemblerResults.assemblerInfo;

@@ -2,7 +2,7 @@ import { Settings } from "../providers/SettingsProvider";
 import { AssemblerInfo } from "./AssemblerInfo";
 import { TextDocumentItem } from "vscode-languageserver";
 import PathUtils from "../utils/PathUtils";
-import { writeFileSync, readFileSync } from "fs";
+import { writeFileSync, readFileSync, unlinkSync } from "fs";
 import { spawnSync } from "child_process";
 import * as path from 'path';
 
@@ -69,6 +69,9 @@ export class Assembler {
         assemblerResults.stdout = java.stdout.toString();
         assemblerResults.stderr = java.stderr.toString();
         assemblerResults.status = java.status;
+
+        //  remove the assembler info file
+        var unlinkResult = unlinkSync(asminfo);
 
         return assemblerResults;
     }

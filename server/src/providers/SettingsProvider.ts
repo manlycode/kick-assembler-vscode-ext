@@ -8,6 +8,8 @@ import {
  } from "vscode-languageserver";
 import Project from "../project/Project";
 
+import { existsSync } from "fs";
+
 /*
 
 */
@@ -53,8 +55,23 @@ export default class SettingsProvider extends Provider {
         this.settings.valid = this.validateSettings(settings);
     }
 
-    //  TODO: 
+    /**
+     * Returns true if the settings for the extension are Valid, 
+     * false otherwise.
+     * 
+     * @param settings 
+     */
     private validateSettings(settings:Settings):boolean|undefined {
-        return true;
+
+        var valid = true;
+        var accessResult;
+
+        accessResult = existsSync(settings.assemblerJar);
+        if (!accessResult) valid = false;
+
+        accessResult = existsSync(settings.javaRuntime);
+        if (!accessResult) valid = false;
+
+        return valid;
     }
 }
