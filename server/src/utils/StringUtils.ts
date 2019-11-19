@@ -11,27 +11,50 @@ export default class StringUtils {
     }
 
 	public static splitFunction(text:string):string[]|undefined {
-		let vals:string[] = [];
-		//	remove parenthesis
-		text = text.replace("(", " ");
-		text = text.replace(")", " ");
-		text = text.replace("{", " ");
-		text = text.replace("/", " ");
-		text = text.trim();
 
-		//	split by blanks to get function name and parms
+		let vals:string[] = [];
+		var pos;
+		var parm_text;
+
+		//	remove code after comments
+		pos = text.indexOf("//");
+		if (pos > 0) {
+			text = text.substring(0, pos);
+		}
+
+		//	remove code after open paren "{"
+		pos = text.indexOf("{");
+		if (pos > 0) {
+			text = text.substring(0, pos);
+		}
+
+		//	get parameters
+		pos = text.indexOf("(");
+		if (pos > 0) {
+			parm_text = text.substring(pos);
+			text = text.substring(0, pos);
+		}
+
+		//	remove parenthesis
+		parm_text = parm_text.replace("(", " ");
+		parm_text = parm_text.replace(")", " ");
+		parm_text = parm_text.trim();
+
+		//	split by blanks to get type and name of function
 		let v1 = text.split(" ");
 		v1 = this.removeEmptyArray(v1);
 		vals.push(v1[0].trim());
 		vals.push(v1[1].trim());
 		
 		//	split parms by comma
-		if (v1[2]) {
-			let parms = v1[2].split(",");
+
+		if (parm_text) {
+			let parms = parm_text.split(",");
 			for (var parm of parms) {
 				vals.push(parm);
 			}
 		}
+
 		return vals;
 	}
 
