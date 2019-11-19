@@ -32,6 +32,7 @@ import { readFileSync } from "fs";
 import PathUtils from "../utils/PathUtils";
 import { createHash } from "crypto";
 import DocumentSymbolProvider from "../providers/DocumentSymbolProvider";
+import CompletionProvider from "../providers/CompletionProvider";
 
 export default class ProjectManager {
 
@@ -45,6 +46,7 @@ export default class ProjectManager {
     private hoverProvider: HoverProvider;
     private diagnosticProvider: DiagnosticProvider;
     private documentSymbolProvider: DocumentSymbolProvider;
+    private completionProvider: CompletionProvider;
 
     constructor(connection: Connection) {
 
@@ -67,6 +69,7 @@ export default class ProjectManager {
         this.hoverProvider = new HoverProvider(connection, projectInfoProvider);
         this.diagnosticProvider = new DiagnosticProvider(connection, projectInfoProvider);
         this.documentSymbolProvider = new DocumentSymbolProvider(connection, projectInfoProvider);
+        this.completionProvider = new CompletionProvider(connection, projectInfoProvider);
 
         connection.onInitialize((params: InitializeParams): InitializeResult => {
             return {
@@ -74,6 +77,10 @@ export default class ProjectManager {
                     textDocumentSync: this.documents.syncKind,
                     hoverProvider: true,
                     documentSymbolProvider: true,
+                    completionProvider: {
+                        resolveProvider: true,
+                        triggerCharacters: ["#", ".", "$", " "],
+                    },
 
                 }
             };
@@ -151,6 +158,10 @@ export default class ProjectManager {
 
     public getCurrentProject(): Project {
         return this.currentProject;
+    }
+
+    public getCompletionProvider(): CompletionProvider {
+        return this.completionProvider;
     }
 
 }

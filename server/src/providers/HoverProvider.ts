@@ -93,7 +93,8 @@ export default class HoverProvider extends Provider {
 			var uri = tokenMatch.data["uri"];
 			var filename = URI.parse(uri);
 			var path = require('path');
-			var file:string = path.parse(filename.path).name + " :: ";
+			// var file:string = "from " + path.parse(filename.path).name;
+			var file:string = "from " + path.parse(filename.path).base;
 			if (file.indexOf(".source") >= 0) {
 				file = "";
 			}
@@ -113,34 +114,69 @@ export default class HoverProvider extends Provider {
 			// return hover;
 
 			// return [
-			// 	`# Header1 \n## Header2 \n### Header3 \nLink [example link](http://example.com/) \n***\n    lda #$01\n    sta $d021\n*emphasis*\n\n**strong**\n* Item1\n* Item2\n\n***\n` ,
+			// 	`# Header1\n## Header2\n### Header3\nLink [example link](http://example.com/)\n***\n    lda #$01\n    sta $d021\n*emphasis*\n\n**strong**\n* Item1\n* Item2\n\n***\n` ,
 			// 	`![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")\n\n\n\nSome More Text`,
 			// 	`<h1>raw html</h1>`,
 			// ];
 
+			// return [`	.macro someMacro(p1, p2) from macro-init\n***\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi rhoncus quis nisl eu aliquet. Praesent sagittis nulla non lacus fermentum ultrices. Etiam eget gravida sem, a venenatis nibh. Cras posuere mauris ut tortor sollicitudin lobortis.`];
+
+			var description = "";
+			if (tokenMatch.comments) description = tokenMatch.comments.trim();
+
 			if (tokenMatch.type == SymbolType.Constant) {
 
-				var description = tokenMatch.comments || "";
-
 				return [
-					`(constant) ${file}${tokenMatch.name} = ${tokenMatch.value}`,
-					`\n\n*${description.trim()}*`,
-					this.getFormattedValue(tokenMatch.value)
+					`	.const ${tokenMatch.name} = ${tokenMatch.value} ${file}`,
+					`\n***\n${description.trim()}`,
+					`\n***\n${this.getFormattedValue(tokenMatch.value)}`
 				 ];
 
 			}
 
 			if (tokenMatch.type == SymbolType.Macro) {
 
-				var description = tokenMatch.comments || "";
+				var parm_text = "";
+
+				if (tokenMatch.data) {
+					for (var parm of tokenMatch.data.parms) {
+						parm_text += parm.name + " ";
+					}
+				}
+
+				parm_text = parm_text.trim();
+				parm_text = parm_text.replace(" ", ", ");
 
 				return [
-					`(macro) ${file}${tokenMatch.name} (p1, p2)`,
-					`\n\n*${description.trim()}*`,
+					`	.macro ${tokenMatch.name}(${parm_text}) ${file}`,
+					`\n***\n${description.trim()}`,
 				 ];
 
 			}
 
+			if (tokenMatch.type == SymbolType.Function) {
+
+				var parm_text = "";
+
+				if (tokenMatch.data) {
+					parm_text = tokenMatch.data.parms;	
+				}
+
+				return [
+					`	.function ${tokenMatch.name} (${parm_text}) ${file}`,
+					`\n***\n${description.trim()}`,
+				 ];
+
+			}
+
+			if (tokenMatch.type == SymbolType.Label) {
+
+				return [
+					`	.label ${tokenMatch.name} ${file}`,
+					`\n***\n${description.trim()}`,
+				 ];
+
+			}
 
 			return undefined;
 		}
