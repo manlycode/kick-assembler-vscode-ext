@@ -71,7 +71,7 @@ export class Assembler {
         assemblerResults.status = java.status;
 
         //  remove the assembler info file
-        var unlinkResult = unlinkSync(asminfo);
+        // var unlinkResult = unlinkSync(asminfo);
 
         return assemblerResults;
     }

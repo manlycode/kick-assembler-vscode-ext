@@ -188,6 +188,8 @@ export default class Project {
             }
         }
 
+        var s = this.getAssemblerResults().assemblerInfo.getAssemblerSyntax();
+
         for (var syntax of this.getAssemblerResults().assemblerInfo.getAssemblerSyntax()) {
             if (syntax.range.fileIndex != autoIncludeFileIndex) {
                 var symbol = this.createSymbol(syntax, this.projectFiles[syntax.range.fileIndex]);
@@ -234,6 +236,7 @@ export default class Project {
     private createFromLabel(sourceRange: AssemblerSourceRange, text: string, main: boolean): Symbol {
         var name = text.substr(sourceRange.startPosition, (sourceRange.endPosition - 1) - sourceRange.startPosition);
         var symbol = <Symbol>{};
+
         symbol.name = name;
         symbol.type = SymbolType.Label;
         symbol.kind = SymbolKind.String;
@@ -260,7 +263,12 @@ export default class Project {
         }
 
         if (directive.toLowerCase() == ".label") {
-            return this.createFromLabel(sourceRange, text, main);
+            var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+            symbol.kind = SymbolKind.Field;
+            symbol.type = SymbolType.Label;
+            symbol.isMain = main;
+            //return this.createFromLabel(sourceRange, text, main);
+            return symbol;
         }
 
         if (directive.toLowerCase() == ".macro") {
@@ -270,6 +278,9 @@ export default class Project {
             if (split.length > 0) {
                 var name = split[1];
                 var symbol = <Symbol>{};
+                
+                if (name.startsWith("_")) return;
+
                 symbol.type = SymbolType.Macro;
                 symbol.kind = SymbolKind.Method;
                 symbol.name = name;

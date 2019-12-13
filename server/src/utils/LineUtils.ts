@@ -25,6 +25,8 @@ export default class LineUtils {
 		var beg = -1;
 		var end = -1;
 
+		if (lineNumber <= 0) return remark;
+
 		while (!found) {
 
 			lineNumber -= 1;
