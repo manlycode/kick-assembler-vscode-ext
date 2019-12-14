@@ -4,7 +4,7 @@
 	"description": "Kick Assembler Extension for Visual Studio Code",
 	"author": "Paul Hocker",
 	"license": "MIT",
-	"version": "0.1.14",
+	"version": "0.1.16-dev",
 	"repository": {
 		"type": "git",
 		"url": "https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext"
@@ -50,22 +50,22 @@
 		],
 		"commands": [
 			{
-			  "command": "kickassembler.build",
-			  "title": "Kick Assembler: Build"
+				"command": "kickassembler.build",
+				"title": "Kick Assembler: Build"
 			},
 			{
-			  "command": "kickassembler.buildandrun",
-			  "title": "Kick Assembler: Build and Run Program"
+				"command": "kickassembler.buildandrun",
+				"title": "Kick Assembler: Build and Run Program"
 			},
 			{
-			  "command": "kickassembler.buildanddebug",
-			  "title": "Kick Assembler: Build and Debug Program"
+				"command": "kickassembler.buildanddebug",
+				"title": "Kick Assembler: Build and Debug Program"
 			},
 			{
-			  "command": "kickassembler.run",
-			  "title": "Kick Assembler: Run Program"
+				"command": "kickassembler.run",
+				"title": "Kick Assembler: Run Program"
 			}
-		  ],
+		],
 		"configuration": {
 			"type": "object",
 			"title": "Kick Assembler Extension Configuration",

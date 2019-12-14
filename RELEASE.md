@@ -1,10 +1,7 @@
 # Release Notes
 
-## v0.1.14
+## v0.1.15
 ### Changed
-* added hover for macros and functions with comments
-* some coverage for parameters on hover
-* better symbol coverage
 ### Fixed
-* command pallette entries missing (thanks Wanja Gayk for finding this)
+* issue #5 -- dedicated output directory (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/5)
 

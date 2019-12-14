@@ -3,15 +3,19 @@
 This extension is a work in progress, there is much left to be done.
 
 ### In Progress
-* hover support for common memory locations like $d020
-* auto-completion support
+* auto-completion support from all imports
+* auto-completion scope support
 
 ### Backburner
-* auto-completion support from all imports
 * refactoring support
-* breakpoints and watches
+* generate breakpoints and watches for vice and c64debugger
+
+### Ideas
+* memory layout (https://kickassmemoryview.insoft.se/)
 
 ### Completed
+* ~~auto-completion support~~
+* ~~hover support for common memory locations like $d020~~
 * ~~basic support for emulators (like vice)~~
 * ~~basic support for C64Debugger~~
 * ~~syntax highlighting~~
