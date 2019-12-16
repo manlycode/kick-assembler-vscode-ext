@@ -7,6 +7,8 @@ import { spawn, spawnSync } from 'child_process';
 import { workspace, window, Disposable, ExtensionContext, commands, WorkspaceConfiguration } from 'vscode';
 import PathUtils from '../utils/PathUtils';  
 import * as vscode from 'vscode';
+import * as path from 'path';
+
 
 export class CommandBuild { 
 
@@ -25,6 +27,19 @@ export class CommandBuild {
         //  is the kickass path set?
         let assemblerJar:string = this._configuration.get("assemblerJar");
 
+        var sourcePath: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString())
+        
+        var rootPath: string = vscode.workspace.getWorkspaceFolder(window.activeTextEditor.document.uri).uri.toString();
+        rootPath = PathUtils.uriToFileSystemPath(rootPath);
+
+        var outputDirectory: string = this._configuration.get("outputDirectory")
+
+        var outPath: string = path.join(rootPath, outputDirectory);
+
+        if (outputDirectory == "") {
+            outPath = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString())
+        }
+
         //  locate file, does it exist?
         console.log(`- activeTextEditor ${window.activeTextEditor}`);
         let doc = window.activeTextEditor.document;
@@ -38,8 +53,7 @@ export class CommandBuild {
         output.show(true);
 
         //  spawn new child process
-        let java = spawnSync(javaRuntime, ["-jar", assemblerJar, file]);
-
+        let java = spawnSync(javaRuntime, ["-jar", assemblerJar, file, "-odir", outPath]);
         let errorCode = java.status;
 
         if (errorCode > 0) {
