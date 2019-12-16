@@ -41,7 +41,7 @@ export class Assembler {
     public assemble(settings: Settings, uri:string, text: string): AssemblerResults | undefined {
 
         var outputDirectory: string = settings.outputDirectory;
-        var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));;
+        var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));
 
         if (outputDirectory == "") {
             outputDirectory = sourcePath;

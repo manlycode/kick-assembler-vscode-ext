@@ -18,7 +18,6 @@ export class CommandBuild {
         this._configuration = workspace.getConfiguration('kickassembler');
     }
 
-
     public build(output:vscode.OutputChannel):number {
 
         //  is the java path set?
@@ -27,33 +26,33 @@ export class CommandBuild {
         //  is the kickass path set?
         let assemblerJar:string = this._configuration.get("assemblerJar");
 
-        var sourcePath: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString())
-        
-        var rootPath: string = vscode.workspace.getWorkspaceFolder(window.activeTextEditor.document.uri).uri.toString();
-        rootPath = PathUtils.uriToFileSystemPath(rootPath);
-
+        //  create output name
         var outputDirectory: string = this._configuration.get("outputDirectory")
+        var sourceFile: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString())
+        let prg = path.basename(sourceFile);
+        prg = prg.replace(".asm", ".prg");
+        prg = prg.replace(".kick", ".prg");
+        prg = prg.replace(".a", ".prg");
+        prg = prg.replace(".ka", ".prg");
+        let outputFile = outputDirectory +  "\\" + prg;
 
-        var outPath: string = path.join(rootPath, outputDirectory);
+        //  create symbol directory
+        let symbolDir = outputDirectory;
 
-        if (outputDirectory == "") {
-            outPath = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString())
-        }
+        //  get the path of the source
+        var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(window.activeTextEditor.document.uri.toString()));
 
         //  locate file, does it exist?
-        console.log(`- activeTextEditor ${window.activeTextEditor}`);
         let doc = window.activeTextEditor.document;
-        console.log(`- doc ${doc}`);
         let file = PathUtils.uriToFileSystemPath(doc.uri.toString());
-        console.log(`- looking for file ${file}`);
 
         //  create new output channel
-        //let outputChannel = window.createOutputChannel('Kick Assembler Build');
         output.clear();
         output.show(true);
 
         //  spawn new child process
-        let java = spawnSync(javaRuntime, ["-jar", assemblerJar, file, "-odir", outPath]);
+        let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfiledir", symbolDir]
+        let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
         let errorCode = java.status;
 
         if (errorCode > 0) {

@@ -104,8 +104,8 @@
 				},
 				"kickassembler.outputDirectory": {
 					"type": "string",
-					"default": ".",
-					"description": "Where to store output files gernerated by Kick Assembler."
+					"default": "",
+					"description": "Where to store output files gernerated by Kick Assembler (no trailing slashes)"
 				},
 				"kickassembler.trace.server": {
 					"scope": "window",
