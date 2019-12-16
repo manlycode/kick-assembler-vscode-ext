@@ -40,13 +40,29 @@ export class Assembler {
 
     public assemble(settings: Settings, uri:string, text: string): AssemblerResults | undefined {
 
+        var outputDirectory: string = settings.outputDirectory;
+        var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));
+
+        if (outputDirectory == "") {
+            outputDirectory = sourcePath;
+        }
+
+        outputDirectory = path.resolve(outputDirectory);
+
+        var fs = require('fs');
+        if (!fs.existsSync(outputDirectory)) {
+            fs.mkdirSync(outputDirectory);
+        }
+
         //  copy file contents into ".source.txt"
-        var basePath = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));
-        var filename = path.join(basePath, ".source.txt");
+        // var basePath = path.join(outputDirectory, "");
+        var filename = path.join(outputDirectory, ".source.txt");
+        filename = path.resolve(filename);
         writeFileSync(filename, text);
 
         //  setup the asminfo.txt output
-        var asminfo = path.join(basePath, ".asminfo.txt");
+        var asminfo = path.join(outputDirectory, ".asminfo.txt");
+        asminfo = path.resolve(asminfo);
 
         //  assemble by running java process
         let java = spawnSync(settings.javaRuntime, [
@@ -58,7 +74,7 @@ export class Assembler {
             '-asminfo',
             'all',
             '-asminfofile',
-            asminfo], { cwd: basePath });
+            asminfo], { cwd: path.resolve(sourcePath) });
 
         //  get contents of asminfo
         var asminfo_data = readFileSync(asminfo, 'utf8');

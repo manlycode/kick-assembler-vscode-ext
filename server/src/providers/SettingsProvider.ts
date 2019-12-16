@@ -19,15 +19,15 @@ interface GlobalSettings {
 }
 
 export interface Settings {
-    assemblerJar:string
-    javaRuntime:string;
-    javaOptions:string;
-    valid:boolean;
-    emulatorRuntime:string;
-    emulatorOptions:string;
-    debuggerRuntime:string;
-    debuggerOptions:string;
-
+    assemblerJar: string
+    javaRuntime: string;
+    javaOptions: string;
+    valid: boolean;
+    emulatorRuntime: string;
+    emulatorOptions: string;
+    debuggerRuntime: string;
+    debuggerOptions: string;
+    outputDirectory: string;
 }
 
 export default class SettingsProvider extends Provider {

@@ -70,37 +70,42 @@
 		],
 		"configuration": {
 			"type": "object",
-			"title": "Kick Assembler Extension Configuration",
+			"title": "Kick Assembler",
 			"properties": {
 				"kickassembler.assemblerJar": {
 					"type": "string",
 					"default": "kickass.jar",
-					"description": "Full Path to Kick Assembler JAR"
+					"description": "Full path to your Kick Assembler JAR file."
 				},
 				"kickassembler.javaRuntime": {
 					"type": "string",
 					"default": "java.exe",
-					"description": "Full Path to Java Runtime"
+					"description": "Full path to your Java runtime."
 				},
 				"kickassembler.emulatorRuntime": {
 					"type": "string",
 					"default": "",
-					"description": "Full Path to Emulator Runtime"
+					"description": "Full path to your emulator runtime."
 				},
 				"kickassembler.emulatorOptions": {
 					"type": "string",
 					"default": "-a",
-					"description": "Runtime Options for Emulator"
+					"description": "Runtime options for your emulator."
 				},
 				"kickassembler.debuggerRuntime": {
 					"type": "string",
 					"default": "",
-					"description": "Full Path to C64 Debugger Runtime"
+					"description": "Full path to your debugger runtime."
 				},
 				"kickassembler.debuggerOptions": {
 					"type": "string",
 					"default": "",
-					"description": "Runtime Options for C64 Debugger"
+					"description": "Runtime options for your debugger."
+				},
+				"kickassembler.outputDirectory": {
+					"type": "string",
+					"default": "",
+					"description": "Where to store output files gernerated by Kick Assembler (no trailing slashes)"
 				},
 				"kickassembler.trace.server": {
 					"scope": "window",
