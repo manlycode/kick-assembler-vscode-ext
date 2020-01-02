@@ -15,7 +15,7 @@ import {
 	VersionedTextDocumentIdentifier
 } from "vscode-languageserver";
 
-import Project, { SymbolType } from "../project/Project";
+import Project, { Symbol, SymbolType } from "../project/Project";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import URI from "vscode-uri";
@@ -76,9 +76,18 @@ export default class HoverProvider extends Provider {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
 		if (tokenMatch) {
+
+			var typeVal = ""
+			if (tokenMatch.type == SymbolType.Macro) { typeVal = "Macro" }
+			if (tokenMatch.type == SymbolType.Constant) { typeVal = "Constant" }
+			if (tokenMatch.type == SymbolType.Function) { typeVal = "Function" }
+
 			return [
-				`(${tokenMatch.type.toString()}) \`${tokenMatch.name}\`: ${tokenMatch.description}`,
-			];
+				`(${typeVal}) \`${tokenMatch.name}\`: ${tokenMatch.description}`,
+				// `	(${tokenMatch.type.toString()}) ${tokenMatch.name}`,
+				// `\n***\n${tokenMatch.description.trim()}`,
+				// `\n***\n${this.getFormattedValue(tokenMatch.value)}`
+				];
 		}
 	}
 
@@ -126,16 +135,6 @@ export default class HoverProvider extends Provider {
 			var description = "";
 			if (tokenMatch.comments) description = tokenMatch.comments.trim();
 
-			if (tokenMatch.type == SymbolType.Constant) {
-
-				return [
-					`	.const ${tokenMatch.name} = ${tokenMatch.value} ${file}`,
-					`\n***\n${description.trim()}`,
-					`\n***\n${this.getFormattedValue(tokenMatch.value)}`
-				 ];
-
-			}
-
 			if (tokenMatch.type == SymbolType.Macro) {
 
 				var parm_text = "";
@@ -171,18 +170,34 @@ export default class HoverProvider extends Provider {
 
 			}
 
+			if (tokenMatch.type == SymbolType.Constant) {
+				return this.createSymbolWithValue(tokenMatch, file);
+			}
+
 			if (tokenMatch.type == SymbolType.Label) {
+				return this.createSymbolWithValue(tokenMatch, file);
+			}
 
-				return [
-					`	.label ${tokenMatch.name} ${file}`,
-					`\n***\n${description.trim()}`,
-				 ];
-
+			if (tokenMatch.type == SymbolType.Variable) {
+				return this.createSymbolWithValue(tokenMatch, file);
 			}
 
 			return undefined;
 		}
 	}
+
+	private createSymbolWithValue(symbol: Symbol, file: string): string[] {
+
+		var description = "";
+
+		if (symbol.comments) description = symbol.comments.trim();
+
+		return [
+			`	.const ${symbol.name} [${symbol.originalValue}] ${file}`,
+			`\n***\n${description.trim()}`,
+			`\n***\n${this.getFormattedValue(symbol.value)}`
+		 ];
+}
 
 	private getDirectiveHover(token: string): string[] | undefined {
 		const tokenMatch = this.project.getDirectives().find((match) => {

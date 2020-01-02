@@ -63,6 +63,7 @@ export interface Symbol {
     library?: string;
     description?: string;
     value: number;
+    originalValue: string;
     kind?: SymbolKind;
     line?: Line;
     scope?: number;
@@ -250,7 +251,12 @@ export default class Project {
         const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition);
 
         if (directive.toLowerCase() == ".var") {
-
+            var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+            symbol.kind = SymbolKind.Variable;
+            symbol.type = SymbolType.Variable;
+            symbol.isMain = main;
+            //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
+            return symbol;
         }
 
         if (directive.toLowerCase() == ".const") {
@@ -324,6 +330,7 @@ export default class Project {
             symbol.name = name;
             symbol.type = SymbolType.Variable;
             symbol.value = NumberUtils.toDecimal(value);
+            symbol.originalValue = value;
         } else {
             symbol.name = text.trim();
         }
