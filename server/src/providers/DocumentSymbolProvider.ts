@@ -43,7 +43,7 @@ export default class DocumentSymbolProvider extends Provider {
                         ),
                         this.getProjectInfo().getCurrentProject().getUri(),
                         ""
-                    )
+                    );
 
                     symbols.push(s1);
                 }

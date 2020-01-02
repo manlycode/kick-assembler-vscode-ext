@@ -37,7 +37,7 @@ export default class SettingsProvider extends Provider {
     constructor(connection:IConnection, projectInfo:ProjectInfoProvider) {
 
         super(connection, projectInfo);
-        connection.console.log("- settings provider registered")
+        connection.console.log("- settings provider registered");
 
         connection.onDidChangeConfiguration((change:DidChangeConfigurationParams) => {
             connection.console.log("- onDidChangeConfiguration");

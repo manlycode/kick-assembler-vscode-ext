@@ -30,7 +30,7 @@ export default class LineUtils {
 		while (!found) {
 
 			lineNumber -= 1;
-			var _line = lines[lineNumber].text.trim()
+			var _line = lines[lineNumber].text.trim();
 
 			// last character on line is }
 			if (_line[_line.length - 1] == "}")
