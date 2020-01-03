@@ -56,17 +56,21 @@ export default class HoverProvider extends Provider {
 		var line = this.project.getSourceLines()[textDocumentPosition.position.line];
 		//  get token under cursor
 		var token = LineUtils.getTokenAtLinePosition2(line, textDocumentPosition.position.character);
+		if(token){
 		//  search for matching token
-		if (!contents) contents = this.getInstructionMatch(token);
-		if (!contents) contents = this.getPseudoOpsMatch(token);
-		if (!contents) contents = this.getPreProcessorMatch(token);
-		if (!contents) contents = this.getDirectiveHover(token);
-		if (!contents) contents = this.getLiteralHover(token);
+			if (!contents) contents = this.getInstructionMatch(token);
+			if (!contents) contents = this.getPseudoOpsMatch(token);
+			if (!contents) contents = this.getPreProcessorMatch(token);
+			if (!contents) contents = this.getDirectiveHover(token);
+			if (!contents) contents = this.getLiteralHover(token);
+		}
 
 		//	no match so far, try stright symbols
 		token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
-		if (!contents) contents = this.getBuiltInSymbolHover(token);
-		if (!contents) contents = this.getSymbolOrLabel(token);
+		if(token) {
+			if (!contents) contents = this.getBuiltInSymbolHover(token);
+			if (!contents) contents = this.getSymbolOrLabel(token);
+		}
 		if (!contents) contents = [];
 		return contents;
 	}
@@ -285,6 +289,8 @@ export default class HoverProvider extends Provider {
 	}
 
 	private getFormattedValue(value: number): string {
+		if (!value)
+			return '';
 		return '\n' +
 			`\n* Dec: \`${value.toString(10)}\`` +
 			`\n* Bin: \`\%${value.toString(2)}\`` +

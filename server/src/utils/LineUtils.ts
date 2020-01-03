@@ -68,20 +68,21 @@ export default class LineUtils {
 		return remark;
 	}
 
-	public static getTokenAtSourcePosition2(sourceLines: string[] | undefined, line: number, column: number): string {
+	public static getTokenAtSourcePosition2(sourceLines: string[] | undefined, line: number, column: number): string | undefined{
 		if (sourceLines && sourceLines.length > line) {
 			// Find the char and the surrounding symbol it relates to
 			const sourceLine = LineUtils.removeComments(sourceLines[line]);
 			return LineUtils.getTokenAtLinePosition(sourceLine, column);
 		}
+		return undefined;
 	}
 
-	public static getTokenAtLinePosition2(sourceLine: string | undefined, column: number): string {
+	public static getTokenAtLinePosition2(sourceLine: string | undefined, column: number): string | undefined{
 
 		const tokens = StringUtils.splitIntoTokens(sourceLine);
 
 		if (!tokens)
-			return "";
+			return undefined;
 
 		if (tokens.length == 1)
 			return tokens[0];
