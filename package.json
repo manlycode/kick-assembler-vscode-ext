@@ -99,7 +99,7 @@
 				},
 				"kickassembler.debuggerOptions": {
 					"type": "string",
-					"default": "",
+					"default": "-wait 2500 -autojmp",
 					"description": "Runtime options for your debugger."
 				},
 				"kickassembler.outputDirectory": {
