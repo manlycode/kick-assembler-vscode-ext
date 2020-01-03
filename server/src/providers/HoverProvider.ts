@@ -202,11 +202,23 @@ export default class HoverProvider extends Provider {
 	private createSymbolWithValue(symbol: Symbol, file: string): string[] {
 
 		var description = "";
+		var symbolDirective = "";
+		switch (symbol.type) {
+			case SymbolType.Constant:
+				symbolDirective = '.const';
+				break;
+			case SymbolType.Variable:
+				symbolDirective = '.var';
+				break;
+			case SymbolType.Label:
+				symbolDirective = '.label';
+				break;				
+		}
 
 		if (symbol.comments) description = symbol.comments.trim();
 
 		return [
-			`	.const ${symbol.name} [${symbol.originalValue}] ${file}`,
+			`	${symbolDirective} ${symbol.name} [${symbol.originalValue}] ${file}`,
 			`\n***\n${description.trim()}`,
 			`\n***\n${this.getFormattedValue(symbol.value)}`
 		 ];
