@@ -73,7 +73,7 @@ export interface Symbol {
     isGlobal?: boolean;      //  is this a global symbol?
     isMain?: boolean;        //  is this a main project symbol?
     data?: any;
-};
+}
 
 export default class Project {
 
@@ -180,7 +180,7 @@ export default class Project {
 
     private createSymbols(): Symbol[] | undefined {
 
-        var symbols = []
+        var symbols = [];
         var autoIncludeFileIndex = 0;
 
         for (var file of this.assemblerInfo.getAssemblerFiles()) {

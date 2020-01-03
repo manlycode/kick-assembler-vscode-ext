@@ -63,7 +63,7 @@ export default class ProjectManager {
             getProject: this.getProject.bind(this),
             getCurrentProject: this.getCurrentProject.bind(this),
             getSettings: this.getSettings.bind(this)
-        }
+        };
 
         this.settingsProvider = new SettingsProvider(connection, projectInfoProvider);
         this.hoverProvider = new HoverProvider(connection, projectInfoProvider);

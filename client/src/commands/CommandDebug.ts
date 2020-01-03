@@ -23,19 +23,19 @@ export class CommandDebug {
         //  is the emulator path set?
         let debuggerRuntime: string = this._configuration.get("debuggerRuntime");
 
-        let debuggerOptionsString: string = this._configuration.get("debuggerOptions")
-        let debuggerOptions = debuggerOptionsString.split(" ").filter((val: any) => val)
+        let debuggerOptionsString: string = this._configuration.get("debuggerOptions");
+        let debuggerOptions = debuggerOptionsString.split(" ").filter((val: any) => val);
         
         //  build source and output dirs
-        var outputDirectory: string = this._configuration.get("outputDirectory")
-        var sourcePath: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString())
+        var outputDirectory: string = this._configuration.get("outputDirectory");
+        var sourcePath: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString());
 
         if (outputDirectory == "") {
             outputDirectory = sourcePath;
         }
 
         //  build file path
-        //  thie below code is dumb, but will work for now
+        //  the below code is dumb, but will work for now
         let prg = path.basename(sourcePath);
         prg = prg.replace(".asm", ".prg");
         prg = prg.replace(".kick", ".prg");

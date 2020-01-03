@@ -27,8 +27,8 @@ export class CommandBuild {
         let assemblerJar:string = this._configuration.get("assemblerJar");
 
         //  create output name
-        var outputDirectory: string = this._configuration.get("outputDirectory")
-        var sourceFile: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString())
+        var outputDirectory: string = this._configuration.get("outputDirectory");
+        var sourceFile: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString());
         let prg = path.basename(sourceFile);
         prg = prg.replace(".asm", ".prg");
         prg = prg.replace(".kick", ".prg");
@@ -51,7 +51,7 @@ export class CommandBuild {
         output.show(true);
 
         //  spawn new child process
-        let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfiledir", symbolDir]
+        let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfiledir", symbolDir];
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
         let errorCode = java.status;
 
