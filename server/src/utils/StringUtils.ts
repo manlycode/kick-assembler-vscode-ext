@@ -124,7 +124,7 @@ export default class StringUtils {
 		// make pos point to a character of the word
 		while (text[position] == " ") position--;
 		// find the space before that word
-		// (add 1 to be at the begining of that word)
+		// (add 1 to be at the beginning of that word)
 		// (note that it works even if there is no space before that word)
 		position = text.lastIndexOf(" ", position) + 1;
 		// find the end of the word

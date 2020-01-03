@@ -16,4 +16,4 @@ export const KickLanguage:KickLanguageDefinition = {
     PseudoOps,
     Extensions,
     PreProcessors,
-}
+};

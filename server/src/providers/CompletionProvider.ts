@@ -97,11 +97,11 @@ export default class CompletionProvider extends Provider {
 
 		if (!settings.valid) return;
 
-		const assemblerResults:AssemblerResults = this.getProjectInfo().getCurrentProject().getAssemblerResults()
+		const assemblerResults:AssemblerResults = this.getProjectInfo().getCurrentProject().getAssemblerResults();
 
 		var loaded:boolean;
 
-		this.documentSource = this.getProjectInfo().getCurrentProject().getSourceLines()
+		this.documentSource = this.getProjectInfo().getCurrentProject().getSourceLines();
 		this.triggerLine = (this.documentSource[this.documentPosition.position.line].trimLeft());
 		this.trigger = "";
 
@@ -276,7 +276,7 @@ export default class CompletionProvider extends Provider {
 		
 		var items: CompletionItem[] = [];
 
-		var _directives = this.project.getAssemblerInfo().getAssemblerDirectives()
+		var _directives = this.project.getAssemblerInfo().getAssemblerDirectives();
 
 		for (let directive of _directives) {
 			const name = directive.name.toLocaleLowerCase();
@@ -291,7 +291,7 @@ export default class CompletionProvider extends Provider {
 
 		var items: CompletionItem[] = [];
 
-		var _directives = this.project.getAssemblerInfo().getAssemblerPreProcessorDirectives()
+		var _directives = this.project.getAssemblerInfo().getAssemblerPreProcessorDirectives();
 
 		for (let directive of _directives) {
 			const name = directive.name.toLocaleLowerCase();
