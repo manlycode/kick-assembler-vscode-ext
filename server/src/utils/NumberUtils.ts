@@ -23,25 +23,39 @@ export default class NumberUtils {
 	 * @param value the String to Convert
 	 */
 	public static toDecimal(value:string):number {
-		if (value.substr(0, 2) == "#$") {
-			var num = parseInt(value.substr(2), 16);
-			return num;
+		var isImmediate = value.substr(0, 1) == "#";
+		var numberPosition = isImmediate ? 1 : 0;		
+		var isLowByte = value.substr(numberPosition, 1) == "<";
+		var isHighByte = value.substr(numberPosition, 1) == ">";
+		if (isLowByte || isHighByte) {
+			numberPosition++;
 		}
+		var numberSystem = value.substr(numberPosition, 1);
+		var numberBase = 10;
+		if (numberSystem == "$") {
+			numberBase = 16;
+			numberPosition++;
+		}
+		if (numberSystem == "0") {
+			numberBase = 8;
+			numberPosition++;
+		}	
+		if (numberSystem == "%") {
+			numberBase = 2;
+			numberPosition++;
+		}					
 
-		if (value.substr(0, 1) == "$") {
-			var num = parseInt(value.substr(1), 16);
+		var num = parseInt(value.substr(numberPosition), numberBase);
+		if (!isNaN(num)) {
+			if(isLowByte) {
+				num = num % 256;
+			}
+			if(isHighByte) {
+				num = num >> 8;
+			}  
 			return num;
 		}
-
-		if (value.substr(0, 1) == "#") {
-			var num = parseInt(value.substr(1), 10);
-			return num;
-		}
-
-		if (value.substr(0, 1) == "%") {
-			var num = parseInt(value.substr(1), 2);
-			return num;
-		}
+		return undefined;
 	}
 
 }

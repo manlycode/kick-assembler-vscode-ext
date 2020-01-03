@@ -16,6 +16,7 @@ import {
 } from "vscode-languageserver";
 
 import Project, { Symbol, SymbolType } from "../project/Project";
+import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import URI from "vscode-uri";
@@ -260,28 +261,8 @@ export default class HoverProvider extends Provider {
 	}
 
 	private getLiteralHover(token: string) {
-
-		if (token.substr(0, 2) == "#$") {
-			var num = parseInt(token.substr(2), 16);
-			if (!isNaN(num)) return [this.getFormattedValue(num)];
-		}
-
-		if (token.substr(0, 1) == "$") {
-			var num = parseInt(token.substr(1), 16);
-			if (!isNaN(num)) return [this.getFormattedValue(num)];
-		}
-
-		if (token.substr(0, 1) == "#") {
-			var num = parseInt(token.substr(1), 10);
-			if (!isNaN(num)) return [this.getFormattedValue(num)];
-		}
-
-		if (token.substr(0, 1) == "%") {
-			var num = parseInt(token.substr(1), 2);
-			if (!isNaN(num)) return [this.getFormattedValue(num)];
-		}
-
-		return undefined;
+		var num = NumberUtils.toDecimal(token);
+		return !isNaN(num) ? [this.getFormattedValue(num)] : undefined;
 	}
 
 	private getFormattedValue(value: number): string {
