@@ -209,6 +209,7 @@ export default class CompletionProvider extends Provider {
 
 			if (prevToken == "instruction") {
 				var symbols = this.getProjectInfo().getCurrentProject().getSymbols();
+				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.NamedLabel));
 				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Function));
 				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Variable));
 				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Label));
@@ -219,6 +220,7 @@ export default class CompletionProvider extends Provider {
 
 			if (prevToken == "symbol") {
 				//this.loadSymbols(line, textDocumentPosition, SymbolTypes.Function, items, lastToken);
+				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.NamedLabel));
 				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Variable, lastToken));
 				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Label, lastToken));
 				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Constant, lastToken));

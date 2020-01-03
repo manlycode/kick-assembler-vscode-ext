@@ -47,6 +47,7 @@ export interface Line {
 }
 
 export enum SymbolType {
+    NamedLabel,
     Label,
     Constant,
     Function,
@@ -121,9 +122,7 @@ export default class Project {
             }
         }
 
-        if (!this.symbols) {
-            this.symbols = this.createSymbols();
-        }
+        this.symbols = this.createSymbols();
     }
 
     public getId(): string {
@@ -239,7 +238,7 @@ export default class Project {
         var symbol = <Symbol>{};
 
         symbol.name = name;
-        symbol.type = SymbolType.Label;
+        symbol.type = SymbolType.NamedLabel;
         symbol.kind = SymbolKind.String;
         symbol.isMain = main;
         //symbol.scope = this._kickAssemblerResults.sourceFiles[sourceRange.fileIndex].lines[sourceRange.startLine].scope;

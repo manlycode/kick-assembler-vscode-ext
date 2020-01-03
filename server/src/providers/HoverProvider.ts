@@ -170,6 +170,19 @@ export default class HoverProvider extends Provider {
 
 			}
 
+			if (tokenMatch.type == SymbolType.NamedLabel) {
+
+				var description = "";
+
+				if (tokenMatch.comments) description = tokenMatch.comments.trim();
+
+				return [
+					`	label ${tokenMatch.name} ${file}`,
+					`\n***\n${description.trim()}`,
+				 ];
+		
+			}
+
 			if (tokenMatch.type == SymbolType.Constant) {
 				return this.createSymbolWithValue(tokenMatch, file);
 			}
