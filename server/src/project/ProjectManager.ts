@@ -103,8 +103,9 @@ export default class ProjectManager {
         connection.onDidChangeTextDocument((change: DidChangeTextDocumentParams) => {
             var project = this.findProject(change.textDocument.uri);
             this.currentProject = project;
-            if (this.settingsProvider.getSettings().valid) {
-                project.assemble(this.settingsProvider.getSettings(), change.contentChanges[0].text);
+            var kickAssSettings = this.settingsProvider.getSettings();
+            if (kickAssSettings.valid && kickAssSettings.autoAssembleTrigger.indexOf('onChange') !== -1) {
+                project.assemble(kickAssSettings, change.contentChanges[0].text);
                 this.diagnosticProvider.process(change.textDocument.uri);
             }
         });

@@ -28,6 +28,7 @@ export interface Settings {
     debuggerRuntime: string;
     debuggerOptions: string;
     outputDirectory: string;
+    autoAssembleTrigger: string;
 }
 
 export default class SettingsProvider extends Provider {
