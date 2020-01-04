@@ -247,9 +247,9 @@ export default class Project {
 
     private createFromDirective(sourceRange: AssemblerSourceRange, text: string, main: boolean): Symbol {
 
-        const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition);
+        const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition).toLowerCase();
 
-        if (directive.toLowerCase() == ".var") {
+        if (directive == ".var") {
             var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
             symbol.kind = SymbolKind.Variable;
             symbol.type = SymbolType.Variable;
@@ -258,7 +258,7 @@ export default class Project {
             return symbol;
         }
 
-        if (directive.toLowerCase() == ".const") {
+        if (directive == ".const") {
             var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
             symbol.kind = SymbolKind.Constant;
             symbol.type = SymbolType.Constant;
@@ -267,7 +267,7 @@ export default class Project {
             return symbol;
         }
 
-        if (directive.toLowerCase() == ".label") {
+        if (directive == ".label") {
             var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
             symbol.kind = SymbolKind.Field;
             symbol.type = SymbolType.Label;
@@ -276,7 +276,7 @@ export default class Project {
             return symbol;
         }
 
-        if (directive.toLowerCase() == ".macro") {
+        if (directive == ".macro" || directive == ".function") {
 
             var split = StringUtils.splitFunction(text);
 
@@ -285,9 +285,14 @@ export default class Project {
                 var symbol = <Symbol>{};
                 
                 if (name.startsWith("_")) return;
-
-                symbol.type = SymbolType.Macro;
-                symbol.kind = SymbolKind.Method;
+                if(directive == ".function"){
+                    symbol.type = SymbolType.Function;
+                    symbol.kind = SymbolKind.Function;
+  
+                } else {
+                    symbol.type = SymbolType.Macro;
+                    symbol.kind = SymbolKind.Method;
+                }
                 symbol.name = name;
                 symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
                 symbol.isMain = main;
