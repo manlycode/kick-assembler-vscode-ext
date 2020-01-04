@@ -1,14 +1,20 @@
-# kick-assembler-vscode-ext
+# kick-assembler-vscode-ext 
+![](https://vsmarketplacebadge.apphb.com/version-short/paulhocker.kick-assembler-vscode-ext.svg)
+![](https://vsmarketplacebadge.apphb.com/installs-short/paulhocker.kick-assembler-vscode-ext.svg)
+
 A [Kick Assembler](http://www.theweb.dk/KickAssembler/Main.html#frontpage) extension for [VSCode](https://code.visualstudio.com/).
 
 **This extension is a work in progress and many features are not completed, and some might even be broken.**
 
-Features:
+## Features
 * build, run and debug commands
 * support for emulators like [VICE](http://vice-emu.sourceforge.net/) and the [C64Debugger](https://csdb.dk/release/?id=170893)
+* Syntax Highlighting
+* Error checking
+* Hover Support
+* Outline List support
 
-
-## Features
+## Feature Details
 The following features are currently working relatively well.
 
 ### Basic Syntax Highlighting
