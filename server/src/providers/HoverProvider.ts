@@ -25,8 +25,6 @@ export default class HoverProvider extends Provider {
 
 	private project: Project;
 
-	private lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur sodales magna, ac accumsan nibh venenatis in. Duis malesuada lectus laoreet, egestas ligula quis, vestibulum enim. Proin dictum velit orci, in sagittis neque rhoncus id.`;
-
 	constructor(connection: IConnection, projectInfo: ProjectInfoProvider) {
 
 		super(connection, projectInfo);
@@ -221,8 +219,7 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`*(directive)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`,
-				this.lorem
+				`*(directive)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`
 			];
 		}
 	}
@@ -233,8 +230,7 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`,
-				this.lorem
+				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`
 			];
 		}
 	}
