@@ -37,13 +37,28 @@ export default class LineUtils {
 				continue;
 
 			var _line = lines[lineNumber].text.trim();
+			// stop when another one-line declaration is found 
+			if(_line[0] == '.') {
+				break;
+			}
 
+			var possibleLineComment = _line.indexOf('//');
+			// ignore pure line comments , those are supposed to be possible comments now 
+			if (possibleLineComment > 0) {
+				_line = _line.substr(0,possibleLineComment);
+			}
 			// last character on line is }
 			if (_line[_line.length - 1] == "}")
 				break;
 
-			if (_line == "//")
-				break;
+			if (_line.substr(0,2) == "//") {
+				//detect a possible outcomment of the same symbol delaration
+				if(_line.substr(2).trim()[0] !== '.') {
+					beg = lineNumber - 1;
+					end = lineNumber + 1;
+					found = true;
+				}
+			}
 
 			if (end < 0) {
 				var e = lines[lineNumber].text.indexOf("*/");
@@ -68,7 +83,10 @@ export default class LineUtils {
 				if(lines[i].text) {
 					remarkLine = this.removeComments( lines[i].text).trim();
 					if (remarkLine[0] == '*') {
-						remarkLine = remarkLine.substr(1);
+						remarkLine = remarkLine.substr(1).trim();
+					}
+					if (remarkLine.substr(0,2) == '//') {
+						remarkLine = remarkLine.substr(2).trim();
 					}
 					remark += remarkLine;
 				}
