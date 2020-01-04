@@ -52,6 +52,9 @@ export class CommandBuild {
 
         //  spawn new child process
         let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfiledir", symbolDir];
+        if (this._configuration.get("debuggerDumpFile")){
+            javaOptions.push('-debugdump');
+        }
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
         let errorCode = java.status;
 
