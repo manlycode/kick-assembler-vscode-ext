@@ -30,16 +30,19 @@ export default class LineUtils {
 		while (!found) {
 
 			lineNumber -= 1;
+			if (lineNumber < 1)
+				break;
+
+			if(!lines[lineNumber].text)
+				continue;
+
 			var _line = lines[lineNumber].text.trim();
 
 			// last character on line is }
 			if (_line[_line.length - 1] == "}")
 				break;
 
-			if (lines[lineNumber].text.trim() == "//")
-				break;
-
-			if (lineNumber < 1)
+			if (_line == "//")
 				break;
 
 			if (end < 0) {
@@ -60,8 +63,16 @@ export default class LineUtils {
 
 		if (found) {
 			remark = "";
+			var remarkLine;
 			for (var i = beg + 1; i < end; i++) {
-				remark += this.removeComments( lines[i].text) + "\r";
+				if(lines[i].text) {
+					remarkLine = this.removeComments( lines[i].text).trim();
+					if (remarkLine[0] == '*') {
+						remarkLine = remarkLine.substr(1);
+					}
+					remark += remarkLine;
+				}
+				remark += "\r";
 			}
 		}
 
@@ -176,7 +187,7 @@ export default class LineUtils {
 	 * Returns a line without comments
 	 */
 	public static removeComments(line: string): string | undefined {
-		const removeCommentsRegex = /^(.+?)(;.+|)$/;
+		const removeCommentsRegex = /^(.+?)(\/\/.+|)$/;
 		const sourceLineNoCommentsMatch = line.match(removeCommentsRegex);
 		if (sourceLineNoCommentsMatch && sourceLineNoCommentsMatch[1]) {
 			return sourceLineNoCommentsMatch[1];

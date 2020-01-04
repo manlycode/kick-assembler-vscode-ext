@@ -140,7 +140,7 @@ export default class HoverProvider extends Provider {
 			var description = "";
 			if (tokenMatch.comments) description = tokenMatch.comments.trim();
 
-			if (tokenMatch.type == SymbolType.Macro) {
+			if (tokenMatch.type == SymbolType.Macro || tokenMatch.type == SymbolType.Function) {
 
 				var parm_text = "";
 
@@ -153,23 +153,9 @@ export default class HoverProvider extends Provider {
 				parm_text = parm_text.trim();
 				parm_text = parm_text.replace(" ", ", ");
 
+				var symbolDirective = tokenMatch.type == SymbolType.Macro ? ".macro" : ".function";
 				return [
-					`	.macro ${tokenMatch.name}(${parm_text}) ${file}`,
-					`\n***\n${description.trim()}`,
-				 ];
-
-			}
-
-			if (tokenMatch.type == SymbolType.Function) {
-
-				var parm_text = "";
-
-				if (tokenMatch.data) {
-					parm_text = tokenMatch.data.parms;	
-				}
-
-				return [
-					`	.function ${tokenMatch.name} (${parm_text}) ${file}`,
+					`	${symbolDirective} ${tokenMatch.name}(${parm_text}) ${file}`,
 					`\n***\n${description.trim()}`,
 				 ];
 
