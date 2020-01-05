@@ -102,6 +102,11 @@
 					"default": "-wait 2500 -autojmp",
 					"description": "Runtime options for your debugger."
 				},
+				"kickassembler.debuggerDumpFile": {
+					"type": "boolean",
+					"default": true,
+					"description": "Dump an *.dbg infofile for c64debugger"
+				},
 				"kickassembler.outputDirectory": {
 					"type": "string",
 					"default": "",
