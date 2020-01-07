@@ -1,7 +1,7 @@
 {
 	"name": "kick-assembler-vscode-ext",
-	"displayName": "Kick Assembler for Visual Studio Code",
-	"description": "Kick Assembler Extension for Visual Studio Code",
+	"displayName": "Kick Assembler (C64) for Visual Studio Code",
+	"description": "Kick Assembler (C64) IDE Extension for Visual Studio Code",
 	"author": "Paul Hocker",
 	"license": "MIT",
 	"version": "0.1.16-dev",
@@ -17,7 +17,7 @@
 		"kick",
 		"assembler",
 		"kickassembler",
-		"assembly",
+		"c64",
 		"6502"
 	],
 	"engines": {
