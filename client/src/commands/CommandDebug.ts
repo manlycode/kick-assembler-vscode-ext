@@ -24,7 +24,7 @@ export class CommandDebug {
         let debuggerRuntime: string = this._configuration.get("debuggerRuntime");
 
         let debuggerOptionsString: string = this._configuration.get("debuggerOptions");
-        let debuggerOptions = debuggerOptionsString.split(" ").filter((val: any) => val);
+        let debuggerOptions = debuggerOptionsString.match(/\S+/g);
         
         //  build source and output dirs
         var outputDirectory: string = this._configuration.get("outputDirectory");
