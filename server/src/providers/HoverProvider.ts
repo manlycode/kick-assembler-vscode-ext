@@ -140,20 +140,17 @@ export default class HoverProvider extends Provider {
 
 			if (tokenMatch.type == SymbolType.Macro || tokenMatch.type == SymbolType.Function) {
 
-				var parm_text = "";
+				var parm_text = [];
 
 				if (tokenMatch.data) {
 					for (var parm of tokenMatch.data.parms) {
-						parm_text += parm.name + " ";
+						parm_text.push(parm.name);
 					}
 				}
 
-				parm_text = parm_text.trim();
-				parm_text = parm_text.replace(" ", ", ");
-
 				var symbolDirective = tokenMatch.type == SymbolType.Macro ? ".macro" : ".function";
 				return [
-					`	${symbolDirective} ${tokenMatch.name}(${parm_text}) ${file}`,
+					`	${symbolDirective} ${tokenMatch.name}(${parm_text.join(", ")}) ${file}`,
 					`\n***\n${description.trim()}`,
 				 ];
 
@@ -184,6 +181,18 @@ export default class HoverProvider extends Provider {
 				return this.createSymbolWithValue(tokenMatch, file);
 			}
 
+			if (tokenMatch.type == SymbolType.Boolean) {
+
+				var description = "";
+
+				if (tokenMatch.comments) description = tokenMatch.comments.trim();
+
+				return [
+					`	#define symbol ${tokenMatch.name} ${file}`,
+					`\n***\n${description.trim()}`,
+				 ];
+		
+			}
 			return undefined;
 		}
 	}
