@@ -51,7 +51,7 @@ export class CommandBuild {
         output.show(true);
 
         //  spawn new child process
-        let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfiledir", symbolDir];
+        let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfile", "-symbolfiledir", symbolDir];
         if (this._configuration.get("debuggerDumpFile")){
             javaOptions.push('-debugdump');
         }
