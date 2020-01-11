@@ -11,7 +11,8 @@ import {
 	CompletionItemKind,
 	IConnection,
 	TextDocumentPositionParams,
-	TextEdit
+	TextEdit,
+	MarkupContent
 } from "vscode-languageserver";
 
 enum LanguageCompletionTypes {
@@ -231,13 +232,15 @@ export default class CompletionProvider extends Provider {
 			textEdit.range.end.character = this.triggerCharacterPos;			
 		}
 
+		let documentation: string | MarkupContent = payload.description || payload.comments ? {
+			value:(payload.description || payload.comments) + (payload.example ? "\n***\n"+payload.example : ""),
+			kind: 'markdown'
+		} : "";
+
 		return {
 			label,
 			kind,
-			documentation: {
-				value:(payload.description || payload.comments || "") + (payload.example ? "\n***\n"+payload.example : ""),
-				kind: 'markdown'
-			},
+			documentation: documentation,
 			filterText: filterText,
 			textEdit: textEdit,
 			data: {
