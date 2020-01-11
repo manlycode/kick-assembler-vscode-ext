@@ -110,19 +110,17 @@ export default class LineUtils {
 
 		const tokens = StringUtils.splitIntoTokens(sourceLine);
 
-		if (!tokens)
-			return undefined;
+		var tL = tokens.length;
+		if (tL === 0) return undefined;
 
-		if (tokens.length == 1)
-			return tokens[0];
+		if (tL === 1) return tokens[0];
 
-		for (var i = 0; i < tokens.length; i++) {
+		for (var i = 0; i < tL; i++) {
 			var pos = sourceLine.indexOf(tokens[i]);
-			if (pos > column)
-				return tokens[i - 1];
+			if (pos > column) return tokens[i - 1];
 		}
 
-		return tokens[tokens.length - 1];
+		return tokens[tL - 1];
 	}
 
 	/**

@@ -35,7 +35,6 @@ import StringUtils from "../utils/StringUtils";
 
 export default class CompletionProvider extends Provider {
 
-	private project: Project;
 	private textDocumentPosition: TextDocumentPositionParams;
 
 	private documentPosition:TextDocumentPositionParams;
@@ -78,6 +77,8 @@ export default class CompletionProvider extends Provider {
 				trigger is "."
 					show directives
 			there are tokens?
+				trigger is "<" or ">"
+					show vars, labels
 				last token ended with ";", ":", "{", "}"?
 					trigger is "."?
 						show directives
@@ -85,163 +86,138 @@ export default class CompletionProvider extends Provider {
 					show vars, labels, macros, functions
 				last token was nothing?
 					show instructions, macros, pseudocommands
+				last token was pre-processor directive
+					show booleans (made of #define)
 
 		*/
 
-		const lineNumber = this.documentPosition.position.line;
-		//const lines:ILine[] = this.getProjectInfo().getCurrentProject().(this.documentPosition.textDocument);
-		//const line:ILine = lines[lineNumber];
 		var items:CompletionItem[] = [];
 		
 		const settings = this.getProjectInfo().getSettings();
 
 		if (!settings.valid) return;
 
-		const assemblerResults:AssemblerResults = this.getProjectInfo().getCurrentProject().getAssemblerResults();
-
-		var loaded:boolean;
+		var triggerCharacterPos = this.documentPosition.position.character - 1;
 
 		this.documentSource = this.getProjectInfo().getCurrentProject().getSourceLines();
-		this.triggerLine = (this.documentSource[this.documentPosition.position.line].trimLeft());
-		this.trigger = "";
+		this.triggerLine = this.documentSource[this.documentPosition.position.line];
+		this.trigger = triggerCharacterPos >=0 ? this.triggerLine[triggerCharacterPos] : "";
 
 		//	get number of tokens before trigger character
-		var token = StringUtils.GetWordAt(this.triggerLine, this.documentPosition.position.character);
-		var tokensLeft = StringUtils.GetWordsBefore(this.triggerLine, this.documentPosition.position.character);
-		var tokensRight = StringUtils.GetWordsAfter(this.triggerLine, this.documentPosition.position.character);
+		this.triggerToken = StringUtils.GetWordAt(this.triggerLine, triggerCharacterPos);
+		var tokensLeft = StringUtils.GetWordsBefore(this.triggerLine, triggerCharacterPos);
+//		var tokensRight = StringUtils.GetWordsAfter(this.triggerLine, triggerCharacterPos);
 
-		//	find position of trigger if available
-
-		//	is it from a #?
-		var pos = this.triggerLine.indexOf("#");
-
-		//	is it from a .?
-		if (pos < 0) {
-			pos = this.triggerLine.indexOf(".");
+// No autocomplete in line comments or within strings
+		if ((tokensLeft && tokensLeft.indexOf("//") !== -1) ||
+			this.triggerToken.substr(0,1).match(/["']/) ||
+			this.triggerToken.substr(-1).match(/["']/) ||
+			this.triggerToken.substr(0,2) == "//") {
+			return;
 		}
 
-		//	trigger character found as first character on line
-		if (pos == 0) {
-			this.trigger = this.triggerLine.substr(pos,1);
+		// 	preproc only on "#" trigger as first directive in line
+		if (!tokensLeft && this.trigger == "#") {
+			items = this.loadPreprocessorDirectives();
 		} 
-
-		// 	preproc only on "#" trigger
-		if (this.trigger == "#" && !loaded ) {
-			for (let pp of assemblerResults.assemblerInfo.getAssemblerPreProcessorDirectives()) {
-				items.push(this.createCompletionItem(pp.name.toLocaleLowerCase(), LanguageCompletionTypes.PreProcessor, pp, CompletionItemKind.Interface, this.documentPosition));
-				loaded = true;
-			}
-		} 
-
+		
 		//	directives only on '.' trigger with no token
-		if (this.trigger == "." && !loaded ) {
-			for (let directive of assemblerResults.assemblerInfo.getAssemblerDirectives()) {
-				items.push(this.createCompletionItem(directive.name.toLocaleLowerCase(), LanguageCompletionTypes.Directives, directive, CompletionItemKind.Interface, this.documentPosition));
-				loaded = true;
-			}
+		if (items.length === 0 && !tokensLeft && this.trigger == ".") {
+			items = this.loadDirectives();
 		}
 
-		if (!loaded) {
-
+		if (items.length === 0) {
 			var prevToken:string = "";
 			var prevSymbolType:SymbolType;
 
-			//	get tokens
-			this.triggerLine = this.triggerLine.replace("#", "");
-			this.triggerLine = this.triggerLine.replace("$", "");
-			this.triggerLine = this.triggerLine.replace("%", "");
+			if(tokensLeft) {
+				var lastToken = tokensLeft[tokensLeft.length - 1].toLowerCase();
+				const instructionMatch = KickLanguage.Instructions.find((instruction) => {
+					return instruction.name.toLowerCase() === lastToken;
+				});
+				if (instructionMatch) {
+					prevToken = "instruction";
+				}
 
-			var tokens = this.triggerLine.trim().split(" ");
+				if(prevToken == "") {
+					const symbolMatch = this.getProjectInfo().getCurrentProject().getSymbols().find((the_symbol) => {
+						return the_symbol.name.toLowerCase() === lastToken;
+					});
+					if (symbolMatch) {
+						prevToken = "symbol";
+						prevSymbolType = symbolMatch.type;
+					}
+				}
 
-			var lastToken:string;
-			//	do we have some tokens?
-			if (tokens.length <= 1) {
-				lastToken = tokens[0]
+				if(prevToken == "") {
+					const preProcessorMatch = KickLanguage.PreProcessors.find((preProcessor) => {
+						return preProcessor.name.toLowerCase() === lastToken && preProcessor.parameters.length > 0;
+					});
+					if (preProcessorMatch) {
+						prevToken = "preprocessor";
+					}			
+				}
+
+				if(prevToken == "") {
+					var firstToken = tokensLeft[0].toLowerCase();
+					const directiveMatch = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerDirectives().find((directive) => {
+						return directive.name.toLowerCase() === lastToken || directive.name.toLowerCase() === firstToken;
+					});
+					if (directiveMatch) {
+						prevToken = "directive";
+					}			
+				}
 			}
-
-			if (tokens.length > 1) {
-				//	grab the previous token
-				lastToken = tokens[tokens.length - 1];
-			}
-
-			lastToken = lastToken.replace(".", "");
-			//var token = LineUtils.getTokenAtPosition(this.triggerLine, textDocumentPosition.position.character);
-			
-			const instructionMatch = KickLanguage.Instructions.find((instruction) => {
-				return instruction.name.toLowerCase() === lastToken.toLowerCase();
-			});
-			if (instructionMatch) {
-				prevToken = "instruction";
-			}
-			const symbolMatch = this.getProjectInfo().getCurrentProject().getSymbols().find((the_symbol) => {
-				return the_symbol.name.toLowerCase() === lastToken.toLowerCase();
-			});
-			if (symbolMatch) {
-				prevToken = "symbol";
-				prevSymbolType = symbolMatch.type;
-			}
-
-			var line:Line = null;
-			var lastToken:string = null;
 
 			if (prevToken == "") {
 
-				//for (let directive of assemblerResults.assemblerInfo.directives) {
-				//	items.push(this.createCompletionItem(directive.name.toLocaleLowerCase(), LanguageCompletionTypes.Directives, directive, CompletionItemKind.Interface, textDocumentPosition));
-				//	loaded = true;
-				//}
-
-				for (let instruction of KickLanguage.Instructions) {
-					const name = instruction.name.toLocaleLowerCase();
-					items.push(this.createCompletionItem(name, LanguageCompletionTypes.Instruction, instruction, CompletionItemKind.Text, this.documentPosition));
-					loaded = true;
-				}
+				items = this.loadInstructions();
 
 				//	insert macros
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Macro));
+				items = items.concat(this.loadSymbols(SymbolType.Macro));
 
 				//	insert pseudocommands
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.PseudoCommand));
+				items = items.concat(this.loadSymbols(SymbolType.PseudoCommand));
 
 				//	insert namespaces
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Namespace));
+				items = items.concat(this.loadSymbols(SymbolType.Namespace));
 			}	
 
 			if (prevToken == "instruction") {
-				var symbols = this.getProjectInfo().getCurrentProject().getSymbols();
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.NamedLabel));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Function));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Variable));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Label));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Constant));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Macro));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Namespace));
+				items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
+				items = items.concat(this.loadSymbols(SymbolType.Function));
+				items = items.concat(this.loadSymbols(SymbolType.Variable));
+				items = items.concat(this.loadSymbols(SymbolType.Label));
+				items = items.concat(this.loadSymbols(SymbolType.Constant));
+				items = items.concat(this.loadSymbols(SymbolType.Macro));
+				items = items.concat(this.loadSymbols(SymbolType.Namespace));
 			}
 
-			if (prevToken == "symbol") {
-				//this.loadSymbols(line, textDocumentPosition, SymbolTypes.Function, items, lastToken);
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.NamedLabel));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Variable, lastToken));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Label, lastToken));
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Constant, lastToken));
-				//this.loadSymbols(line, textDocumentPosition, SymbolTypes.Macro, lastToken);
-				items = items.concat(this.loadSymbols(line, this.documentPosition, SymbolType.Namespace));
+			if (prevToken == "symbol" || prevToken == "directive") {
+				items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
+				items = items.concat(this.loadSymbols(SymbolType.Variable));
+				items = items.concat(this.loadSymbols(SymbolType.Label));
+				items = items.concat(this.loadSymbols(SymbolType.Constant));
+				items = items.concat(this.loadSymbols(SymbolType.Namespace));
+			}
+
+			if (prevToken == "preprocessor" && lastToken !== "#define") {
+				items = items.concat(this.loadSymbols(SymbolType.Boolean));
 			}
 
 		}
-
 
 		return items;
 	}
 	
-	private createCompletionItem(label:string, type:LanguageCompletionTypes, payload:any, kind:CompletionItemKind, textPosition:TextDocumentPositionParams):CompletionItem {
+	private createCompletionItem(label:string, type:LanguageCompletionTypes, payload:any, kind:CompletionItemKind):CompletionItem {
 		
 		let filterText = label;
 		let insertText = label;
 
-		if (this.trigger.length > 0 ) {
-			filterText = filterText.substr(1,filterText.length-1);
-			insertText = label.substr(1, label.length);
+		if (this.trigger.match(/[.#]/)) {			
+			filterText = filterText.substr(1);
+			insertText = label.substr(1);
 		}
 
 		return {
@@ -251,8 +227,8 @@ export default class CompletionProvider extends Provider {
 			insertText: insertText,
 			data: {
 				type,
-				payload,
-				},
+				payload
+			}
 		};
 	
 	}
@@ -263,12 +239,12 @@ export default class CompletionProvider extends Provider {
 	}
 
 	private loadInstructions(): CompletionItem[] {
-		
+
 		var items: CompletionItem[] = [];
 
 		for (let instruction of KickLanguage.Instructions) {
 			const name = instruction.name.toLocaleLowerCase();
-			items.push(this.createCompletionItem(name, LanguageCompletionTypes.Instruction, instruction, CompletionItemKind.Text, this.textDocumentPosition));
+			items.push(this.createCompletionItem(name, LanguageCompletionTypes.Instruction, instruction, CompletionItemKind.Text));
 		}
 
 		return items;
@@ -278,11 +254,10 @@ export default class CompletionProvider extends Provider {
 		
 		var items: CompletionItem[] = [];
 
-		var _directives = this.project.getAssemblerInfo().getAssemblerDirectives();
-
+		var _directives = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerDirectives();
 		for (let directive of _directives) {
 			const name = directive.name.toLocaleLowerCase();
-			items.push(this.createCompletionItem(name, LanguageCompletionTypes.Instruction, directive, CompletionItemKind.Text, this.textDocumentPosition));
+			items.push(this.createCompletionItem(name, LanguageCompletionTypes.Directives, directive, CompletionItemKind.Interface));
 		}
 
 		return items;
@@ -293,11 +268,10 @@ export default class CompletionProvider extends Provider {
 
 		var items: CompletionItem[] = [];
 
-		var _directives = this.project.getAssemblerInfo().getAssemblerPreProcessorDirectives();
-
-		for (let directive of _directives) {
-			const name = directive.name.toLocaleLowerCase();
-			items.push(this.createCompletionItem(name, LanguageCompletionTypes.Instruction, directive, CompletionItemKind.Text, this.textDocumentPosition));
+		var _pps = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerPreProcessorDirectives();
+		for (let pp of _pps) {
+			const name = pp.name.toLocaleLowerCase();
+			items.push(this.createCompletionItem(name, LanguageCompletionTypes.PreProcessor, pp, CompletionItemKind.Interface));
 		}
 
 		return items;
@@ -305,12 +279,12 @@ export default class CompletionProvider extends Provider {
 	}
 
 
-	private loadSymbols(line:Line, textDocumentPosition:TextDocumentPositionParams, symbolType:SymbolType, token:string = undefined): CompletionItem[] {
+	private loadSymbols(symbolType:SymbolType): CompletionItem[] {
 		var items: CompletionItem[] = [];
 		var symbols = this.getProjectInfo().getCurrentProject().getSymbols();
 		for (let symbol of symbols) {
 			if (symbol.type == symbolType) {
-				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Directives, symbol, CompletionItemKind.Class, textDocumentPosition));
+				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, CompletionItemKind.Class));
 			}
 		}
 		return items;

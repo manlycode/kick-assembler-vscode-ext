@@ -56,6 +56,7 @@ export enum SymbolType {
     Variable,
     Namespace,
     Parameter,
+    Boolean
 }
 
 export interface Symbol {
@@ -157,6 +158,10 @@ export default class Project {
         return this.source;
     }
 
+    public setSource(text: string) {
+        this.source = text;
+    }
+
     public getSourceLines(): string[] {
         return StringUtils.splitIntoLines(this.source);
     }
@@ -166,7 +171,7 @@ export default class Project {
     }
 
     public getSymbols(): Symbol[] {
-        return this.symbols;
+        return this.symbols || [];
     }
 
     public getBuiltInSymbols(): Symbol[] {
@@ -187,8 +192,6 @@ export default class Project {
                 autoIncludeFileIndex = file.index;
             }
         }
-
-        var s = this.getAssemblerResults().assemblerInfo.getAssemblerSyntax();
 
         for (var syntax of this.getAssemblerResults().assemblerInfo.getAssemblerSyntax()) {
             if (syntax.range.fileIndex != autoIncludeFileIndex) {
@@ -216,7 +219,7 @@ export default class Project {
             symbol = this.createFromLabel(range, text, projectFile.isMain());
         }
 
-        if (type == "directive") {
+        if (type == "directive" || type == "ppdirective") {
             symbol = this.createFromDirective(range, text, projectFile.isMain());
         }
 
@@ -249,6 +252,15 @@ export default class Project {
 
         const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition).toLowerCase();
 
+        if (directive == "#define") {
+            var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+            symbol.kind = SymbolKind.Boolean;
+            symbol.type = SymbolType.Boolean;
+            symbol.isMain = main;
+            //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
+            return symbol;
+        }
+
         if (directive == ".var") {
             var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
             symbol.kind = SymbolKind.Variable;
@@ -280,7 +292,7 @@ export default class Project {
 
             var split = StringUtils.splitFunction(text);
 
-            if (split.length > 0) {
+            if (split.length > 1) {
                 var name = split[1];
                 var symbol = <Symbol>{};
                 

@@ -79,9 +79,8 @@ export default class ProjectManager {
                     documentSymbolProvider: true,
                     completionProvider: {
                         resolveProvider: true,
-                        triggerCharacters: ["#", ".", "$", " "],
-                    },
-
+                        triggerCharacters: ["#", ".", " ", "<", ">", ","],
+                    }
                 }
             };
         });
@@ -104,9 +103,13 @@ export default class ProjectManager {
             var project = this.findProject(change.textDocument.uri);
             this.currentProject = project;
             var kickAssSettings = this.settingsProvider.getSettings();
+            var source = change.contentChanges[0].text;
             if (kickAssSettings.valid && kickAssSettings.autoAssembleTrigger.indexOf('onChange') !== -1) {
-                project.assemble(kickAssSettings, change.contentChanges[0].text);
+                project.assemble(kickAssSettings, source);
                 this.diagnosticProvider.process(change.textDocument.uri);
+            } else {
+                //at least make sure source is updated internally for the completionprovider to work with latest changes
+                project.setSource(source);
             }
         });
 
