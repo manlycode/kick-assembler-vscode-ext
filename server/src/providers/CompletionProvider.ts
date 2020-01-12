@@ -122,10 +122,39 @@ export default class CompletionProvider extends Provider {
 		if (!tokensLeft && this.trigger == "#") {
 			items = this.loadPreprocessorDirectives();
 		} 
-		
-		//	directives only on '.' trigger with no token
-		if (items.length === 0 && !tokensLeft && this.trigger == ".") {
-			items = this.loadDirectives();
+
+		if(this.trigger == "."){
+			var preparedToken = this.triggerToken.replace(/\(.*?\)/g,"");
+			var possibleInternalClass = LineUtils.getTokenAtLinePosition(preparedToken,preparedToken.length - 1);
+			if(possibleInternalClass) {
+				var symbolInstance = "", instancePos;
+				for (let symbol of this.getProjectInfo().getCurrentProject().getSymbols()) {
+					if (symbol.name == possibleInternalClass) {
+						instancePos = symbol.originalValue.indexOf("(");
+						if(instancePos > 0) {
+							symbolInstance = symbol.originalValue.substr(0,instancePos);
+							continue;
+						}
+					}
+				}				
+				for (let symbol of this.getProjectInfo().getCurrentProject().getBuiltInSymbols()) {
+					if (symbol.name == possibleInternalClass || symbol.name == symbolInstance) {
+						if(symbol.properties) {
+							symbol.properties.forEach((property)=> {
+								items.push(this.createCompletionItem(property.name, LanguageCompletionTypes.Symbol, property, CompletionItemKind.Property));
+							});
+						}
+						if(symbol.methods) {
+							symbol.methods.forEach((method)=> {
+								items.push(this.createCompletionItem(method.name, LanguageCompletionTypes.Symbol, method, CompletionItemKind.Method));
+							});	
+						}
+					}
+				}
+
+			} else if (items.length === 0 && !tokensLeft) {
+				items = this.loadDirectives();
+			}
 		}
 
 		if (items.length === 0) {
@@ -197,6 +226,7 @@ export default class CompletionProvider extends Provider {
 
 			if (prevToken == "symbol" || prevToken == "directive") {
 				items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
+				items = items.concat(this.loadSymbols(SymbolType.Function));
 				items = items.concat(this.loadSymbols(SymbolType.Variable));
 				items = items.concat(this.loadSymbols(SymbolType.Label));
 				items = items.concat(this.loadSymbols(SymbolType.Constant));
@@ -308,14 +338,14 @@ export default class CompletionProvider extends Provider {
 		// project symbols
 		for (let symbol of symbols) {
 			if (symbol.type == symbolType) {
-				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, CompletionItemKind.Class));
+				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, symbol.completionKind || CompletionItemKind.Class));
 			}
 		}
 
 		// built-in symbols
 		for (let symbol of this.getProjectInfo().getCurrentProject().getBuiltInSymbols()) {
 			if (symbol.type == symbolType) {
-				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, CompletionItemKind.Class));
+				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, symbol.completionKind || CompletionItemKind.Class));
 			}
 
 		}

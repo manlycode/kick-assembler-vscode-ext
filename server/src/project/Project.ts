@@ -32,7 +32,7 @@ import { Assembler, AssemblerResults } from "../assembler/Assembler";
 import { ProjectFile } from "./ProjectFile";
 import { Directive } from "../definition/KickDirectives";
 import { readFileSync } from "fs";
-import { KickInternalSymbols } from "../definition/KickInternalSymbols";
+import { KickInternalSymbols, Property, Method } from "../definition/KickInternalSymbols";
 import { createHash } from "crypto";
 import { CompletionItemKind, SymbolKind, Location } from "vscode-languageserver";
 import NumberUtils from "../utils/NumberUtils";
@@ -67,10 +67,13 @@ export interface Symbol {
     value: number;
     originalValue: string;
     kind?: SymbolKind;
+    completionKind?: CompletionItemKind;
     line?: Line;
     scope?: number;
     comments?: string;
     parameters?: Parameter[];
+    properties?: Property[];
+    methods?: Method[];
     isExternal?: boolean;
     isGlobal?: boolean;     //  is this a global symbol?
     isMain?: boolean;       //  is this a main project symbol?
