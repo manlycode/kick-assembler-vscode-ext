@@ -11,7 +11,8 @@ import {
 	CompletionItemKind,
 	IConnection,
 	TextDocumentPositionParams,
-	TextEdit
+	TextEdit,
+	MarkupContent
 } from "vscode-languageserver";
 
 enum LanguageCompletionTypes {
@@ -43,6 +44,7 @@ export default class CompletionProvider extends Provider {
 	private trigger:string;
 	private triggerToken:string;
 	private triggerLine:string;
+	private triggerCharacterPos: number;
 
 	private intelligentLabels:boolean;
 
@@ -97,15 +99,15 @@ export default class CompletionProvider extends Provider {
 
 		if (!settings.valid) return;
 
-		var triggerCharacterPos = this.documentPosition.position.character - 1;
+		this.triggerCharacterPos = this.documentPosition.position.character - 1;
 
 		this.documentSource = this.getProjectInfo().getCurrentProject().getSourceLines();
 		this.triggerLine = this.documentSource[this.documentPosition.position.line];
-		this.trigger = triggerCharacterPos >=0 ? this.triggerLine[triggerCharacterPos] : "";
+		this.trigger = this.triggerCharacterPos >=0 ? this.triggerLine[this.triggerCharacterPos] : "";
 
 		//	get number of tokens before trigger character
-		this.triggerToken = StringUtils.GetWordAt(this.triggerLine, triggerCharacterPos);
-		var tokensLeft = StringUtils.GetWordsBefore(this.triggerLine, triggerCharacterPos);
+		this.triggerToken = StringUtils.GetWordAt(this.triggerLine, this.triggerCharacterPos);
+		var tokensLeft = StringUtils.GetWordsBefore(this.triggerLine, this.triggerCharacterPos);
 //		var tokensRight = StringUtils.GetWordsAfter(this.triggerLine, triggerCharacterPos);
 
 		// No autocomplete in line comments or within strings
@@ -213,18 +215,34 @@ export default class CompletionProvider extends Provider {
 	private createCompletionItem(label:string, type:LanguageCompletionTypes, payload:any, kind:CompletionItemKind):CompletionItem {
 		
 		let filterText = label;
-		let insertText = label;
+		let textEdit: TextEdit = {
+			newText: label,
+			range: {
+				start: this.documentPosition.position,
+				end: this.documentPosition.position
+			}
+		};
 
-		if (this.trigger.match(/[.#]/)) {			
+		if (this.trigger.match(/[.#]/) && (type == LanguageCompletionTypes.PreProcessor || type == LanguageCompletionTypes.Directives)) {			
 			filterText = filterText.substr(1);
-			insertText = label.substr(1);
+			textEdit.newText = label.substr(1);
 		}
+		if(!this.trigger.match(/[.#,<> ]/)) {
+			textEdit.range.start.character = this.triggerCharacterPos;
+			textEdit.range.end.character = this.triggerCharacterPos;			
+		}
+
+		let documentation: string | MarkupContent = payload.description || payload.comments ? {
+			value:(payload.description || payload.comments) + (payload.example ? "\n***\n"+payload.example : ""),
+			kind: 'markdown'
+		} : "";
 
 		return {
 			label,
 			kind,
+			documentation: documentation,
 			filterText: filterText,
-			insertText: insertText,
+			textEdit: textEdit,
 			data: {
 				type,
 				payload
