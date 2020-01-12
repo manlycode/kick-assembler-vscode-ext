@@ -108,7 +108,7 @@ export default class CompletionProvider extends Provider {
 		var tokensLeft = StringUtils.GetWordsBefore(this.triggerLine, triggerCharacterPos);
 //		var tokensRight = StringUtils.GetWordsAfter(this.triggerLine, triggerCharacterPos);
 
-// No autocomplete in line comments or within strings
+		// No autocomplete in line comments or within strings
 		if ((tokensLeft && tokensLeft.indexOf("//") !== -1) ||
 			this.triggerToken.substr(0,1).match(/["']/) ||
 			this.triggerToken.substr(-1).match(/["']/) ||
@@ -278,15 +278,30 @@ export default class CompletionProvider extends Provider {
 
 	}
 
-
+	/**
+	 * Load Symbols from Source file and Built In Resources.
+	 * @param symbolType 
+	 */
 	private loadSymbols(symbolType:SymbolType): CompletionItem[] {
+
 		var items: CompletionItem[] = [];
 		var symbols = this.getProjectInfo().getCurrentProject().getSymbols();
+
+		// project symbols
 		for (let symbol of symbols) {
 			if (symbol.type == symbolType) {
 				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, CompletionItemKind.Class));
 			}
 		}
+
+		// built-in symbols
+		for (let symbol of this.getProjectInfo().getCurrentProject().getBuiltInSymbols()) {
+			if (symbol.type == symbolType) {
+				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, CompletionItemKind.Class));
+			}
+
+		}
+
 		return items;
 	}
 

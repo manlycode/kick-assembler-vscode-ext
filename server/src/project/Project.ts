@@ -72,8 +72,9 @@ export interface Symbol {
     comments?: string;
     parameters?: Parameter[];
     isExternal?: boolean;
-    isGlobal?: boolean;      //  is this a global symbol?
-    isMain?: boolean;        //  is this a main project symbol?
+    isGlobal?: boolean;     //  is this a global symbol?
+    isMain?: boolean;       //  is this a main project symbol?
+    isBuiltin?: boolean;    //  is this built-ion
     data?: any;
 }
 

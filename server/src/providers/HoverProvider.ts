@@ -20,6 +20,7 @@ import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import URI from "vscode-uri";
+import { Parameter } from "../definition/KickPreprocessors";
 
 export default class HoverProvider extends Provider {
 
@@ -64,10 +65,10 @@ export default class HoverProvider extends Provider {
 			if (!contents) contents = this.getLiteralHover(token);
 		}
 
-		//	no match so far, try stright symbols
+		//	no match so far, try just symbols
 		token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
 		if(token) {
-			if (!contents) contents = this.getBuiltInSymbolHover(token);
+			//if (!contents) contents = this.getBuiltInSymbolHover(token);
 			if (!contents) contents = this.getSymbolOrLabel(token);
 		}
 		if (!contents) contents = [];
@@ -78,6 +79,12 @@ export default class HoverProvider extends Provider {
 		const tokenMatch = this.project.getBuiltInSymbols().find((match) => {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
+
+		if (tokenMatch) {
+			return this.createSymbolWithValue(tokenMatch, "built-in");
+		}
+
+		/*
 		if (tokenMatch) {
 
 			var typeVal = ""
@@ -92,59 +99,69 @@ export default class HoverProvider extends Provider {
 				// `\n***\n${this.getFormattedValue(tokenMatch.value)}`
 				];
 		}
+		*/
+
 	}
 
 	private getSymbolOrLabel(token: string): string[] | undefined {
 
 		var symbols = this.project.getSymbols();
 
-		const tokenMatch = symbols.find((match) => {
+		// check project symbols
+		var tokenMatch = symbols.find((match) => {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
 
+		// check built in symbols
+		if (!tokenMatch) { 
+			tokenMatch = this.project.getBuiltInSymbols().find((match) => {
+				return match.name.toLowerCase() === token.toLowerCase();
+			});
+		}
+
 		if (tokenMatch) {
 
-			var uri = tokenMatch.data["uri"];
-			var filename = URI.parse(uri);
-			var path = require('path');
-			// var file:string = "from " + path.parse(filename.path).name;
-			var file:string = "from " + path.parse(filename.path).base;
-			if (file.indexOf(".source") >= 0) {
-				file = "";
+			// figure out the file the symbol came from
+
+			var file:string = "";
+
+			if (tokenMatch.isBuiltin) {
+
+				file = "from built-in";
+
+			} else {
+
+				var uri = tokenMatch.data["uri"];
+				var filename = URI.parse(uri);
+				var path = require('path');
+
+				file = "from " + path.parse(filename.path).base;
+
+				if (file.indexOf(".source") >= 0) {
+					file = "";
+				}
 			}
 
-			// var hover = [];
-
-			// if (file) {
-			// 	hover.push(`#### ${file}\n\n`);
-			// }
-
-			// hover.push(`*(${SymbolType[tokenMatch.type].toString()})* **${tokenMatch.name}** : ${tokenMatch.value}\n\n`);
-
-			// if (tokenMatch.comments) {
-			// 	hover.push(tokenMatch.comments);
-			// }
-
-			// return hover;
-
-			// return [
-			// 	`# Header1\n## Header2\n### Header3\nLink [example link](http://example.com/)\n***\n    lda #$01\n    sta $d021\n*emphasis*\n\n**strong**\n* Item1\n* Item2\n\n***\n` ,
-			// 	`![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")\n\n\n\nSome More Text`,
-			// 	`<h1>raw html</h1>`,
-			// ];
-
-			// return [`	.macro someMacro(p1, p2) from macro-init\n***\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi rhoncus quis nisl eu aliquet. Praesent sagittis nulla non lacus fermentum ultrices. Etiam eget gravida sem, a venenatis nibh. Cras posuere mauris ut tortor sollicitudin lobortis.`];
+			// format the description
 
 			var description = "";
+
 			if (tokenMatch.comments) description = tokenMatch.comments.trim();
+			if (tokenMatch.description) description = tokenMatch.description.trim();
 
 			if (tokenMatch.type == SymbolType.Macro || tokenMatch.type == SymbolType.Function) {
 
 				var parm_text = [];
 
 				if (tokenMatch.data) {
-					for (var parm of tokenMatch.data.parms) {
-						parm_text.push(parm.name);
+					for (var parm1 of tokenMatch.data.parms) {
+						parm_text.push(parm1.name);
+					}
+				}
+
+				if (tokenMatch.parameters) {
+					for (var parm2 of tokenMatch.parameters) {
+						parm_text.push(parm2.name);
 					}
 				}
 
@@ -214,6 +231,7 @@ export default class HoverProvider extends Provider {
 		}
 
 		if (symbol.comments) description = symbol.comments.trim();
+		if (symbol.description) description = symbol.description.trim();
 
 		return [
 			`	${symbolDirective} ${symbol.name} [${symbol.originalValue}] ${file}`,
