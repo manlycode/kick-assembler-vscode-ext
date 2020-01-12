@@ -27,6 +27,12 @@ export default class LineUtils {
 
 		if (lineNumber <= 0) return remark;
 
+		var _line = lines[lineNumber].text.trim(); 
+		var possibleLineComment = _line.indexOf('//');
+
+		if (possibleLineComment > 0) {
+			return _line.substr(possibleLineComment + 2);
+		}
 		while (!found) {
 
 			lineNumber -= 1;
@@ -36,13 +42,13 @@ export default class LineUtils {
 			if(!lines[lineNumber].text)
 				continue;
 
-			var _line = lines[lineNumber].text.trim();
+			_line = lines[lineNumber].text.trim();
 			// stop when another one-line declaration is found 
 			if(_line[0] == '.') {
 				break;
 			}
 
-			var possibleLineComment = _line.indexOf('//');
+			possibleLineComment = _line.indexOf('//');
 			// ignore pure line comments , those are supposed to be possible comments now 
 			if (possibleLineComment > 0) {
 				_line = _line.substr(0,possibleLineComment);

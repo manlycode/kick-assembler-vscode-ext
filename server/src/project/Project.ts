@@ -343,7 +343,7 @@ export default class Project {
         if (text.indexOf("=") >= 0) {
             let parms = text.split("=");
             let name = parms[0].trim();
-            let value = parms[1].trim();
+            let value = parms[1].split("//")[0].trim();
             symbol.name = name;
             symbol.type = SymbolType.Variable;
             symbol.value = NumberUtils.toDecimal(value);
