@@ -151,7 +151,7 @@ export default class LineUtils {
 			}
 
 			if (targetMatch && targetMatch[1]) {
-				return targetMatch[1];
+				return targetMatch[1].split(".")[0];
 			}
 		}
 
