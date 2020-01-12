@@ -1,6 +1,7 @@
-# Kick Assembler Visual Studio Code Extension
 
-## v0.1.16
+## Visual Studio Code Extension for Kick Assembler 
+
+## v0.2.0
 ### Changed
 + add new default options C64Debugger (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/3) - Lubber
 + new output directory option when compiling
@@ -18,12 +19,17 @@
 + dont provide intructions, but only symbols/macros/etc when a directive was the previous token - Lubber
 + recognize and deny completion inside line comments or string definitions - Lubber
 + fix function/macro parameter hover (last param missed comma separation) - Lubber
++ show docs, examples and comments for completion items (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/19)- Lubber
++ correctly fetch base symbol with methods added (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/22) - Lubber
++ hovers show which file symbols were imported from
 ### Fixed
 + thanks to Lubber for some general cleanup of code
 + make sure that symbols are updated on outline and in completion (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/13) - Lubber
 + fix undefined errors on hover (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/5) - Lubber
 + fix comments on functions (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/8) - Lubber
 + removed lorem ipsum from opcode hover (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/11) - Lubber
++ upgraded language server (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/20) - Lubber
++ hover over zero values was broken (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/21) - Lubber
 
 ## v0.1.15
 ### Changed

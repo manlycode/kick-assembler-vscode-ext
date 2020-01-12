@@ -26,11 +26,15 @@ The following features are currently working relatively well.
 ### Hover Support
 Hover support for Macro comments and definition.
 
-![Macro Comment Hover](/images/ka-hover1.png)
+![Macro Comment Hover](/images/ka-hover1.gif)
 
 Hover support for literals.
 
-![Macro Comment Hover](/images/ka-hover2.png)
+![Macro Comment Hover](/images/ka-hover2.gif)
+
+Hover support for Hi/Lo Byte
+
+![Macro Comment Hover](/images/ka-hover3.gif)
 
 
 ## TODO

@@ -3,7 +3,6 @@
 This extension is a work in progress, there is much left to be done.
 
 ### In Progress
-* auto-completion support from all imports
 * auto-completion scope support
 
 ### Backburner
@@ -14,6 +13,7 @@ This extension is a work in progress, there is much left to be done.
 * memory layout (https://kickassmemoryview.insoft.se/)
 
 ### Completed
+* ~~auto-completion support from all imports~~
 * ~~auto-completion support~~
 * ~~hover support for common memory locations like $d020~~
 * ~~basic support for emulators (like vice)~~
