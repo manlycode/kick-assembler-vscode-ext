@@ -291,8 +291,7 @@ export default class HoverProvider extends Provider {
 	}
 
 	private getFormattedValue(value: number): string {
-		if (!value)
-			return '';
+		if (isNaN(value)) return '';
 		return '\n' +
 			`\n* Dec: \`${value.toString(10)}\`` +
 			`\n* Bin: \`\%${value.toString(2)}\`` +

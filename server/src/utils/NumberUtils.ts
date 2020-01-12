@@ -36,7 +36,7 @@ export default class NumberUtils {
 			numberBase = 16;
 			numberPosition++;
 		}
-		if (numberSystem == "0") {
+		if (numberSystem == "0" && value !== "0") {
 			numberBase = 8;
 			numberPosition++;
 		}	
