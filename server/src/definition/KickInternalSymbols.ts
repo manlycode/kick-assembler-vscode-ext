@@ -1848,7 +1848,7 @@ export class KickInternalSymbols {
                             {
                                 name: "value",
                                 type: "string",
-                                description: "Value to store ((Numbers, Strings, Booleans)"
+                                description: "Value to store (Numbers, Strings, Booleans)"
                             }
                         ]
                     },
@@ -1915,6 +1915,104 @@ export class KickInternalSymbols {
                     }         
                 ]
             },
+            {
+                type: SymbolType.Function,
+                name: "Hashtable",
+                description: "Hashtables are tables that map keys to value",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Class,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                methods: <Method[]> [
+                    {
+                        name: "get",
+                        type: "string",
+                        description: "Returns the value mapped to 'key'. A null value is returned if no value has been mapped to the key.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "key",
+                                type: "string",
+                                description: "Name of the key"
+                            }
+                        ]
+                    },
+                    {
+                        name: "put",
+                        type: "string",
+                        description: "Maps 'key' to 'value'. If the key is previously mapped to a value, the previous mapping is lost. The table itself is returned. Add multiple key/value pairs comma separated.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "key",
+                                type: "string",
+                                description: "Name of the key"
+                            },
+                            {
+                                name: "value",
+                                type: "string",
+                                description: "Value to store (Numbers, Strings, Booleans)"
+                            }
+                        ]
+                    },
+                    {
+                        name: "keys",
+                        type: "string",
+                        description: "Returns a list value of all the keys in the table."
+                    },
+                    {
+                        name: "containsKey",
+                        type: "string",
+                        description: "Returns true if the key is defined in the table, otherwise false.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "key",
+                                type: "string",
+                                description: "Name of the key"
+                            }
+                        ]
+                    },
+                    {
+                        name: "remove",
+                        type: "string",
+                        description: "Removes the key and its value from the table.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "key",
+                                type: "string",
+                                description: "Name of the key"
+                            }
+                        ]
+                    }        
+                ]
+            },
+            {
+                type: SymbolType.Function,
+                name: "CmdArgument",
+                description: "Constructs a new command argument",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                    {
+                        name: "type",
+                        type: "label",
+                        description: "Mnemonic argument type"
+                    },
+                    {
+                        name: "value",
+                        type: "value",
+                        description: "Argument value"
+                    }        
+                ]
+            }
         ];
     }
 }
