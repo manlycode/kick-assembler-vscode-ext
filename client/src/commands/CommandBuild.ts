@@ -55,6 +55,9 @@ export class CommandBuild {
         if (this._configuration.get("debuggerDumpFile")){
             javaOptions.push('-debugdump');
         }
+        if (this._configuration.get("javaAllowFileCreation")){
+            javaOptions.push('-afo');
+        }
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
         let errorCode = java.status;
 

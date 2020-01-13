@@ -1767,6 +1767,41 @@ export class KickInternalSymbols {
                     }
                 ]  
             },
+            {
+                type: SymbolType.Function,
+                name: "createFile",
+                description: "Create/overwrite a file on the disk. IMPORTANT: For security reasons, you have to enable this feature in the settings tab explicitely",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Class,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                    {
+                        name: "file",
+                        type: "string",
+                        description: "Path to the filename"
+                    }
+                ],  
+                methods: <Method[]> [
+                    {
+                        name: "writeln",
+                        type: "string",
+                        description: "Writes a text (if given) to the file and a line shift",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "text",
+                                type: "string",
+                                description: "The text t be written to the file",
+                                optional: true
+                            }
+                        ]
+                    }                    
+                ]
+            },
         ];
     }
 }
