@@ -1466,6 +1466,55 @@ export class KickInternalSymbols {
             },
             {
                 type: SymbolType.Function,
+                name: "Matrix",
+                description: "Creates an identity matrix",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                methods: <Method[]> [
+                    {
+                        name: "get",
+                        type: "value",
+                        description: "Gets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    },
+                    {
+                        name: "set",
+                        type: "value",
+                        description: "Sets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    }
+                ]
+            },
+            {
+                type: SymbolType.Function,
                 name: "RotationMatrix",
                 description: "Creates a rotation matrix where aX, aY and aZ are the angles rotated around the x, y and z axis. The angles are given in radians",
                 value: 1,
