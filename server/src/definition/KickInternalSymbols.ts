@@ -1288,6 +1288,110 @@ export class KickInternalSymbols {
                     }
                 ]
             },
+            {
+                type: SymbolType.Function,
+                name: "toIntString",
+                description: "Return x as an integer string (eg x=16.0 will return “16”).",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]>[
+                    {
+                        name: "x",
+                        type: "value",
+                        description: "Integer value to be converted"
+                    },
+                    {
+                        name: "minSize",
+                        type: "value",
+                        description: "If given, it will return space-padded to reach the given minsize",
+                        optional: true
+                    }
+                ]  
+            },
+            {
+                type: SymbolType.Function,
+                name: "toBinaryString",
+                description: "Return x as a binary string (eg x=16.0 will return “10000”",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                     {
+                        name: "x",
+                        type: "value",
+                        description: "Integer value to be converted"
+                    },
+                    {
+                        name: "minSize",
+                        type: "value",
+                        description: "If given, it will return zero-padded to reach the given minsize",
+                        optional: true
+                    }
+                ]  
+            },
+            {
+                type: SymbolType.Function,
+                name: "toOctalString",
+                description: "Return x as an octal string (eg x=16.0 will return “20”",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                     {
+                        name: "x",
+                        type: "value",
+                        description: "Integer value to be converted"
+                    },
+                    {
+                        name: "minSize",
+                        type: "value",
+                        description: "If given, it will return zero-padded to reach the given minsize",
+                        optional: true
+                    }
+                ]  
+            },
+            {
+                type: SymbolType.Function,
+                name: "toHexString",
+                description: "Return x as hexadecimal string (eg x=16.0 will return “10”",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                     {
+                        name: "x",
+                        type: "value",
+                        description: "Integer value to be converted"
+                    },
+                    {
+                        name: "minSize",
+                        type: "value",
+                        description: "If given, it will return zero-padded to reach the given minsize.",
+                        optional: true
+                    }
+                ]  
+            },
         ];
     }
 }

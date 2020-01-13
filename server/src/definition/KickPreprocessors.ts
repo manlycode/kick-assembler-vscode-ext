@@ -4,6 +4,7 @@ export interface Parameter {
 	type: "string" | "value" | "enum" | "label";
 	values?: string[];
 	description?: string;
+	optional?: boolean;
 }
 
 export interface PreProcessor {
