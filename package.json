@@ -82,6 +82,11 @@
 					"default": "java.exe",
 					"description": "Full path to your Java runtime."
 				},
+				"kickassembler.javaAllowFileCreation": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Enable the **createFile** functionality"
+				},
 				"kickassembler.emulatorRuntime": {
 					"type": "string",
 					"default": "",
