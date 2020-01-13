@@ -1802,6 +1802,119 @@ export class KickInternalSymbols {
                     }                    
                 ]
             },
+            {
+                type: SymbolType.Function,
+                name: "List",
+                description: "Lists are used to hold a list of other values",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Class,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                    {
+                        name: "x",
+                        type: "value",
+                        description: "Number of elements the List should contain",
+                        optional: true
+                    }
+                ],  
+                methods: <Method[]> [
+                    {
+                        name: "get",
+                        type: "string",
+                        description: "Gets the n’th element (first element starts at zero).",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Element index (starts with zero)"
+                            }
+                        ]
+                    },
+                    {
+                        name: "set",
+                        type: "string",
+                        description: "Sets the n’th element (first element starts at zero).",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Element index (starts with zero)"
+                            },
+                            {
+                                name: "value",
+                                type: "string",
+                                description: "Value to store ((Numbers, Strings, Booleans)"
+                            }
+                        ]
+                    },
+                    {
+                        name: "add",
+                        type: "string",
+                        description: "Add elements to the end of the list.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "value",
+                                type: "string",
+                                description: "Value(s) to add (any type). Add multiple values comma separated."
+                            }
+                        ]
+                    },
+                    {
+                        name: "addAll",
+                        type: "string",
+                        description: "Add all elements from another list.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "list",
+                                type: "label",
+                                description: "List label to add"
+                            }
+                        ]
+                    },
+                    {
+                        name: "size",
+                        type: "value",
+                        description: "Returns the size of the list"
+                    },
+                    {
+                        name: "remove",
+                        type: "value",
+                        description: "Removes the n’th element.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Element index"
+                            }
+                        ]
+                    },
+                    {
+                        name: "shuffle",
+                        type: "value",
+                        description: "Puts the elements of the list in random order."
+                    },
+                    {
+                        name: "reverse",
+                        type: "value",
+                        description: "Puts the elements of the list in reverse order."
+                    },
+                    {
+                        name: "sort",
+                        type: "value",
+                        description: "Sorts the elements of the list (only numeric values are supported)."
+                    },
+                    {
+                        name: "lock",
+                        type: "value",
+                        description: "Locks the list from being changed"
+                    }         
+                ]
+            },
         ];
     }
 }
