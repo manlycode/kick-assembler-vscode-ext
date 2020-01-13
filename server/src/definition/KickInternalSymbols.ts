@@ -1291,7 +1291,7 @@ export class KickInternalSymbols {
             {
                 type: SymbolType.Function,
                 name: "toIntString",
-                description: "Return x as an integer string (eg x=16.0 will return “16”).",
+                description: "Return x as an integer string (eg x=16.0 will return '16').",
                 value: 1,
                 originalValue: "",
                 completionKind: CompletionItemKind.Function,
@@ -1317,7 +1317,7 @@ export class KickInternalSymbols {
             {
                 type: SymbolType.Function,
                 name: "toBinaryString",
-                description: "Return x as a binary string (eg x=16.0 will return “10000”",
+                description: "Return x as a binary string (eg x=16.0 will return '10000'",
                 value: 1,
                 originalValue: "",
                 completionKind: CompletionItemKind.Function,
@@ -1343,7 +1343,7 @@ export class KickInternalSymbols {
             {
                 type: SymbolType.Function,
                 name: "toOctalString",
-                description: "Return x as an octal string (eg x=16.0 will return “20”",
+                description: "Return x as an octal string (eg x=16.0 will return '20'",
                 value: 1,
                 originalValue: "",
                 completionKind: CompletionItemKind.Function,
@@ -1369,7 +1369,7 @@ export class KickInternalSymbols {
             {
                 type: SymbolType.Function,
                 name: "toHexString",
-                description: "Return x as hexadecimal string (eg x=16.0 will return “10”",
+                description: "Return x as hexadecimal string (eg x=16.0 will return '10')",
                 value: 1,
                 originalValue: "",
                 completionKind: CompletionItemKind.Function,
@@ -1389,6 +1389,332 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "If given, it will return zero-padded to reach the given minsize.",
                         optional: true
+                    }
+                ]  
+            },
+            {
+                type: SymbolType.Function,
+                name: "Vector",
+                description: "Vector values are used to hold 3D vectors. They are created by the Vector function that takes x, y and z as argument",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Class,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                    {
+                        name: "x",
+                        type: "value",
+                        description: "x value of the vector"
+                    },
+                    {
+                        name: "y",
+                        type: "value",
+                        description: "y value of the vector"
+                    },
+                    {
+                        name: "z",
+                        type: "value",
+                        description: "z value of the vector"
+                    }
+                ],  
+                methods: <Method[]> [
+                    {
+                        name: "get",
+                        type: "value",
+                        description: "Returns the n'th coordinate (x=0, y=1, z=2).",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "position of coordinate"
+                            }
+                        ]
+                    },
+                    {
+                        name: "getX",
+                        type: "value",
+                        description: "Returns the x coordinate"
+                    },
+                    {
+                        name: "getY",
+                        type: "value",
+                        description: "Returns the y coordinate"
+                    },
+                    {
+                        name: "getZ",
+                        type: "value",
+                        description: "Returns the z coordinate"
+                    },
+                    {
+                        name: "X",
+                        type: "value",
+                        description: "Returns the cross product between two vectors.",
+                        example: "Vector(0,1,0).X(Vector(1,0,0))",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "v",
+                                type: "value",
+                                description: "position of coordinate"
+                            }
+                        ]
+                    }                    
+                ]
+            },
+            {
+                type: SymbolType.Function,
+                name: "RotationMatrix",
+                description: "Creates a rotation matrix where aX, aY and aZ are the angles rotated around the x, y and z axis. The angles are given in radians",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                    {
+                        name: "aX",
+                        type: "value",
+                        description: "Angle around x axis in radian"
+                    },
+                    {
+                        name: "aY",
+                        type: "value",
+                        description: "Angle around y axis in radian"
+                    },
+                    {
+                        name: "aZ",
+                        type: "value",
+                        description: "Angle around z axis in radian"
+                    }
+                ],
+                methods: <Method[]> [
+                    {
+                        name: "get",
+                        type: "value",
+                        description: "Gets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    },
+                    {
+                        name: "set",
+                        type: "value",
+                        description: "Sets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    }
+                ]
+            },
+            {
+                type: SymbolType.Function,
+                name: "ScaleMatrix",
+                description: "Creates a scale matrix where the x coordinate is scaled by sX, the y-coordinate by sY and the z-coordinate by sZ.",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                    {
+                        name: "sX",
+                        type: "value",
+                        description: "Value to scale the x axis"
+                    },
+                    {
+                        name: "sY",
+                        type: "value",
+                        description: "Value to scale the y axis"
+                    },
+                    {
+                        name: "sZ",
+                        type: "value",
+                        description: "Value to scale the z axis"
+                    }
+                ],
+                methods: <Method[]> [
+                    {
+                        name: "get",
+                        type: "value",
+                        description: "Gets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    },
+                    {
+                        name: "set",
+                        type: "value",
+                        description: "Sets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    }
+                ]
+            },
+            {
+                type: SymbolType.Function,
+                name: "MoveMatrix",
+                description: "Creates a move matrix that moves mX along the x-axis, mY along the y-axis and mZ along the z-axis.",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                    {
+                        name: "mX",
+                        type: "value",
+                        description: "Value to move the x axis"
+                    },
+                    {
+                        name: "mY",
+                        type: "value",
+                        description: "Value to move the y axis"
+                    },
+                    {
+                        name: "mZ",
+                        type: "value",
+                        description: "Value to move the z axis"
+                    }
+                ],
+                methods: <Method[]> [
+                    {
+                        name: "get",
+                        type: "value",
+                        description: "Gets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    },
+                    {
+                        name: "set",
+                        type: "value",
+                        description: "Sets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    }
+                ] 
+            },
+            {
+                type: SymbolType.Function,
+                name: "PerspectiveMatrix",
+                description: "Creates a perspective projection where the eye-point is placed in (0,0,0) and coordinates are projected on the XY-plane where z=zProj.",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Function,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+                parameters: <Parameter[]> [
+                    {
+                        name: "zProj",
+                        type: "value",
+                        description: "Value where the xy plane is projected on z"
+                    }
+                ],
+                methods: <Method[]> [
+                    {
+                        name: "get",
+                        type: "value",
+                        description: "Gets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
+                    },
+                    {
+                        name: "set",
+                        type: "value",
+                        description: "Sets the value at n,m.",
+                        parameters: <Parameter[]> [
+                            {
+                                name: "n",
+                                type: "value",
+                                description: "Matrix position n"
+                            },
+                            {
+                                name: "m",
+                                type: "value",
+                                description: "Matrix position m"
+                            }
+                        ] 
                     }
                 ]  
             },
