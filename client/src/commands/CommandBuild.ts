@@ -34,7 +34,7 @@ export class CommandBuild {
         prg = prg.replace(".kick", ".prg");
         prg = prg.replace(".a", ".prg");
         prg = prg.replace(".ka", ".prg");
-        let outputFile = outputDirectory +  "\\" + prg;
+        let outputFile = outputDirectory +  path.sep + prg;
 
         //  create symbol directory
         let symbolDir = outputDirectory;
