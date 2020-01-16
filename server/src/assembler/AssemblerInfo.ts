@@ -63,7 +63,7 @@ export interface AssemblerFile {
     index:number;
     system:boolean;     //  is this an internal system file?
     main:boolean;    //  is this the main project file?
-    uri:string;
+    uri:Uri;
 }
 
 export interface AssemblerSyntax {
@@ -238,14 +238,14 @@ export class AssemblerInfo {
         var parms = line.split(";");
         let assemblerFile = <AssemblerFile> {};
         assemblerFile.index = parseInt(parms[0]);
-        assemblerFile.uri = parms[1];
+        assemblerFile.uri = Uri.file(parms[1])
 
         //  don't include the kick autoinclude AssemblerFile
-        if (assemblerFile.uri.indexOf('autoinclude') > 0)
+        if (assemblerFile.uri.fsPath.indexOf('autoinclude') > 0)
             assemblerFile.system = true;
 
         //  is this the main project file?
-        if (assemblerFile.uri.indexOf('.source.txt') > 0)
+        if (assemblerFile.uri.fsPath.indexOf('.source.txt') > 0)
             assemblerFile.main = true;
 
         this.AssemblerFiles.push(assemblerFile);
