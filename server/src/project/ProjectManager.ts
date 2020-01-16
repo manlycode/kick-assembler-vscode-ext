@@ -85,7 +85,6 @@ export default class ProjectManager {
                 }
             };
         });
-BADFLAGS.padStart.le
 
         connection.onInitialized((params: InitializedParams) => {
             connection.console.log(params.toString());

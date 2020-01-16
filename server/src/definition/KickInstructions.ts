@@ -15,70 +15,70 @@ export const Instructions:Instruction[] = [
 		description: "ADd to accumulator with Carry",
 		group: "Arithmetic",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "AND",
 		description: "AND memory with accumulator",
 		group: "Logical",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "ASL",
 		description: "Accumulator Shift Left",
 		group: "Shift and Rotate",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "BCC",
 		description: "Branch on Carry Clear (C = 0)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "BCS",
 		description: "Branch on Carry Set (C = 1)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "BEQ",
 		description: "Branch on EQual to zero (Z = 1)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "BIT",
 		description: "test BITs",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "BMI",
 		description: "Branch on MInus (N = 1)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "BNE",
 		description: "Branch on Not Equal to zero (Z = 0)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "BPL",
 		description: "Branch on PLus (N = 0)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "BRK",
@@ -92,14 +92,14 @@ export const Instructions:Instruction[] = [
 		description: "Branch on oVerflow Clear (V = 0)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "BVS",
 		description: "Branch on oVerflow Set (V = 1)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "CLC",
@@ -134,28 +134,28 @@ export const Instructions:Instruction[] = [
 		description: "CoMPare memory and accumulator",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "CPX",
 		description: "ComPare memory and X",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "CPY",
 		description: "ComPare memory and Y",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "DEC",
 		description: "DECrement memory by one",
 		group: "Increment and Decrement",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "DEX",
@@ -176,14 +176,14 @@ export const Instructions:Instruction[] = [
 		description: "Exclusive-OR memory with Accumulator",
 		group: "Logical",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "INC",
 		description: "INCrement memory by one",
 		group: "Increment and Decrement",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "INX",
@@ -204,42 +204,42 @@ export const Instructions:Instruction[] = [
 		description: "JuMP to another location (GOTO)",
 		group: "Jump, Branch, Compare, and Test",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "JSR",
 		description: "Jump to SubRoutine",
 		group: "Subroutine",
 		parameters: [],
-		snippet: ' ${1:target}'
+		snippet: ' '
 	},
 	{
 		name: "LDA",
 		description: "LoaD the Accumulator",
 		group: "Load and Store",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "LDX",
 		description: "LoaD the X register",
 		group: "Load and Store",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "LDY",
 		description: "LoaD the Y register",
 		group: "Load and Store",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "LSR",
 		description: "Logical Shift Right",
 		group: "Shift and Rotate",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "NOP",
@@ -253,7 +253,7 @@ export const Instructions:Instruction[] = [
 		description: "OR memory with Accumulator",
 		group: "Logical",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "PHA",
@@ -287,14 +287,14 @@ export const Instructions:Instruction[] = [
 		description: "ROtate Left",
 		group: "Shift and Rotate",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "ROR",
 		description: "ROtate Right",
 		group: "Shift and Rotate",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "RTI",
@@ -315,7 +315,7 @@ export const Instructions:Instruction[] = [
 		description: "SuBtract from accumulator with Carry",
 		group: "Arithmetic",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "SEC",
@@ -343,21 +343,21 @@ export const Instructions:Instruction[] = [
 		description: "STore the Accumulator",
 		group: "Load and Store",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "STX",
 		description: "STore the X register",
 		group: "Load and Store",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "STY",
 		description: "STore the Y register",
 		group: "Load and Store",
 		parameters: [],
-		snippet: ' ${1:value}'
+		snippet: ' '
 	},
 	{
 		name: "TAX",

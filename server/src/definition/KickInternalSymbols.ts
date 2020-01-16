@@ -14,7 +14,8 @@ export interface Method {
     values?: string[];
     description?: string;
     example?: string;
-	parameters?: Parameter[];
+    parameters?: Parameter[];
+    snippet?: String;
 }
 
 export class KickInternalSymbols {
@@ -1253,10 +1254,11 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Byte position (starts from 0)"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:n})'
                     }
                 ],
-                snippet: '(${1:x})'
+                snippet: '("${1:x}")'
             },
             {
                 type: SymbolType.Function,
@@ -1305,7 +1307,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "y position within the image given in pixels"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:x},${2:y})'
                     },
                     {
                         name: "getSinglecolorByte",
@@ -1322,7 +1325,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "y position within the image given in pixels"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:x},${2:y})'
                     },
                     {
                         name: "getMulticolorByte",
@@ -1339,10 +1343,11 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "y position within the image given in pixels"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:x},${2:y})'
                     }
                 ],
-                snippet: '(${1:x})'
+                snippet: '("${1:x}")'
             },
             {
                 type: SymbolType.Function,
@@ -1374,12 +1379,14 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Byte position of the file"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:i})'
                     },
                     {
                         name: "getSize",
                         type: "value",
-                        description: "Gets the size of the file."
+                        description: "Gets the size of the file.",
+                        snippet: '()'
                     },
                     {
                         name: "uget",
@@ -1391,10 +1398,11 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Byte position of the file"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:i})'
                     }
                 ],
-                snippet: '(${1:x})'
+                snippet: '("${1:x}")'
             },
             {
                 type: SymbolType.Function,
@@ -1421,7 +1429,7 @@ export class KickInternalSymbols {
                         optional: true
                     }
                 ] ,
-                snippet: '(${1:x})' 
+                snippet: '($0)' 
             },
             {
                 type: SymbolType.Function,
@@ -1448,7 +1456,7 @@ export class KickInternalSymbols {
                         optional: true
                     }
                 ] ,
-                snippet: '(${1:x})' 
+                snippet: '($1)' 
             },
             {
                 type: SymbolType.Function,
@@ -1544,22 +1552,26 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "position of coordinate"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:n})'
                     },
                     {
                         name: "getX",
                         type: "value",
-                        description: "Returns the x coordinate"
+                        description: "Returns the x coordinate",
+                        snippet: '()'
                     },
                     {
                         name: "getY",
                         type: "value",
-                        description: "Returns the y coordinate"
+                        description: "Returns the y coordinate",
+                        snippet: '()'
                     },
                     {
                         name: "getZ",
                         type: "value",
-                        description: "Returns the z coordinate"
+                        description: "Returns the z coordinate",
+                        snippet: '()'
                     },
                     {
                         name: "X",
@@ -1572,7 +1584,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "position of coordinate"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:v})'
                     }                    
                 ],
                 snippet: '(${1:x},${2:y},${3:z})'
@@ -1605,7 +1618,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ] ,
+                        snippet: '(${1:n},${2:m})'
                     },
                     {
                         name: "set",
@@ -1622,7 +1636,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ] ,
+                        snippet: '(${1:n},${2:m})'
                     }
                 ],
                 snippet: '()'
@@ -1672,7 +1687,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ],
+                        snippet: '(${1:n},${2:m})'
                     },
                     {
                         name: "set",
@@ -1689,7 +1705,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ],
+                        snippet: '(${1:n},${2:m})' 
                     }
                 ],
                 snippet: '(${1:aX},${2:aY},${3:aZ})'
@@ -1739,7 +1756,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ],
+                        snippet: '(${1:n},${2:m})'
                     },
                     {
                         name: "set",
@@ -1756,7 +1774,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ],
+                        snippet: '(${1:n},${2:m})' 
                     }
                 ],
                 snippet: '(${1:sX},${2:sY},${3:sZ})'
@@ -1806,7 +1825,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ],
+                        snippet: '(${1:n},${2:m})'
                     },
                     {
                         name: "set",
@@ -1823,7 +1843,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ],
+                        snippet: '(${1:n},${2:m})'
                     }
                 ],
                 snippet: '(${1:mX},${2:mY},${3:mZ})'
@@ -1863,7 +1884,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ],
+                        snippet: '(${1:n},${2:m})'
                     },
                     {
                         name: "set",
@@ -1880,7 +1902,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Matrix position m"
                             }
-                        ] 
+                        ],
+                        snippet: '(${1:n},${2:m})'
                     }
                 ],
                 snippet: '(${1:ZProj})'
@@ -1916,7 +1939,8 @@ export class KickInternalSymbols {
                                 description: "The text t be written to the file",
                                 optional: true
                             }
-                        ]
+                        ],
+                        snippet: '($1)'
                     }                    
                 ],
                 snippet: '(${1:file})'
@@ -1952,7 +1976,8 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Element index (starts with zero)"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:n})'
                     },
                     {
                         name: "set",
@@ -1969,7 +1994,8 @@ export class KickInternalSymbols {
                                 type: "string",
                                 description: "Value to store (Numbers, Strings, Booleans)"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:n},${2:value})'
                     },
                     {
                         name: "add",
@@ -1981,7 +2007,8 @@ export class KickInternalSymbols {
                                 type: "string",
                                 description: "Value(s) to add (any type). Add multiple values comma separated."
                             }
-                        ]
+                        ],
+                        snippet: '(${1:value})'
                     },
                     {
                         name: "addAll",
@@ -1993,12 +2020,14 @@ export class KickInternalSymbols {
                                 type: "label",
                                 description: "List label to add"
                             }
-                        ]
+                        ],
+                        snippet: '($0)'
                     },
                     {
                         name: "size",
                         type: "value",
-                        description: "Returns the size of the list"
+                        description: "Returns the size of the list",
+                        snippet: '()'
                     },
                     {
                         name: "remove",
@@ -2010,27 +2039,32 @@ export class KickInternalSymbols {
                                 type: "value",
                                 description: "Element index"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:n})'
                     },
                     {
                         name: "shuffle",
                         type: "value",
-                        description: "Puts the elements of the list in random order."
+                        description: "Puts the elements of the list in random order.",
+                        snippet: '()'
                     },
                     {
                         name: "reverse",
                         type: "value",
-                        description: "Puts the elements of the list in reverse order."
+                        description: "Puts the elements of the list in reverse order.",
+                        snippet: '()'
                     },
                     {
                         name: "sort",
                         type: "value",
-                        description: "Sorts the elements of the list (only numeric values are supported)."
+                        description: "Sorts the elements of the list (only numeric values are supported).",
+                        snippet: '()'
                     },
                     {
                         name: "lock",
                         type: "value",
-                        description: "Locks the list from being changed"
+                        description: "Locks the list from being changed",
+                        snippet: '()'
                     }         
                 ],
                 snippet: '($1)'
@@ -2058,7 +2092,8 @@ export class KickInternalSymbols {
                                 type: "string",
                                 description: "Name of the key"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:key})'
                     },
                     {
                         name: "put",
@@ -2075,12 +2110,14 @@ export class KickInternalSymbols {
                                 type: "string",
                                 description: "Value to store (Numbers, Strings, Booleans)"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:key},${2:value})'
                     },
                     {
                         name: "keys",
                         type: "string",
-                        description: "Returns a list value of all the keys in the table."
+                        description: "Returns a list value of all the keys in the table.",
+                        snippet: '()'
                     },
                     {
                         name: "containsKey",
@@ -2092,7 +2129,8 @@ export class KickInternalSymbols {
                                 type: "string",
                                 description: "Name of the key"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:key})'
                     },
                     {
                         name: "remove",
@@ -2104,7 +2142,8 @@ export class KickInternalSymbols {
                                 type: "string",
                                 description: "Name of the key"
                             }
-                        ]
+                        ],
+                        snippet: '(${1:key})'
                     }        
                 ],
                 snippet: '()'
