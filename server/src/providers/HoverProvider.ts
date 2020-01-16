@@ -168,7 +168,7 @@ export default class HoverProvider extends Provider {
 				var symbolDirective = tokenMatch.type == SymbolType.Macro ? ".macro" : ".function";
 				return [
 					`	${symbolDirective} ${tokenMatch.name}(${parm_text.join(", ")}) ${file}`,
-					`\n***\n${description.trim()}`,
+					`${description.trim()}`,
 				 ];
 
 			}
@@ -180,8 +180,8 @@ export default class HoverProvider extends Provider {
 				if (tokenMatch.comments) description = tokenMatch.comments.trim();
 
 				return [
-					`	label ${tokenMatch.name} ${file}`,
-					`\n***\n${description.trim()}`,
+					`	*(label)* ${tokenMatch.name} ${file}`,
+					`${description.trim()}`,
 				 ];
 		
 			}
@@ -205,8 +205,8 @@ export default class HoverProvider extends Provider {
 				if (tokenMatch.comments) description = tokenMatch.comments.trim();
 
 				return [
-					`	#define symbol ${tokenMatch.name} ${file}`,
-					`\n***\n${description.trim()}`,
+					`	#define ${tokenMatch.name} ${file}`,
+					`${description.trim()}`,
 				 ];
 		
 			}
@@ -235,8 +235,8 @@ export default class HoverProvider extends Provider {
 
 		return [
 			`	${symbolDirective} ${symbol.name} [${symbol.originalValue}] ${file}`,
-			`\n***\n${description.trim()}`,
-			`\n***\n${this.getFormattedValue(symbol.value)}`
+			`${description.trim()}`,
+			`${this.getFormattedValue(symbol.value)}`
 		 ];
 }
 
@@ -275,7 +275,7 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`(pseudo-op) \`${tokenMatch.name}\`: ${tokenMatch.description}`
+				`*(pseudo-op)* \`${tokenMatch.name}\`: ${tokenMatch.description}`,
 			];
 		}
 	}
@@ -286,7 +286,7 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`(pre-processor) \`${tokenMatch.name}\`: ${tokenMatch.description}`
+				`*(pre-processor)* \`${tokenMatch.name}\`: ${tokenMatch.description}`,
 			];
 		}
 	}

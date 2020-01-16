@@ -19,7 +19,7 @@
         file that can be used.
 */
 
-import URI from "vscode-uri";
+import Uri from "vscode-uri";
 import StringUtils from "../utils/StringUtils";
 import { Line } from "./Project";
 import LineUtils from "../utils/LineUtils";
@@ -27,7 +27,7 @@ import LineUtils from "../utils/LineUtils";
 export class ProjectFile {
 
     //  the uri of the document
-    private uri: URI;
+    private uri: Uri;
 
     //  the text of the document
     private text: string;
@@ -38,8 +38,8 @@ export class ProjectFile {
     //  is the main project file
     private main:boolean;
 
-    public constructor(uri: string, text: string, main: boolean) {
-        this.uri = URI.parse(uri);
+    public constructor(uri: Uri, text: string, main: boolean) {
+        this.uri = uri
         this.text = text;
         this.lines = this.createLines(text);
         this.main = main;

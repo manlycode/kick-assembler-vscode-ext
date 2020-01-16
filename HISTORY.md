@@ -1,6 +1,14 @@
 
 ## Visual Studio Code Extension for Kick Assembler 
 
+## v0.2.4
+### Fixed
++ fixed issue #22 where files could not be read on macos and linux (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/22)
+
+## v0.2.3
+### Fixed
++ remove extra hover lines (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/26) - Lubber
+
 ## v0.2.2
 ### Changed
 + detect inline comment as remark and handle original value (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/23) - Lubber

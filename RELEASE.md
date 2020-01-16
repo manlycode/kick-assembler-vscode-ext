@@ -1,9 +1,5 @@
 # Release Notes
 
-## v0.2.2
-### Changed
-+ detect inline comment as remark and handle original value (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/23) - Lubber
-+ support code folding (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/25) - Lubber
-+ add missing built-in functions (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/24) - Lubber
+## v0.2.4
 ### Fixed
-+ fix path issue on mac/linux on builds (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/2)
++ fixed issue #22 where files could not be read on macos and linux (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/22)
