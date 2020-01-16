@@ -38,6 +38,7 @@ import { CompletionItemKind, SymbolKind, Location } from "vscode-languageserver"
 import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 import { Parameter } from "../definition/KickPreprocessors";
+import Uri from "vscode-uri";
 
 export interface Line {
     number: number;
@@ -110,8 +111,15 @@ export default class Project {
         this.projectFiles = [];
 
         for (var file of this.assemblerResults.assemblerInfo.getAssemblerFiles()) {
+
             if (!file.system) {
-                const projectFile = new ProjectFile(file.uri, readFileSync(file.uri, 'utf8'), file.main);
+                
+                var _uri: Uri = file.uri;
+                var _text: string  = readFileSync(file.uri.fsPath).toString();
+                var _main: boolean = file.main;
+
+                var projectFile = new ProjectFile(_uri, _text, _main);
+
                 this.projectFiles[file.index] = projectFile;
             }
         }
