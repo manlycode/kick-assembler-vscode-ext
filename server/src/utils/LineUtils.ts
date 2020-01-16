@@ -114,7 +114,7 @@ export default class LineUtils {
 
 	public static getTokenAtLinePosition2(sourceLine: string | undefined, column: number): string | undefined{
 
-		const tokens = StringUtils.splitIntoTokens(sourceLine);
+		const tokens = StringUtils.splitIntoTokens(sourceLine.replace(/[=-+]/," $& "));
 
 		var tL = tokens.length;
 		if (tL === 0) return undefined;
@@ -155,7 +155,7 @@ export default class LineUtils {
 				targetRegex = new RegExp("^.{0," + Math.max(column - 1, 0) + "}\\b([\\w.]*)\\b.*$");
 				targetMatch = sourceLine.match(targetRegex);
 			}
-
+console.log(targetMatch);
 			if (targetMatch && targetMatch[1]) {
 				return targetMatch[1].split(".")[0];
 			}

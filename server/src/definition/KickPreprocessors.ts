@@ -1,3 +1,4 @@
+import { TextEdit } from "vscode-languageserver";
 
 export interface Parameter {
 	name: string;
@@ -12,6 +13,7 @@ export interface PreProcessor {
 	description: string;
 	example: string;
 	parameters: Parameter[];
+	snippet?: string;
 }
 
 export const PreProcessors:PreProcessor[] = [
@@ -24,7 +26,8 @@ export const PreProcessors:PreProcessor[] = [
 				name: "symbol",
 				type: "string",
 			}
-		]
+		],
+		snippet: ' ${1:symbol}'
 	},
 	{
 		name: "#elif",
@@ -35,7 +38,8 @@ export const PreProcessors:PreProcessor[] = [
 				name: "symbol",
 				type: "string",
 			}
-		]
+		],
+		snippet: ' ${1:symbol}'
 	},
 	{
 		name: "#else",
@@ -58,7 +62,8 @@ export const PreProcessors:PreProcessor[] = [
 				name: "symbol",
 				type: "string",
 			}
-		]
+		],
+		snippet: ' ${1:symbol}'
 	},
 	{
 		name: "#import",
@@ -84,7 +89,8 @@ export const PreProcessors:PreProcessor[] = [
 				name: "filename",
 				type: "string"
 			}
-		]
+		],
+		snippet: ' ${1:symbol} "${2:filename}"'
 	},
 	{
 		name: "#importonce",
@@ -101,6 +107,7 @@ export const PreProcessors:PreProcessor[] = [
 				name: "symbol",
 				type: "string",
 			}
-		]
+		],
+		snippet: ' ${1:symbol}'
 	}
 ];

@@ -20,7 +20,6 @@ import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import URI from "vscode-uri";
-import { Parameter } from "../definition/KickPreprocessors";
 
 export default class HoverProvider extends Provider {
 
@@ -64,12 +63,13 @@ export default class HoverProvider extends Provider {
 			if (!contents) contents = this.getDirectiveHover(token);
 			if (!contents) contents = this.getLiteralHover(token);
 		}
-
-		//	no match so far, try just symbols
-		token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
-		if(token) {
-			//if (!contents) contents = this.getBuiltInSymbolHover(token);
-			if (!contents) contents = this.getSymbolOrLabel(token);
+		if (!contents) {
+			//	no match so far, try just symbols
+			token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
+			if(token) {
+				//if (!contents) contents = this.getBuiltInSymbolHover(token);
+				if (!contents) contents = this.getSymbolOrLabel(token);
+			}
 		}
 		if (!contents) contents = [];
 		return contents;
@@ -230,8 +230,8 @@ export default class HoverProvider extends Provider {
 				break;				
 		}
 
-		if (symbol.comments) description = symbol.comments.trim();
 		if (symbol.description) description = symbol.description.trim();
+		if (symbol.comments) description += (description !== "" ? "\n":"") + symbol.comments.trim();
 
 		return [
 			`	${symbolDirective} ${symbol.name} [${symbol.originalValue}] ${file}`,
@@ -241,14 +241,20 @@ export default class HoverProvider extends Provider {
 }
 
 	private getDirectiveHover(token: string): string[] | undefined {
-		const tokenMatch = this.project.getDirectives().find((match) => {
+		const tokenMatch = KickLanguage.Directives.find((match) => {
 			return match.name.toLowerCase() === token.toLowerCase();
 		});
 		if (tokenMatch) {
 			return [
-				`*(directive)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`
+				`*(directive)* **${tokenMatch.name}** : ${tokenMatch.description}`,
+				(tokenMatch.deprecated?`*(deprecated)*`:'')
+			];
+		} else if (token===KickLanguage.Star.name) {
+			return [
+				`*(directive)* __${KickLanguage.Star.name}__ : ${KickLanguage.Star.description}`
 			];
 		}
+		
 	}
 
 	private getInstructionMatch(token: string): string[] | undefined {
@@ -257,7 +263,7 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}\n\n`
+				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}`
 			];
 		}
 	}
@@ -269,7 +275,7 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`(pseudo-op) \`${tokenMatch.name}\`: ${tokenMatch.description}`,
+				`(pseudo-op) \`${tokenMatch.name}\`: ${tokenMatch.description}`
 			];
 		}
 	}
@@ -280,7 +286,7 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`(pre-processor) \`${tokenMatch.name}\`: ${tokenMatch.description}`,
+				`(pre-processor) \`${tokenMatch.name}\`: ${tokenMatch.description}`
 			];
 		}
 	}

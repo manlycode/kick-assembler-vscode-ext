@@ -29,9 +29,7 @@ import Project, { SymbolType, Line } from "../project/Project";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import URI from "vscode-uri";
-import { KickDirectives } from "../definition/KickDirectives";
-import { PreProcessor } from "../definition/KickPreprocessors";
-import { AssemblerResults } from "../assembler/Assembler";
+import { Parameter } from "../definition/KickPreprocessors";
 import StringUtils from "../utils/StringUtils";
 
 export default class CompletionProvider extends Provider {
@@ -191,7 +189,7 @@ export default class CompletionProvider extends Provider {
 
 				if(prevToken == "") {
 					var firstToken = tokensLeft[0].toLowerCase();
-					const directiveMatch = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerDirectives().find((directive) => {
+					const directiveMatch = KickLanguage.Directives.find((directive) => {
 						return directive.name.toLowerCase() === lastToken || directive.name.toLowerCase() === firstToken;
 					});
 					if (directiveMatch) {
@@ -212,6 +210,8 @@ export default class CompletionProvider extends Provider {
 
 				//	insert namespaces
 				items = items.concat(this.loadSymbols(SymbolType.Namespace));
+
+				items.push(this.createCompletionItem(KickLanguage.Star.name, LanguageCompletionTypes.Label, KickLanguage.Star, CompletionItemKind.Value));
 			}	
 
 			if (prevToken == "instruction") {
@@ -266,6 +266,32 @@ export default class CompletionProvider extends Provider {
 			value:(payload.description || payload.comments) + (payload.example ? "\n***\n"+payload.example : ""),
 			kind: 'markdown'
 		} : "";
+		//console.log(label,type,payload.type,kind);
+//			textEdit.newText += "(${1:foo},${2:bar},${3:blubs}) {$4\n}";
+//		} else if() {
+			
+		if(	kind == CompletionItemKind.Method ||
+			kind == CompletionItemKind.Function ||
+			kind == CompletionItemKind.Class //||
+			/*[".macro",".function"].includes(label)*/) {
+			//console.log(1,label, kind, payload.parameters);
+			var paramSnippet: string[] = [];
+			if(payload.parameters){
+				payload.parameters.forEach((parameter: Parameter, i: number) => {
+					paramSnippet.push("${"+i+":"+parameter.name+"}");
+				});
+			}
+//			textEdit.newText += "("+paramSnippet.join(", ")+")";
+			
+//			if([".macro",".function",".segment"].includes(label)){
+//				textEdit.newText += " {\n$"+paramSnippet.length+"}";
+//			}
+
+		}
+		textEdit.newText += (payload.snippet || "");
+		if(payload.deprecated) {
+			documentation += "\n*(deprecated)*"
+		}
 
 		return {
 			label,
@@ -273,6 +299,7 @@ export default class CompletionProvider extends Provider {
 			documentation: documentation,
 			filterText: filterText,
 			textEdit: textEdit,
+			insertTextFormat: 2,
 			data: {
 				type,
 				payload
@@ -302,8 +329,7 @@ export default class CompletionProvider extends Provider {
 		
 		var items: CompletionItem[] = [];
 
-		var _directives = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerDirectives();
-		for (let directive of _directives) {
+		for (let directive of KickLanguage.Directives) {
 			const name = directive.name.toLocaleLowerCase();
 			items.push(this.createCompletionItem(name, LanguageCompletionTypes.Directives, directive, CompletionItemKind.Interface));
 		}
@@ -316,8 +342,7 @@ export default class CompletionProvider extends Provider {
 
 		var items: CompletionItem[] = [];
 
-		var _pps = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerPreProcessorDirectives();
-		for (let pp of _pps) {
+		for (let pp of KickLanguage.PreProcessors) {
 			const name = pp.name.toLocaleLowerCase();
 			items.push(this.createCompletionItem(name, LanguageCompletionTypes.PreProcessor, pp, CompletionItemKind.Interface));
 		}

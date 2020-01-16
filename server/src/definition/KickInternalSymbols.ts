@@ -276,6 +276,75 @@ export class KickInternalSymbols {
                 isMain: false,
                 isBuiltin: true,
             },
+            {
+                type: SymbolType.Constant,
+                name: "BF_C64FILE",
+                description: "A C64 file (The two first bytes are skipped)",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Constant,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+            },
+            {
+                type: SymbolType.Constant,
+                name: "BF_BITMAP_SINGLECOLOR",
+                description: "The Bitmap single color format outputted from Timanthes.",
+                comments: "Blocks: ScreenRam, Bitmap",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Constant,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+            },
+            {
+                type: SymbolType.Constant,
+                name: "BF_KOALA",
+                description: "Files from Koala Paint",
+                comments: "Blocks: Bitmap, ScreenRam, ColorRam, BackgroundColor",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Constant,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+            },
+            {
+                type: SymbolType.Constant,
+                name: "BF_FLI",
+                description: "Files from Blackmails FLI editor.",
+                comments: "Blocks: ColorRam, ScreenRam, Bitmap",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Constant,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+            },
+            {
+                type: SymbolType.Constant,
+                name: "BF_DOODLE",
+                description: "Files from Doodle",
+                comments: "Blocks: ColorRam, Bitmap",
+                value: 1,
+                originalValue: "",
+                completionKind: CompletionItemKind.Constant,
+                scope: 0,
+                isExternal: false,
+                isGlobal: true,
+                isMain: false,
+                isBuiltin: true,
+            },
 
             /*
                 MACROS
@@ -298,7 +367,8 @@ export class KickInternalSymbols {
                         type: "string",
                         description: "The Label that locates the Start of the Program."
                     }
-                ]
+                ],
+                snippet: '(${1:addess})\n'
             },
             {
                 type: SymbolType.Macro,
@@ -318,7 +388,8 @@ export class KickInternalSymbols {
                         type: "string",
                         description: "The Label that locates the Start of the Program."
                     }
-                ]
+                ],
+                snippet: '(${1:address})\n'
             },
             /*
                 MATH LIB
@@ -367,7 +438,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the absolute value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -387,7 +459,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the sine value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -407,7 +480,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the arc sin value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -427,7 +501,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the arc tangent value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -452,7 +527,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "x coordinate for which the angle is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:y},${2:x})'
             },
             {
                 type: SymbolType.Function,
@@ -472,7 +548,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the cube of root is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -492,7 +569,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the nearest integer is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -512,7 +590,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the cosine value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:r})'
             },
             {
                 type: SymbolType.Function,
@@ -532,7 +611,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the hyperbolic cosine value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -552,7 +632,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the ex is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -572,7 +653,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the ex is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -592,7 +674,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the floor value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -617,7 +700,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Second numeric Expression for which the hypot value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:a},${2:b})'
             },
             {
                 type: SymbolType.Function,
@@ -642,7 +726,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Second numeric Expression for which the remainder is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x},${2:y})'
             },
             {
                 type: SymbolType.Function,
@@ -662,7 +747,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the logarithm value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -682,7 +768,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the logarithm value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -702,7 +789,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the logarithm value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -727,7 +815,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Second numeric Expression for which the max Value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x},${2:y})'
             },
             {
                 type: SymbolType.Function,
@@ -752,7 +841,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Second numeric Expression for which the min Value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x},${2:y})'
             },
             {
                 type: SymbolType.Function,
@@ -777,7 +867,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Second numeric Expression for which the mod Value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:a},${2:b})'
             },
             {
                 type: SymbolType.Function,
@@ -802,7 +893,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Second numeric Expression for which the pow Value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x},${2:y})'
             },
             {
                 type: SymbolType.Function,
@@ -815,7 +907,8 @@ export class KickInternalSymbols {
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                isBuiltin: true
+                isBuiltin: true,
+                snippet: '()'
             },
             {
                 type: SymbolType.Function,
@@ -835,7 +928,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the neareast value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -855,7 +949,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the signum value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -875,7 +970,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the sine value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:r})'
             },
             {
                 type: SymbolType.Function,
@@ -895,7 +991,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the hyperbolic sine value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -915,7 +1012,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the square root value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
                         {
                 type: SymbolType.Function,
@@ -935,7 +1033,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the tangent value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:r})'
             },
             {
                 type: SymbolType.Function,
@@ -955,7 +1054,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for which the hyperbolic tangent value is needed."
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -975,7 +1075,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for conversion."
                     }
-                ]
+                ],
+                snippet: '(${1:r})'
             },
             {
                 type: SymbolType.Function,
@@ -995,7 +1096,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Numeric Expression for conversion."
                     }
-                ]
+                ],
+                snippet: '(${1:d})'
             },
             /*
                 MISC
@@ -1011,7 +1113,8 @@ export class KickInternalSymbols {
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                isBuiltin: true
+                isBuiltin: true,
+                snippet: '()'
             },
             {
                 type: SymbolType.Function,
@@ -1024,7 +1127,8 @@ export class KickInternalSymbols {
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                isBuiltin: true
+                isBuiltin: true,
+                snippet: '()'
             },
             {
                 type: SymbolType.Function,
@@ -1037,7 +1141,8 @@ export class KickInternalSymbols {
                 isExternal: false,
                 isGlobal: true,
                 isMain: false,
-                isBuiltin: true
+                isBuiltin: true,
+                snippet: '()'
             },
             {
                 type: SymbolType.Function,
@@ -1150,7 +1255,8 @@ export class KickInternalSymbols {
                             }
                         ]
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -1235,7 +1341,8 @@ export class KickInternalSymbols {
                             }
                         ]
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -1286,7 +1393,8 @@ export class KickInternalSymbols {
                             }
                         ]
                     }
-                ]
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -1312,7 +1420,8 @@ export class KickInternalSymbols {
                         description: "If given, it will return space-padded to reach the given minsize",
                         optional: true
                     }
-                ]  
+                ] ,
+                snippet: '(${1:x})' 
             },
             {
                 type: SymbolType.Function,
@@ -1338,7 +1447,8 @@ export class KickInternalSymbols {
                         description: "If given, it will return zero-padded to reach the given minsize",
                         optional: true
                     }
-                ]  
+                ] ,
+                snippet: '(${1:x})' 
             },
             {
                 type: SymbolType.Function,
@@ -1364,7 +1474,8 @@ export class KickInternalSymbols {
                         description: "If given, it will return zero-padded to reach the given minsize",
                         optional: true
                     }
-                ]  
+                ],
+                snippet: '(${1:x})'
             },
             {
                 type: SymbolType.Function,
@@ -1390,7 +1501,8 @@ export class KickInternalSymbols {
                         description: "If given, it will return zero-padded to reach the given minsize.",
                         optional: true
                     }
-                ]  
+                ],
+                snippet: '(${1:x})'  
             },
             {
                 type: SymbolType.Function,
@@ -1462,7 +1574,8 @@ export class KickInternalSymbols {
                             }
                         ]
                     }                    
-                ]
+                ],
+                snippet: '(${1:x},${2:y},${3:z})'
             },
             {
                 type: SymbolType.Function,
@@ -1511,7 +1624,8 @@ export class KickInternalSymbols {
                             }
                         ] 
                     }
-                ]
+                ],
+                snippet: '()'
             },
             {
                 type: SymbolType.Function,
@@ -1577,7 +1691,8 @@ export class KickInternalSymbols {
                             }
                         ] 
                     }
-                ]
+                ],
+                snippet: '(${1:aX},${2:aY},${3:aZ})'
             },
             {
                 type: SymbolType.Function,
@@ -1643,7 +1758,8 @@ export class KickInternalSymbols {
                             }
                         ] 
                     }
-                ]
+                ],
+                snippet: '(${1:sX},${2:sY},${3:sZ})'
             },
             {
                 type: SymbolType.Function,
@@ -1709,7 +1825,8 @@ export class KickInternalSymbols {
                             }
                         ] 
                     }
-                ] 
+                ],
+                snippet: '(${1:mX},${2:mY},${3:mZ})'
             },
             {
                 type: SymbolType.Function,
@@ -1765,7 +1882,8 @@ export class KickInternalSymbols {
                             }
                         ] 
                     }
-                ]  
+                ],
+                snippet: '(${1:ZProj})'
             },
             {
                 type: SymbolType.Function,
@@ -1800,7 +1918,8 @@ export class KickInternalSymbols {
                             }
                         ]
                     }                    
-                ]
+                ],
+                snippet: '(${1:file})'
             },
             {
                 type: SymbolType.Function,
@@ -1913,7 +2032,8 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Locks the list from being changed"
                     }         
-                ]
+                ],
+                snippet: '($1)'
             },
             {
                 type: SymbolType.Function,
@@ -1986,7 +2106,8 @@ export class KickInternalSymbols {
                             }
                         ]
                     }        
-                ]
+                ],
+                snippet: '()'
             },
             {
                 type: SymbolType.Function,
@@ -2011,7 +2132,60 @@ export class KickInternalSymbols {
                         type: "value",
                         description: "Argument value"
                     }        
-                ]
+                ],
+                snippet: '(${1:type},${2:value})'
+            },{
+                type: SymbolType.Constant,
+                name: "AT_ABSOLUTE",
+                value: 1,
+                originalValue: "",
+                description: "Example: $1000"
+            },{
+                type: SymbolType.Constant,
+                name: "AT_ABSOLUTEX",
+                value: 1,
+                originalValue: "",
+                description: "Example: $1000,x"
+            },{
+                type: SymbolType.Constant,
+                name: "AT_ABSOLUTEY",
+                value: 1,
+                originalValue: "",
+                description: "Example: $1000,y"
+            },{
+                type: SymbolType.Constant,
+                name: "AT_IMMEDIATE",
+                value: 1,
+                originalValue: "Immediate adressing",
+                description: "#10"
+            },{
+                type: SymbolType.Constant,
+                name: "AT_INDIRECT",
+                value: 1,
+                originalValue: "",
+                description: "Indirect adressing mode",
+                comments: "Example: ($1000)"
+            },{
+                type: SymbolType.Constant,
+                name: "AT_IZEROPAGEX",
+                value: 1,
+                originalValue: "",
+                description: "Indirect zeropage x adressing",
+                comments: "Example: ($10,x)"
+            },{
+                type: SymbolType.Constant,
+                name: "AT_IZEROPAGEY",
+                value: 1,
+                originalValue: "",
+                description: "Indirect zeropage y adressing",
+                comments: "Example: ($10),y"
+            },{
+                type: SymbolType.Constant,
+                name: "AT_NONE",
+                value: 1,
+                originalValue: "",
+                description: "No adressing",
+                comments: "Example: NOP"
             }
         ];
     }
