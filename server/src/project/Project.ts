@@ -312,6 +312,7 @@ export default class Project {
                 symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
                 symbol.isMain = main;
                 var parms = [];
+                var paramSnippet: string[] = [];
 
                 for (var i = 2; i < split.length; i++) {
                     var parm = { "name": split[i] };
@@ -323,7 +324,10 @@ export default class Project {
                     parm_symbol.kind = SymbolKind.Variable;
                     parm_symbol.scope = symbol.scope;
                     parm_symbol.isMain = main;
+                    
+                    paramSnippet.push("${"+(i-1)+":"+parm_symbol.name+"}");
                 }
+                symbol.snippet = '(' + paramSnippet.join(',') + ')';
 
                 symbol.data = { "parms": parms };
 
