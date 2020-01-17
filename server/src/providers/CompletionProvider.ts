@@ -266,28 +266,7 @@ export default class CompletionProvider extends Provider {
 			value:(payload.description || payload.comments) + (payload.example ? "\n***\n"+payload.example : ""),
 			kind: 'markdown'
 		} : "";
-		//console.log(label,type,payload.type,kind);
-//			textEdit.newText += "(${1:foo},${2:bar},${3:blubs}) {$4\n}";
-//		} else if() {
-			
-		if(	kind == CompletionItemKind.Method ||
-			kind == CompletionItemKind.Function ||
-			kind == CompletionItemKind.Class //||
-			/*[".macro",".function"].includes(label)*/) {
-			//console.log(1,label, kind, payload.parameters);
-			var paramSnippet: string[] = [];
-			if(payload.parameters){
-				payload.parameters.forEach((parameter: Parameter, i: number) => {
-					paramSnippet.push("${"+i+":"+parameter.name+"}");
-				});
-			}
-//			textEdit.newText += "("+paramSnippet.join(", ")+")";
-			
-//			if([".macro",".function",".segment"].includes(label)){
-//				textEdit.newText += " {\n$"+paramSnippet.length+"}";
-//			}
 
-		}
 		textEdit.newText += (payload.snippet || "");
 		if(payload.deprecated) {
 			documentation += "\n*(deprecated)*"
