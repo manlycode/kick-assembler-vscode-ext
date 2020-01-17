@@ -28,9 +28,6 @@ export interface AssemblerSourceRange {
 }
 
 export enum AssemblerSections {
-    Libraries,
-    AssemblerDirectives,
-    Preprocessor,
     AssemblerFiles,
     AssemblerSyntax,
     AssemblerErrors,
@@ -41,19 +38,7 @@ export enum AssemblerEntryType {
     Function,
 }
 
-export interface AssemblerLibrary {
-    name:string;
-    AssemblerEntryType:AssemblerEntryType;
-    data:{};
-}
-
 export interface AssemblerDirective {
-    name:string;
-    example:string;
-    description:string;
-}
-
-export interface AssemblerPreProcessorDirective {
     name:string;
     example:string;
     description:string;
@@ -82,27 +67,12 @@ export interface AssemblerError {
 
 export class AssemblerInfo {
 
-    private libraries:AssemblerLibrary[] = [];
-    private AssemblerDirectives:AssemblerDirective[] = [];
-    private AssemblerPreProcessorDirectives:AssemblerPreProcessorDirective[] = [];
     private AssemblerFiles:AssemblerFile[] = [];
     private AssemblerSyntax:AssemblerSyntax[] = [];
     private AssemblerErrors:AssemblerError[] = [];
 
     constructor(data:string) {
         this.processData(data); 
-    }
-
-    public getLibraries():AssemblerLibrary[] {
-        return this.libraries;
-    }
-
-    public getAssemblerDirectives():AssemblerDirective[] {
-        return this.AssemblerDirectives;
-    }
-
-    public getAssemblerPreProcessorDirectives():AssemblerPreProcessorDirective[] {
-        return this.AssemblerPreProcessorDirectives;
     }
 
     public getAssemblerFiles():AssemblerFile[] {
@@ -129,50 +99,22 @@ export class AssemblerInfo {
             if (line.length <= 0)
                 continue;
 
-            if (line.toLowerCase() == "[libraries]") {
-                section = AssemblerSections.Libraries;
-                continue;
-            }
-
-            if (line.toLowerCase() == "[directives]") {
-                section = AssemblerSections.AssemblerDirectives;
-                continue;
-            }
-
-            if (line.toLowerCase() == "[ppdirectives]") {
-                section = AssemblerSections.Preprocessor;
-                continue;
-            }
-
-           if (line.toLowerCase() == "[errors]") {
+            if (line.toLowerCase() == "[errors]") {
                 section = AssemblerSections.AssemblerErrors;
                 continue;
             }
 
-           if (line.toLowerCase() == "[syntax]") {
+            if (line.toLowerCase() == "[syntax]") {
                 section = AssemblerSections.AssemblerSyntax;
                 continue;
             }
 
-           if (line.toLowerCase() == "[files]") {
+            if (line.toLowerCase() == "[files]") {
                 section = AssemblerSections.AssemblerFiles;
                 continue;
             }
 
             switch(section) {
-
-                case AssemblerSections.Libraries: 
-                    this.addAssemblerLibrary(line);
-                    break;
-
-                case AssemblerSections.AssemblerDirectives:
-                    this.addAssemblerDirective(line);
-                    break;
-
-                case AssemblerSections.Preprocessor:
-                    this.addPreprocessor(line);
-                    break;
-
                 case AssemblerSections.AssemblerErrors:
                     this.addAssemblerError(line);
                     break;
@@ -185,38 +127,10 @@ export class AssemblerInfo {
                     this.addAssemblerFile(line);
                     break;
             }
-
         }
     }
 
-    private addAssemblerLibrary(line:string) {
-        var parms = line.split(";");
-        var assemblerLibrary = <AssemblerLibrary>{};
-        assemblerLibrary.name = parms[0];
-        assemblerLibrary.AssemblerEntryType = parms[1].toLowerCase() == "constant" ? AssemblerEntryType.Constant : AssemblerEntryType.Function;
-        assemblerLibrary.data = parms[2];
-        this.libraries.push(assemblerLibrary);
-    }
-
-    private addAssemblerDirective(line:string) {
-        var parms = line.split(";");
-        let assemblerDirective = <AssemblerDirective>{};
-        assemblerDirective.name = parms[0];
-        assemblerDirective.example = parms[1];
-        assemblerDirective.description = parms[2];
-        this.AssemblerDirectives.push(assemblerDirective);
-    }
-
-    private addPreprocessor(line:string) {
-        var parms = line.split(";");
-        let assemblerPreProcessorDirective = <AssemblerPreProcessorDirective>{};
-        assemblerPreProcessorDirective.name = parms[0];
-        assemblerPreProcessorDirective.example = parms[1];
-        assemblerPreProcessorDirective.description = parms[2];
-        this.AssemblerPreProcessorDirectives.push(assemblerPreProcessorDirective);
-    }
-    
-    private addAssemblerError(line:string) {
+     private addAssemblerError(line:string) {
         var parms = line.split(";");
         let assemblerError = <AssemblerError>{};
         assemblerError.level = parms[0];

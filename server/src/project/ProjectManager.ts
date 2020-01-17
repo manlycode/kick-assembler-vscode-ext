@@ -33,6 +33,7 @@ import PathUtils from "../utils/PathUtils";
 import { createHash } from "crypto";
 import DocumentSymbolProvider from "../providers/DocumentSymbolProvider";
 import CompletionProvider from "../providers/CompletionProvider";
+import { BADFLAGS } from "dns";
 
 export default class ProjectManager {
 
@@ -79,7 +80,7 @@ export default class ProjectManager {
                     documentSymbolProvider: true,
                     completionProvider: {
                         resolveProvider: true,
-                        triggerCharacters: ["#", ".", " ", "<", ">", ","],
+                        triggerCharacters: ["#", ".", " ", "<", ">", ",", "*"],
                     }
                 }
             };

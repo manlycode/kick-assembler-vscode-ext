@@ -26,7 +26,7 @@
 
 import StringUtils from "../utils/StringUtils";
 
-import { AssemblerInfo, AssemblerDirective, AssemblerSyntax, AssemblerSourceRange } from "../assembler/AssemblerInfo";
+import { AssemblerInfo, AssemblerSyntax, AssemblerSourceRange } from "../assembler/AssemblerInfo";
 import { Settings } from "../providers/SettingsProvider";
 import { Assembler, AssemblerResults } from "../assembler/Assembler";
 import { ProjectFile } from "./ProjectFile";
@@ -38,6 +38,7 @@ import { CompletionItemKind, SymbolKind, Location } from "vscode-languageserver"
 import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 import { Parameter } from "../definition/KickPreprocessors";
+import { KickLanguage } from "../definition/KickLanguage";
 import Uri from "vscode-uri";
 
 export interface Line {
@@ -80,6 +81,7 @@ export interface Symbol {
     isMain?: boolean;       //  is this a main project symbol?
     isBuiltin?: boolean;    //  is this built-ion
     data?: any;
+    snippet?: string;
 }
 
 export default class Project {
@@ -91,7 +93,6 @@ export default class Project {
     private assemblerResults: AssemblerResults;
     private assemblerInfo: AssemblerInfo;
     private projectFiles: ProjectFile[];
-    private directives: Directive[];
     private symbols: Symbol[];
 
     constructor(uri: string) {
@@ -110,8 +111,7 @@ export default class Project {
 
         this.projectFiles = [];
 
-        for (var file of this.assemblerResults.assemblerInfo.getAssemblerFiles()) {
-
+        for (var file of this.assemblerInfo.getAssemblerFiles()) {
             if (!file.system) {
                 
                 var _uri: Uri = file.uri;
@@ -121,17 +121,6 @@ export default class Project {
                 var projectFile = new ProjectFile(_uri, _text, _main);
 
                 this.projectFiles[file.index] = projectFile;
-            }
-        }
-
-        if (!this.directives) {
-            this.directives = [];
-            for (var assemblerDirective of this.assemblerResults.assemblerInfo.getAssemblerDirectives()) {
-                var directive = <Directive>{};
-                directive.name = assemblerDirective.name;
-                directive.description = assemblerDirective.description;
-                directive.example = assemblerDirective.example;
-                this.directives.push(directive);
             }
         }
 
@@ -179,7 +168,7 @@ export default class Project {
     }
 
     public getDirectives(): Directive[] {
-        return this.directives;
+        return KickLanguage.Directives;
     }
 
     public getSymbols(): Symbol[] {
@@ -312,10 +301,12 @@ export default class Project {
                 if(directive == ".function"){
                     symbol.type = SymbolType.Function;
                     symbol.kind = SymbolKind.Function;
+                    symbol.completionKind = CompletionItemKind.Function;
   
                 } else {
                     symbol.type = SymbolType.Macro;
                     symbol.kind = SymbolKind.Method;
+                    symbol.completionKind = CompletionItemKind.Method;
                 }
                 symbol.name = name;
                 symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
