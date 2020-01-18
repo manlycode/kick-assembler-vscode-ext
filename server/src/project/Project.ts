@@ -242,8 +242,8 @@ export default class Project {
         var symbol = <Symbol>{};
 
         symbol.name = name;
+        symbol.kind = SymbolKind.Object;
         symbol.type = SymbolType.NamedLabel;
-        symbol.kind = SymbolKind.String;
         symbol.isMain = main;
         //symbol.scope = this._kickAssemblerResults.sourceFiles[sourceRange.fileIndex].lines[sourceRange.startLine].scope;
         return symbol;
@@ -282,7 +282,7 @@ export default class Project {
 
         if (directive == ".label") {
             var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
-            symbol.kind = SymbolKind.Field;
+            symbol.kind = SymbolKind.Object;
             symbol.type = SymbolType.Label;
             symbol.isMain = main;
             //return this.createFromLabel(sourceRange, text, main);

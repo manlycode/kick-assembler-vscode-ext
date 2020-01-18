@@ -83,24 +83,6 @@ export default class HoverProvider extends Provider {
 		if (tokenMatch) {
 			return this.createSymbolWithValue(tokenMatch, "built-in");
 		}
-
-		/*
-		if (tokenMatch) {
-
-			var typeVal = ""
-			if (tokenMatch.type == SymbolType.Macro) { typeVal = "Macro" }
-			if (tokenMatch.type == SymbolType.Constant) { typeVal = "Constant" }
-			if (tokenMatch.type == SymbolType.Function) { typeVal = "Function" }
-
-			return [
-				`(${typeVal}) \`${tokenMatch.name}\`: ${tokenMatch.description}`,
-				// `	(${tokenMatch.type.toString()}) ${tokenMatch.name}`,
-				// `\n***\n${tokenMatch.description.trim()}`,
-				// `\n***\n${this.getFormattedValue(tokenMatch.value)}`
-				];
-		}
-		*/
-
 	}
 
 	private getSymbolOrLabel(token: string): string[] | undefined {
