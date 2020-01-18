@@ -3,16 +3,18 @@
 This extension is a work in progress, there is much left to be done.
 
 ### In Progress
-* auto-completion scope support
 
 ### Backburner
 * refactoring support
 * generate breakpoints and watches for vice and c64debugger
+* scope and namespace support (http://www.theweb.dk/KickAssembler/webhelp/content/cpt_Namespaces.html)
+* multi label support (http://www.theweb.dk/KickAssembler/webhelp/content/ch03s04.html)
 
 ### Ideas
 * memory layout (https://kickassmemoryview.insoft.se/)
 
 ### Completed
+* ~~auto-completion scope support~~
 * ~~auto-completion support from all imports~~
 * ~~auto-completion support~~
 * ~~hover support for common memory locations like $d020~~

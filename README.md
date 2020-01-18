@@ -17,22 +17,60 @@ A [Kick Assembler](http://www.theweb.dk/KickAssembler/Main.html#frontpage) exten
 ## Feature Details
 The following features are currently working relatively well.
 
-### Basic Syntax Highlighting
-![Syntax Highlighting](/images/ka-syntax-highlighting.png)
+### Editing
 
-### Error Checking
-![Error Checking](/images/ka-error-checking.png)
+This extension provides a lot of features to make your coding life easier with Kick Assembler.
+
+#### Syntax Highlighting
+
+Syntax highlighting for every element in your code.
+
+![](/images/syntax-highlighting.png)
+
+#### Code Snippets
+
+Code snippets for built-in and personal functions and macros.
+
+![](/images/snippets.gif)
+
+#### Completion Suggestions
+
+#### Imported File Support
+
+Any imported files will have their variables, macros and functions available in auto completion for your current file. The heading of the hover will let you know which file the item was imported from.
+
+![](/images/include-file-information.gif)
+
+
+#### Error Checking
+
+Real time syntax checking of your code by using information from the Kick Assembler compiler. 
+
+![](/images/error-checking.gif)
+
+#### Code Folding
+
+![](/images/folding.gif)
 
 ### Hover Support
-Hover support for Macro comments and definition.
 
-![Macro Comment Hover](/images/ka-hover1.gif)
+Hover support has been added to help you with your daily coding. From simple things like a comment on your variable or macro, to more useful things like variable values and even support to show you high and low byte values in your code.
 
-Hover support for literals.
+#### Comments
+
+Most comments for defined variables, macros and functions are captured and displayed as a comment. There is some very basic MARKDOWN support so that you can include things like parameters in your comments.
+
+![Macro Comment Hover](/images/comments.gif)
+
+#### Values
+
+Most values will give you comments about the variable itself, but also decimal, hex and binary values as well.
 
 ![Macro Comment Hover](/images/ka-hover2.gif)
 
-Hover support for Hi/Lo Byte
+#### Hi/Lo Byte Values
+
+Useful when creating jump tables.
 
 ![Macro Comment Hover](/images/ka-hover3.gif)
 
@@ -41,7 +79,11 @@ Hover support for Hi/Lo Byte
 See [the Roadmap](/ROADMAP.md)
 
 ## Release Notes
-See [the Release Notes](/RELEASE.md)
+See [the Release Notes](/RELEASE.md) for a summary of what was changed.
+
+## History
+See [the History](/HISTORY.md) for a more detailed breakdown of everything that has been done to the extenstion.
+
 
 ## Acknowledgements
 Thanks to [SWOFFA](https://csdb.dk/scener/?id=984) for his work on the tmLanguage file for syntax highlighting from his [Sublime Package](https://github.com/Swoffa/SublimeKickAssemblerC64).

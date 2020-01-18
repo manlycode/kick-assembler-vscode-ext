@@ -1,6 +1,13 @@
 
 ## Visual Studio Code Extension for Kick Assembler 
 
+## v0.2.6
+### Changed
++ some small changes to the code snippets for whitepace and value completion for .var and .label directives
++ changes to the README to help developers interested in the extension to see all of the new features that have been added
+### Fixed
++ fix code snippets to include completion items -- not that this also requires that the editor setting "editor.suggest.snippetsPreventQuickSuggestions" is set to FALSE
+
 ## v0.2.5
 ### Changed
 + code snippets and new directive support (https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/merge_requests/27) - Lubber

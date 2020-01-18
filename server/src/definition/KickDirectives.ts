@@ -18,7 +18,7 @@ export const Star:Directive =
 		name: '*',
 		example: '*=$1000',
 		description: 'Sets the memory position to a given value.',
-		snippet: '=$${1:1000} "${2:Block}"\n'
+		snippet: ' = $${1:1000} "${2:Block}"\n'
 	}
 ;
 export const Directives:Directive[] = [
@@ -156,7 +156,7 @@ export const Directives:Directive[] = [
 		name: '.for', 
 		example: '.for(var i;i<10;i++)',
 		description: "Creates a for loop",
-		snippet: ' (${1:init};${2:expression};${3:iterator}) {\n\t$0\n}\n'
+		snippet: ' (${1:init}; ${2:expression}; ${3:iterator}) {\n\t$0\n}\n'
 	 },
 	{
 		name: '.function',
@@ -210,7 +210,7 @@ export const Directives:Directive[] = [
 		name: '.label',
 		example: '.label color=$d020',
 		description: 'Assigns a given expression to a label.',
-		snippet: ' ${1:name}='
+		snippet: ' ${1:name} = ${2:value}'
 	},
 	{
 		name: '.lohifill',
@@ -327,7 +327,7 @@ export const Directives:Directive[] = [
 		name: '.var',
 		example: '.var x=27',
 		description: 'Defines a variable.',
-		snippet: ' ${1:name}='
+		snippet: ' ${1:name} = ${2:value}'
 	},
 	{
 		name: '.while',
