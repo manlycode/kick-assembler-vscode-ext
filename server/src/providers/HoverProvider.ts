@@ -180,7 +180,7 @@ export default class HoverProvider extends Provider {
 				if (tokenMatch.comments) description = tokenMatch.comments.trim();
 
 				return [
-					`	*(label)* ${tokenMatch.name} ${file}`,
+					`*(label)* ${tokenMatch.name} ${file}`,
 					`${description.trim()}`,
 				 ];
 		
