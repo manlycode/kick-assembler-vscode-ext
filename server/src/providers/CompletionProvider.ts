@@ -198,24 +198,28 @@ export default class CompletionProvider extends Provider {
 				}
 			}
 
+			// always insert named labels
+			items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
+
+			// completion items for unhandled previous tokens
 			if (prevToken == "") {
 
 				items = this.loadInstructions();
 
-				//	insert macros
+				// insert macros
 				items = items.concat(this.loadSymbols(SymbolType.Macro));
 
-				//	insert pseudocommands
+				// insert pseudocommands
 				items = items.concat(this.loadSymbols(SymbolType.PseudoCommand));
 
-				//	insert namespaces
+				// insert namespaces
 				items = items.concat(this.loadSymbols(SymbolType.Namespace));
 
 				items.push(this.createCompletionItem(KickLanguage.Star.name, LanguageCompletionTypes.Label, KickLanguage.Star, CompletionItemKind.Value));
 			}	
 
 			if (prevToken == "instruction") {
-				items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
+				//items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
 				items = items.concat(this.loadSymbols(SymbolType.Function));
 				items = items.concat(this.loadSymbols(SymbolType.Variable));
 				items = items.concat(this.loadSymbols(SymbolType.Label));
@@ -225,7 +229,7 @@ export default class CompletionProvider extends Provider {
 			}
 
 			if (prevToken == "symbol" || prevToken == "directive") {
-				items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
+				//items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
 				items = items.concat(this.loadSymbols(SymbolType.Function));
 				items = items.concat(this.loadSymbols(SymbolType.Variable));
 				items = items.concat(this.loadSymbols(SymbolType.Label));

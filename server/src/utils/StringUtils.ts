@@ -99,6 +99,9 @@ export default class StringUtils {
 	 * @param position 
 	 */
 	public static GetWordAt(text:string, position:number):string {
+
+		text = this.CleanText(text);
+
 		// make pos point to a character of the word
 		while (text[position] == " ") position--;
 		// find the space before that word
@@ -128,6 +131,8 @@ export default class StringUtils {
 	 */
 	public static GetWordsBefore(text:string, position:number):string[] | undefined {
 
+		text = this.CleanText(text);
+
 		var index = text.lastIndexOf(" ", position);
 
 		if (index < 0) return undefined;
@@ -152,12 +157,27 @@ export default class StringUtils {
 	 */
 	public static GetWordsAfter(text:string, position:number):string[] | undefined {
 
+		text = this.CleanText(text);
+
 		var index = text.indexOf(" ", position);
 		
 		if (index < 0) return undefined;
 
 		var workText = text.substring(index).trim();
 		return workText!="" ? this.splitIntoTokens(workText) : undefined;
+	}
+
+	public static CleanText(text:string):string {
+
+		// comment out to test the new way
+		//return text;
+		
+		//	test to see if removing paren works for code snippets
+		text = text.replace("(", " ");
+		text = text.replace(")", " ");
+		text = text.replace("\"", " ");
+		text = text.replace("#", " ");
+		return text ;
 	}
 
 }
