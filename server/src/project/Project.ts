@@ -1,7 +1,7 @@
 /*
     Class:  Project
 
-    Represents the Currently Open Source File
+    Represents the Currently Open Source File.
 
     Remarks:
 

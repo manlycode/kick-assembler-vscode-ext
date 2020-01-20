@@ -1,4 +1,10 @@
 /*
+	Class: Hover Provider
+
+	Handles any incoming Requests for a Hover Response in the Editor.
+
+	Remarks:
+
 
 */
 
@@ -44,7 +50,7 @@ export default class HoverProvider extends Provider {
 	}
 
     /**
-     * Does Something
+     * Process the Hover Request.
      * @param textDocumentPosition
      */
 	private process(textDocumentPosition: TextDocumentPositionParams): Hover | ResponseError<void> {
@@ -56,6 +62,106 @@ export default class HoverProvider extends Provider {
 		return { contents };
 	}
 
+	/**
+	 * Returns the File that a Symbol is from.
+	 * 
+	 * @param symbol the symbol to use
+	 */
+	private getFileFromSymbol(symbol: Symbol): string | undefined{
+
+		var file:string = "";
+
+		// when this is a built-in function in the kickass.jar file
+		if (symbol.isBuiltin) {
+			return "from built-in";
+		}
+
+		// when this is in the currently open source file
+		if (symbol.isMain) {
+			return "";
+		}
+
+		var uri = symbol.data["uri"];
+		var filename = URI.parse(uri);
+		var path = require('path');
+
+		file = "from " + path.parse(filename.path).base;
+
+		if (file.indexOf(".source") >= 0) {
+			file = "";
+		}
+
+		return file;
+	}
+
+	/**
+	 * Find a Symbol of a specific SymbolType.
+	 * 
+	 * @param token the token to search the symbol
+	 * @param type  the type of symbol to find
+	 */
+	private findSymbolOfType(token:string, type: SymbolType): Symbol | undefined {
+
+		for(let symbol of this.symbols) {
+			if (symbol.type === type) {
+				if (symbol.name === token) {
+					return symbol;
+				}
+			}
+		}
+		return undefined;
+	}
+
+	/**
+	 * Returns a Description from a Symbol.
+	 * 
+	 * @param symbol the symbol 
+	 */
+	private getSymbolDescription(symbol: Symbol): string | undefined {
+		var _description: string = "";
+		if (symbol.description) _description = symbol.description.trim();
+		if (symbol.comments) _description += (_description !== "" ? "\n":"") + symbol.comments.trim();
+		return _description;
+	}
+
+	private createSimpleHover(symbol: Symbol): string[] | undefined {
+
+		var _file = this.getFileFromSymbol(symbol);
+		var _description = this.getSymbolDescription(symbol);
+		var _original = "";
+
+		if (symbol.originalValue) {
+			_original = `[${symbol.originalValue}]`;
+		}
+		var _type = "";
+
+		switch (symbol.type) {
+			case SymbolType.Constant:
+				_type = '.const';
+				break;
+			case SymbolType.Variable:
+				_type = '.var';
+				break;
+			case SymbolType.Label:
+				_type = '.label';
+				break;
+			case SymbolType.NamedLabel:
+				_type = '(label)';
+				break;
+			}				
+
+		return [
+			`	${_type} ${symbol.name} ${_original} ${_file}`,
+			`${_description}`,
+			`${StringUtils.BuildSymbolFormattedValue(symbol)}`
+		];
+	}
+
+	/**
+	 * Create a Hover Response at the Current Text Position.
+	 * 
+	 * @param textDocumentPosition the location in the document
+	 */
 	private createHover(textDocumentPosition: TextDocumentPositionParams): string[] | undefined {
 
 		// initialize the contents of the returned hover text
@@ -114,7 +220,7 @@ export default class HoverProvider extends Provider {
 
 						if (assemblerSyntax.type === 'macroExecution') {
 
-							const symbol = this.getSymbolOfType(token, SymbolType.Macro);
+							const symbol = this.findSymbolOfType(token, SymbolType.Macro);
 
 							if (symbol) {
 
@@ -122,7 +228,7 @@ export default class HoverProvider extends Provider {
 								const _parms = StringUtils.BuildSymbolParameterString(symbol);
 								const _name = symbol.name;
 								const _directive = ".macro";
-								const _description = "";
+								const _description = this.getSymbolDescription(symbol);
 
 								return [
 									`	${_directive} ${_name}(${_parms}) ${_file}`,
@@ -133,19 +239,15 @@ export default class HoverProvider extends Provider {
 
 						// symbolReference
 
-						if (assemblerSyntax.type === 'symbolReference') {
+						if (assemblerSyntax.type === 'symbolReference' || assemblerSyntax.type === 'label') {
 
-							var symbol = this.getSymbolOfType(token, SymbolType.Variable);
-							if (!symbol) symbol = this.getSymbolOfType(token, SymbolType.Constant);
-							if (!symbol) symbol = this.getSymbolOfType(token, SymbolType.Label);
-							if (!symbol) symbol = this.getSymbolOfType(token, SymbolType.NamedLabel);
+							var symbol = this.findSymbolOfType(token, SymbolType.Variable);
+							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Constant);
+							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Label);
+							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.NamedLabel);
 							
 							if (symbol) {
-								return [
-									symbol.name, 
-									symbol.comments,
-									assemblerSyntax.type
-								];
+								return this.createSimpleHover(symbol);
 							}
 						}
 
@@ -166,7 +268,6 @@ export default class HoverProvider extends Provider {
 						if (assemblerSyntax.type === 'ppDirective') {
 							return this.getPreProcessorMatch("#".concat(token)); // add # for proper search
 						}
-
 					}
 
 					// mnemonic line?
@@ -210,16 +311,13 @@ export default class HoverProvider extends Provider {
 								_contents
 							];						
 
-						var _symbol = this.getSymbolOfType(token, SymbolType.Variable);
-						if (!_symbol) _symbol = this.getSymbolOfType(token, SymbolType.Label);
-						if (!_symbol) _symbol = this.getSymbolOfType(token, SymbolType.NamedLabel);
+						var _symbol = this.findSymbolOfType(token, SymbolType.Variable);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Constant);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Label);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.NamedLabel);
 
 						if (_symbol) {
-							return [
-								_symbol.name,
-								_symbol.comments,
-								assemblerSyntax.type
-							]
+							return this.createSimpleHover(_symbol);
 						}
 					}
 
@@ -236,6 +334,10 @@ export default class HoverProvider extends Provider {
 
 		return contents;
 
+	/*
+		Everything after this point will probably be deleted
+		very soon.
+	*/
 
 
 
@@ -249,6 +351,7 @@ export default class HoverProvider extends Provider {
 			if (!contents) contents = this.getDirectiveHover(token);
 			//if (!contents) contents = this.getLiteralHover(token);
 		}
+
 		if (!contents) {
 			//	no match so far, try just symbols
 			token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
@@ -257,75 +360,10 @@ export default class HoverProvider extends Provider {
 				if (!contents) contents = this.getSymbolOrLabel(token);
 			}
 		}
+		
 		if (!contents) contents = [];
 		return contents;
 	}
-
-	// find the file this symbol is in
-	private getFileFromSymbol(symbol: Symbol): string {
-
-		var file:string = "";
-
-		// when this is a built-in function in the kickass.jar file
-		if (symbol.isBuiltin) {
-			return "from built-in";
-		}
-
-		// when this is in the currently open source file
-		if (symbol.isMain) {
-			return "";
-		}
-
-		var uri = symbol.data["uri"];
-		var filename = URI.parse(uri);
-		var path = require('path');
-
-		file = "from " + path.parse(filename.path).base;
-
-		if (file.indexOf(".source") >= 0) {
-			file = "";
-		}
-
-		return file;
-	}
-	
-	
-
-	private getMacroSymbol(token: string):Symbol {
-
-		var symbols:Symbol[] = this.project.getAllSymbols();
-
-		for(let symbol of symbols) {
-			if (symbol.type === SymbolType.Macro) {
-				if (symbol.name === token) {
-					return symbol;
-				}
-			}
-		}
-		return undefined;
-	}
-
-	private getSymbolOfType(token:string, type: SymbolType) {
-
-		for(let symbol of this.symbols) {
-			if (symbol.type === type) {
-				if (symbol.name === token) {
-					return symbol;
-				}
-			}
-		}
-		return undefined;
-	}
-
-	// private getBuiltInSymbolHover(token: string): string[] | undefined {
-	// 	const tokenMatch = this.project.getBuiltInSymbols().find((match) => {
-	// 		return match.name.toLowerCase() === token.toLowerCase();
-	// 	});
-
-	// 	if (tokenMatch) {
-	// 		return this.createSymbolWithValue(tokenMatch, "built-in");
-	// 	}
-	// }
 
 	private getSymbolOrLabel(token: string): string[] | undefined {
 
@@ -516,10 +554,5 @@ export default class HoverProvider extends Provider {
 			];
 		}
 	}
-
-	// private getLiteralHover(token: string) {
-	// 	var num = NumberUtils.toDecimal(token);
-	// 	return !isNaN(num) ? [StringUtils.BuildSymbolFormattedValues(token)] : undefined;
-	// }
 
 }
