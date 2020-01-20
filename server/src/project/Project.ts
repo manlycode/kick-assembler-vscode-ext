@@ -304,7 +304,10 @@ export default class Project {
                 var name = split[1];
                 var symbol = <Symbol>{};
                 
-                if (name.startsWith("_")) return;
+                // this was preventing internal macros from showing
+                
+                //if (name.startsWith("_")) return;
+
                 if(directive == ".function"){
                     symbol.type = SymbolType.Function;
                     symbol.kind = SymbolKind.Function;

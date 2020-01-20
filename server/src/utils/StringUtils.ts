@@ -186,6 +186,7 @@ export default class StringUtils {
 		text = text.replace(/\:/g, " ");
 		text = text.replace(/\[/g, " ");
 		text = text.replace(/\]/g, " ");
+		text = text.replace(/\@/g, " ");
 		return text ;
 	}
 

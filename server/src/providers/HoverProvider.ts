@@ -157,6 +157,21 @@ export default class HoverProvider extends Provider {
 		];
 	}
 
+	private createMacroHover(symbol: Symbol): string[] | undefined {
+
+		const _file = this.getFileFromSymbol(symbol);
+		const _parms = StringUtils.BuildSymbolParameterString(symbol);
+		const _name = symbol.name;
+		const _directive = ".macro";
+		const _description = this.getSymbolDescription(symbol);
+
+		return [
+			`	${_directive} ${_name}(${_parms}) ${_file}`,
+			`${_description.trim()}`,
+		];
+
+	}
+
 	/**
 	 * Create a Hover Response at the Current Text Position.
 	 * 
@@ -223,17 +238,7 @@ export default class HoverProvider extends Provider {
 							const symbol = this.findSymbolOfType(token, SymbolType.Macro);
 
 							if (symbol) {
-
-								const _file = this.getFileFromSymbol(symbol);
-								const _parms = StringUtils.BuildSymbolParameterString(symbol);
-								const _name = symbol.name;
-								const _directive = ".macro";
-								const _description = this.getSymbolDescription(symbol);
-
-								return [
-									`	${_directive} ${_name}(${_parms}) ${_file}`,
-									`${_description.trim()}`,
-								];
+								return this.createMacroHover(symbol);
 							}
 						}
 
@@ -315,8 +320,15 @@ export default class HoverProvider extends Provider {
 						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Constant);
 						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Label);
 						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.NamedLabel);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Macro);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Function);
 
 						if (_symbol) {
+
+							if (_symbol.type === SymbolType.Macro) {
+								return this.createMacroHover(_symbol);
+							}
+							
 							return this.createSimpleHover(_symbol);
 						}
 					}
