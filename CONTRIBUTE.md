@@ -34,3 +34,9 @@ A local copy will create a VSIX file that you can use for sharing with other peo
 - change to the Debug-Tab and Start "Client+Server"
 - another VSCode Window will open which uses your just compiled local fork extension
  
+### Extension Resources
+
+Here are some additional links to help you get started with understanding how to write extensions and language servers for Visual Studio Code.
+
+- https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
+- https://github.com/Microsoft/vscode-extension-samples/tree/master/lsp-sample
