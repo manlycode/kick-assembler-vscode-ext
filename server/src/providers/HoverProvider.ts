@@ -18,12 +18,19 @@ import {
 import Project, { Symbol, SymbolType } from "../project/Project";
 import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
+import StringUtils from "../utils/StringUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import URI from "vscode-uri";
+import { AssemblerSyntax, AssemblerFile } from "../assembler/AssemblerInfo";
+import { ProjectFile } from "../project/ProjectFile";
 
 export default class HoverProvider extends Provider {
 
+	// contains all project information
 	private project: Project;
+
+	// used for symbol lookups
+	private symbols: Symbol[];
 
 	constructor(connection: IConnection, projectInfo: ProjectInfoProvider) {
 
@@ -43,6 +50,7 @@ export default class HoverProvider extends Provider {
 	private process(textDocumentPosition: TextDocumentPositionParams): Hover | ResponseError<void> {
 
 		this.project = this.getProjectInfo().getProject(textDocumentPosition.textDocument.uri);
+		this.symbols = this.project.getAllSymbols();
 		let contents = this.createHover(textDocumentPosition);
 
 		return { contents };
@@ -50,11 +58,114 @@ export default class HoverProvider extends Provider {
 
 	private createHover(textDocumentPosition: TextDocumentPositionParams): string[] | undefined {
 
+		// initialize the contents of the returned hover text
 		var contents: string[] | undefined;
-		//  get line
+
+		// we always need the token word at the cursor
 		var line = this.project.getSourceLines()[textDocumentPosition.position.line];
-		//  get token under cursor
-		var token = LineUtils.getTokenAtLinePosition2(line, textDocumentPosition.position.character);
+		var token = StringUtils.GetWordAt(line, textDocumentPosition.position.character);
+
+		/*
+			and now -- some logic
+
+			perhaps a partial or full rewrite for returning hovers
+
+			- get the current assembler info syntax
+			- read through each line of the current source file (main = true)
+			- check for matching line number
+			- check for position in range
+			- get the syntax type
+			- load hover based on syntax type
+		*/
+
+		// get main file number
+		var fileNumber: number;
+
+		// find the current source file index in the asminfo file
+		// TODO: figure this out after assembly instead of here
+		var files = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerFiles();
+		for (var i: number = 0; i < files.length; i++) {
+			var file: AssemblerFile = files[i];
+			if (file.main) {
+				fileNumber = file.index;
+				break;
+			}
+		}
+
+		// get current assembler syntax
+		var syntaxList: AssemblerSyntax[] = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerSyntax();
+
+		for (var i: number = 0; i < syntaxList.length; i++) {
+
+			var assemblerSyntax: AssemblerSyntax = syntaxList[i];
+
+			// source file?
+			if (assemblerSyntax.range.fileIndex === fileNumber) {
+
+				// same line number?
+				if (textDocumentPosition.position.line >= assemblerSyntax.range.startLine &&
+					textDocumentPosition.position.line <= assemblerSyntax.range.endLine) {
+
+					// in range?
+					if (textDocumentPosition.position.character >= assemblerSyntax.range.startPosition &&
+						textDocumentPosition.position.character <= assemblerSyntax.range.endPosition) {
+
+						// macroExecution
+
+						if (assemblerSyntax.type === 'macroExecution') {
+
+							const symbol = this.getSymbolOfType(token, SymbolType.Macro);
+
+							if (symbol) {
+								contents = [
+							`	${symbolDirective} ${tokenMatch.name}(${parm_text.join(", ")}) ${file}`,
+							`${description.trim()}`,
+												];
+							}
+						}
+
+						// symbolReference
+
+						if (assemblerSyntax.type === 'symbolReference') {
+
+							var symbol = this.getSymbolOfType(token, SymbolType.Variable);
+							if (!symbol) symbol = this.getSymbolOfType(token, SymbolType.Label);
+							if (!symbol) symbol = this.getSymbolOfType(token, SymbolType.NamedLabel);
+							if (!symbol) symbol = this.getSymbolOfType(token, SymbolType.Constant);
+							
+							if (symbol) {
+								contents = [symbol.name, assemblerSyntax.type];
+							}
+						}
+
+						// mnmemonic
+
+						if (assemblerSyntax.type === 'mnemonic') {
+							contents = this.getInstructionMatch(token);
+						}
+
+						// directives
+
+						if (assemblerSyntax.type === 'directive') {
+							contents = this.getDirectiveHover(token);
+						}
+
+						// ppDirective
+
+						if (assemblerSyntax.type === 'ppDirective') {
+							contents = this.getPreProcessorMatch("#".concat(token)); // add # for proper search
+						}
+
+						if (!contents) contents = [token, assemblerSyntax.type];
+					}
+				}
+			}
+		}
+
+		return contents;
+
+		// no match then fall back to normal hover processing -- i hope
+
 		if(token){
 		//  search for matching token
 			if (!contents) contents = this.getInstructionMatch(token);
@@ -75,15 +186,41 @@ export default class HoverProvider extends Provider {
 		return contents;
 	}
 
-	private getBuiltInSymbolHover(token: string): string[] | undefined {
-		const tokenMatch = this.project.getBuiltInSymbols().find((match) => {
-			return match.name.toLowerCase() === token.toLowerCase();
-		});
+	private getMacroSymbol(token: string):Symbol {
 
-		if (tokenMatch) {
-			return this.createSymbolWithValue(tokenMatch, "built-in");
+		var symbols:Symbol[] = this.project.getAllSymbols();
+
+		for(let symbol of symbols) {
+			if (symbol.type === SymbolType.Macro) {
+				if (symbol.name === token) {
+					return symbol;
+				}
+			}
 		}
+		return undefined;
 	}
+
+	private getSymbolOfType(token:string, type: SymbolType) {
+
+		for(let symbol of this.symbols) {
+			if (symbol.type === type) {
+				if (symbol.name === token) {
+					return symbol;
+				}
+			}
+		}
+		return undefined;
+	}
+
+	// private getBuiltInSymbolHover(token: string): string[] | undefined {
+	// 	const tokenMatch = this.project.getBuiltInSymbols().find((match) => {
+	// 		return match.name.toLowerCase() === token.toLowerCase();
+	// 	});
+
+	// 	if (tokenMatch) {
+	// 		return this.createSymbolWithValue(tokenMatch, "built-in");
+	// 	}
+	// }
 
 	private getSymbolOrLabel(token: string): string[] | undefined {
 

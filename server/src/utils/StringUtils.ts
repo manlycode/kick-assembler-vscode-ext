@@ -172,11 +172,11 @@ export default class StringUtils {
 		// comment out to test the new way
 		//return text;
 		
-		//	test to see if removing paren works for code snippets
-		text = text.replace("(", " ");
-		text = text.replace(")", " ");
-		text = text.replace("\"", " ");
-		text = text.replace("#", " ");
+		text = text.replace(/\(/g, " ");
+		text = text.replace(/\)/g, " ");
+		text = text.replace(/\\/g, " ");
+		text = text.replace(/\#/g, " ");
+		text = text.replace(/\;/g, " ");
 		return text ;
 	}
 

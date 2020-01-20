@@ -171,6 +171,13 @@ export default class Project {
         return KickLanguage.Directives;
     }
 
+    /**
+     * Returns all Code generated and Build-In Symbols
+     */
+    public getAllSymbols(): Symbol[] {
+        return this.getSymbols().concat(this.getBuiltInSymbols());
+    }
+
     public getSymbols(): Symbol[] {
         return this.symbols || [];
     }
