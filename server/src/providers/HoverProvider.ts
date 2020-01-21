@@ -201,7 +201,7 @@ export default class HoverProvider extends Provider {
 
 		// we always need the token word at the cursor
 		var line = this.project.getSourceLines()[textDocumentPosition.position.line];
-		var token = StringUtils.GetWordAt(line, textDocumentPosition.position.character);
+		var token = StringUtils.GetWordAt(line, textDocumentPosition.position.character).trim();
 
 		/*
 			and now -- some logic
@@ -355,160 +355,16 @@ export default class HoverProvider extends Provider {
 					}
 
 
-					// unhandled token information
+					// unhandled token information -- uncomment for trubble shooting :)
 
 					contents = [
-						token, 
-						assemblerSyntax.type
+						// token, 
+						// assemblerSyntax.type
 					];
 				}
 			}
 		}
-
 		return contents;
-
-	/*
-		Everything after this point will probably be deleted
-		very soon.
-	*/
-
-
-
-		// no match then fall back to normal hover processing -- i hope
-
-		if(token){
-		//  search for matching token
-			if (!contents) contents = this.getInstructionMatch(token);
-			if (!contents) contents = this.getPseudoOpsMatch(token);
-			if (!contents) contents = this.getPreProcessorMatch(token);
-			if (!contents) contents = this.getDirectiveHover(token);
-			//if (!contents) contents = this.getLiteralHover(token);
-		}
-
-		if (!contents) {
-			//	no match so far, try just symbols
-			token = LineUtils.getTokenAtLinePosition(line, textDocumentPosition.position.character);
-			if(token) {
-				//if (!contents) contents = this.getBuiltInSymbolHover(token);
-				if (!contents) contents = this.getSymbolOrLabel(token);
-			}
-		}
-		
-		if (!contents) contents = [];
-		return contents;
-	}
-
-	private getSymbolOrLabel(token: string): string[] | undefined {
-
-		var symbols = this.project.getSymbols();
-
-		// check project symbols
-		var tokenMatch = symbols.find((match) => {
-			return match.name.toLowerCase() === token.toLowerCase();
-		});
-
-		// check built in symbols
-		if (!tokenMatch) { 
-			tokenMatch = this.project.getBuiltInSymbols().find((match) => {
-				return match.name.toLowerCase() === token.toLowerCase();
-			});
-		}
-
-		if (tokenMatch) {
-
-			// figure out the file the symbol came from
-
-			// var file:string = "";
-
-			// if (tokenMatch.isBuiltin) {
-
-			// 	file = "from built-in";
-
-			// } else {
-
-			// 	var uri = tokenMatch.data["uri"];
-			// 	var filename = URI.parse(uri);
-			// 	var path = require('path');
-
-			// 	file = "from " + path.parse(filename.path).base;
-
-			// 	if (file.indexOf(".source") >= 0) {
-			// 		file = "";
-			// 	}
-			// }
-
-			var file = this.getFileFromSymbol(tokenMatch);
-
-			// format the description
-
-			var description = "";
-
-			if (tokenMatch.comments) description = tokenMatch.comments.trim();
-			if (tokenMatch.description) description = tokenMatch.description.trim();
-
-			if (tokenMatch.type == SymbolType.Macro || tokenMatch.type == SymbolType.Function) {
-
-				var parm_text = [];
-
-				if (tokenMatch.data) {
-					for (var parm1 of tokenMatch.data.parms) {
-						parm_text.push(parm1.name);
-					}
-				}
-
-				if (tokenMatch.parameters) {
-					for (var parm2 of tokenMatch.parameters) {
-						parm_text.push(parm2.name);
-					}
-				}
-
-				var symbolDirective = tokenMatch.type == SymbolType.Macro ? ".macro" : ".function";
-				return [
-					`	${symbolDirective} ${tokenMatch.name}(${parm_text.join(", ")}) ${file}`,
-					`${description.trim()}`,
-				 ];
-
-			}
-
-			if (tokenMatch.type == SymbolType.NamedLabel) {
-
-				var description = "";
-
-				if (tokenMatch.comments) description = tokenMatch.comments.trim();
-
-				return [
-					`*(label)* ${tokenMatch.name} ${file}`,
-					`${description.trim()}`,
-				 ];
-		
-			}
-
-			if (tokenMatch.type == SymbolType.Constant) {
-				return this.createSymbolWithValue(tokenMatch, file);
-			}
-
-			if (tokenMatch.type == SymbolType.Label) {
-				return this.createSymbolWithValue(tokenMatch, file);
-			}
-
-			if (tokenMatch.type == SymbolType.Variable) {
-				return this.createSymbolWithValue(tokenMatch, file);
-			}
-
-			if (tokenMatch.type == SymbolType.Boolean) {
-
-				var description = "";
-
-				if (tokenMatch.comments) description = tokenMatch.comments.trim();
-
-				return [
-					`	#define ${tokenMatch.name} ${file}`,
-					`${description.trim()}`,
-				 ];
-		
-			}
-			return undefined;
-		}
 	}
 
 	private createSymbolWithValue(symbol: Symbol, file: string): string[] {
