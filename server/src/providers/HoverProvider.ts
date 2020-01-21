@@ -290,6 +290,12 @@ export default class HoverProvider extends Provider {
 						if (assemblerSyntax.type === 'ppDirective') {
 							return this.getPreProcessorMatch("#".concat(token)); // add # for proper search
 						}
+
+						// pseudoCommandExecution
+
+						if (assemblerSyntax.type === 'pseudoCommandExecution') {
+							return this.getPseudoCommandMatch(token); 
+						}
 					}
 
 					// mnemonic line?
@@ -421,7 +427,7 @@ export default class HoverProvider extends Provider {
 		}
 	}
 
-	private getPseudoOpsMatch(token: string): string[] | undefined {
+	private getPseudoCommandMatch(token: string): string[] | undefined {
 		const tokenMatch = KickLanguage.PseudoOps.find((pseudoOp) => {
 			return pseudoOp.name.toLowerCase() === token.toLowerCase() ||
 				pseudoOp.otherNames.some((otherName) => otherName.toLowerCase() === token.toLowerCase());
