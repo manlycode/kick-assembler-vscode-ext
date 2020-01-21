@@ -233,6 +233,14 @@ export default class Project {
 
         if (symbol) {
 
+            // make any symbol starting with @ global
+            
+            if (symbol.name.substr(0, 1) == "@") {
+                symbol.scope = 0;
+                symbol.name = symbol.name.substr(1);
+                symbol.isGlobal = true;
+            }
+
             if (!symbol.data)
                 symbol.data = {};
 
@@ -340,12 +348,6 @@ export default class Project {
                 symbol.snippet = '(' + paramSnippet.join(',') + ')';
 
                 symbol.data = { "parms": parms };
-
-                if (symbol.name.substr(0, 1) == "@") {
-                    symbol.scope = 0;
-                    symbol.name = symbol.name.substr(1);
-                    symbol.isGlobal = true;
-                }
 
                 return symbol;
             }

@@ -18,7 +18,9 @@ import {
 	Hover,
 	ResponseError,
 	MarkedString,
-	VersionedTextDocumentIdentifier
+	VersionedTextDocumentIdentifier,
+	WorkspaceChange,
+	RemoteWindow
 } from "vscode-languageserver";
 
 import Project, { Symbol, SymbolType } from "../project/Project";
@@ -163,6 +165,21 @@ export default class HoverProvider extends Provider {
 		const _parms = StringUtils.BuildSymbolParameterString(symbol);
 		const _name = symbol.name;
 		const _directive = ".macro";
+		const _description = this.getSymbolDescription(symbol);
+
+		return [
+			`	${_directive} ${_name}(${_parms}) ${_file}`,
+			`${_description.trim()}`,
+		];
+
+	}
+
+	private createFunctionHover(symbol: Symbol): string[] | undefined {
+
+		const _file = this.getFileFromSymbol(symbol);
+		const _parms = StringUtils.BuildSymbolParameterString(symbol);
+		const _name = symbol.name;
+		const _directive = ".function";
 		const _description = this.getSymbolDescription(symbol);
 
 		return [
@@ -327,6 +344,10 @@ export default class HoverProvider extends Provider {
 
 							if (_symbol.type === SymbolType.Macro) {
 								return this.createMacroHover(_symbol);
+							}
+							
+							if (_symbol.type === SymbolType.Function) {
+								return this.createFunctionHover(_symbol);
 							}
 							
 							return this.createSimpleHover(_symbol);
