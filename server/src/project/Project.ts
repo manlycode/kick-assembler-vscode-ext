@@ -1,7 +1,7 @@
 /*
     Class:  Project
 
-    Represents the Currently Open Source File
+    Represents the Currently Open Source File.
 
     Remarks:
 
@@ -171,6 +171,13 @@ export default class Project {
         return KickLanguage.Directives;
     }
 
+    /**
+     * Returns all Code generated and Build-In Symbols
+     */
+    public getAllSymbols(): Symbol[] {
+        return this.getSymbols().concat(this.getBuiltInSymbols());
+    }
+
     public getSymbols(): Symbol[] {
         return this.symbols || [];
     }
@@ -225,6 +232,14 @@ export default class Project {
         }
 
         if (symbol) {
+
+            // make any symbol starting with @ global
+            
+            if (symbol.name.substr(0, 1) == "@") {
+                symbol.scope = 0;
+                symbol.name = symbol.name.substr(1);
+                symbol.isGlobal = true;
+            }
 
             if (!symbol.data)
                 symbol.data = {};
@@ -297,7 +312,10 @@ export default class Project {
                 var name = split[1];
                 var symbol = <Symbol>{};
                 
-                if (name.startsWith("_")) return;
+                // this was preventing internal macros from showing
+                
+                //if (name.startsWith("_")) return;
+
                 if(directive == ".function"){
                     symbol.type = SymbolType.Function;
                     symbol.kind = SymbolKind.Function;
@@ -330,12 +348,6 @@ export default class Project {
                 symbol.snippet = '(' + paramSnippet.join(',') + ')';
 
                 symbol.data = { "parms": parms };
-
-                if (symbol.name.substr(0, 1) == "@") {
-                    symbol.scope = 0;
-                    symbol.name = symbol.name.substr(1);
-                    symbol.isGlobal = true;
-                }
 
                 return symbol;
             }

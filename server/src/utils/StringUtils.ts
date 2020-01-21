@@ -1,4 +1,10 @@
-import { stringify } from "querystring";
+/**
+ * A Collection Of Helpers For Formatting Strings
+ * 
+ */
+import {stringify} from "querystring";
+import {Symbol} from "../project/Project";
+import NumberUtils from "./NumberUtils";
 
 export default class StringUtils {
 
@@ -172,12 +178,92 @@ export default class StringUtils {
 		// comment out to test the new way
 		//return text;
 		
-		//	test to see if removing paren works for code snippets
-		text = text.replace("(", " ");
-		text = text.replace(")", " ");
-		text = text.replace("\"", " ");
-		text = text.replace("#", " ");
+		text = text.replace(/\(/g, " ");
+		text = text.replace(/\)/g, " ");
+		text = text.replace(/\\/g, " ");
+		text = text.replace(/\#/g, " ");
+		text = text.replace(/\;/g, " ");
+		text = text.replace(/\:/g, " ");
+		text = text.replace(/\[/g, " ");
+		text = text.replace(/\]/g, " ");
+		text = text.replace(/\@/g, " ");
 		return text ;
+	}
+
+	/**
+	 * Build a String that represents the Parameters in a Function or Macro.
+	 * 
+	 * @param symbol the Symbol containing the Parameters
+	 */
+	public static BuildSymbolParameterString(symbol: Symbol): string {
+
+		var parm_text = [];
+
+		if (symbol.data) {
+			for (var parm1 of symbol.data.parms) {
+				parm_text.push(parm1.name);
+			}
+		}
+
+		if (symbol.parameters) {
+			for (var parm2 of symbol.parameters) {
+				parm_text.push(parm2.name);
+			}
+		}
+
+		return parm_text.join(", ");
+
+	}
+
+	/**
+	 * Build a Formatted Value from a Symbol
+	 * 
+	 * @param full set true if you also want to include the octal value
+	 */
+	public static BuildSymbolFormattedValue(symbol: Symbol, full: boolean = false): string {
+
+		if (isNaN(symbol.value) || !Number.isInteger(symbol.value))
+			return '';
+
+		return this.BuildFormattedValue(symbol.value, full);
+	}
+
+	/**
+	 * Build a Formatted Value from a String Token
+	 * 
+	 * @param token 
+	 * @param full 
+	 */
+	public static BuildTokenFormattedValue(token: string, full: boolean = false): string {
+
+		var _number = NumberUtils.toDecimal(token);
+
+			if (isNaN(_number) || !Number.isInteger(_number))
+				return '';
+
+			return this.BuildFormattedValue(_number, full);
+		}
+
+	/**
+	 * Build a Formatted Value from a Number
+	 * 
+	 * @param value 
+	 * @param full 
+	 */
+	public static BuildFormattedValue(value: number, full: boolean = false): string {
+
+		if (!full)
+			return '\n' +
+			`\n* Dec: \`${value.toString(10)}\`` +
+			`\n* Bin: \`\%${value.toString(2)}\`` +
+			`\n* Hex: \`\$${value.toString(16)}\``;
+
+
+		return '\n' +
+		`\n* Dec: \`${value.toString(10)}\`` +
+		`\n* Bin: \`\%${value.toString(2)}\`` +
+		`\n* Oct: \`${value.toString(8)}\`` +
+		`\n* Hex: \`\$${value.toString(16)}\``;
 	}
 
 }
