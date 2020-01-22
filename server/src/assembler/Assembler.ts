@@ -72,7 +72,7 @@ export class Assembler {
             '-noeval',
             '-warningsoff',
             '-asminfo',
-            'allSourceSpecific',
+            'allSourceSpecific|version',
             '-asminfofile',
             asminfo], { cwd: path.resolve(sourcePath) });
 
