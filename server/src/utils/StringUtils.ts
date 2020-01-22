@@ -104,9 +104,11 @@ export default class StringUtils {
 	 * @param text 
 	 * @param position 
 	 */
-	public static GetWordAt(text:string, position:number):string {
+	public static GetWordAt(text:string, position:number, cleanText:boolean=true):string {
 
-		text = this.CleanText(text);
+		if(cleanText){
+			text = this.CleanText(text);
+		}
 
 		// make pos point to a character of the word
 		while (text[position] == " ") position--;
@@ -181,7 +183,7 @@ export default class StringUtils {
 		text = text.replace(/\(/g, " ");
 		text = text.replace(/\)/g, " ");
 		text = text.replace(/\\/g, " ");
-		text = text.replace(/\#/g, " ");
+		text = text.replace(/(?<!^\s*)#/g, " ");
 		text = text.replace(/\;/g, " ");
 		text = text.replace(/\:/g, " ");
 		text = text.replace(/\[/g, " ");

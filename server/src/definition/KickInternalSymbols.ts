@@ -1258,7 +1258,7 @@ export class KickInternalSymbols {
                         snippet: '(${1:n})'
                     }
                 ],
-                snippet: '("${1:x}")'
+                snippet: '("$1")'
             },
             {
                 type: SymbolType.Function,
@@ -1347,7 +1347,7 @@ export class KickInternalSymbols {
                         snippet: '(${1:x},${2:y})'
                     }
                 ],
-                snippet: '("${1:x}")'
+                snippet: '("$1")'
             },
             {
                 type: SymbolType.Function,
@@ -1402,7 +1402,7 @@ export class KickInternalSymbols {
                         snippet: '(${1:i})'
                     }
                 ],
-                snippet: '("${1:x}")'
+                snippet: '("$1")'
             },
             {
                 type: SymbolType.Function,

@@ -343,7 +343,8 @@ export default class Project {
                     parm_symbol.scope = symbol.scope;
                     parm_symbol.isMain = main;
                     
-                    paramSnippet.push("${"+(i-1)+":"+parm_symbol.name+"}");
+ //                   paramSnippet.push("${"+(i-1)+":"+parm_symbol.name+"}");
+                    paramSnippet.push("$"+(i-1));
                 }
                 symbol.snippet = '(' + paramSnippet.join(',') + ')';
 

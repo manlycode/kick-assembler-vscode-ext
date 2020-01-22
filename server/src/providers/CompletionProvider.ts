@@ -2,6 +2,11 @@
 
 */
 
+const { resolve } = require('path');
+const { readdir } = require('fs').promises;
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {
 	Provider, ProjectInfoProvider
 } from "./Provider";
@@ -28,9 +33,8 @@ enum LanguageCompletionTypes {
 import Project, { SymbolType, Line } from "../project/Project";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
-import URI from "vscode-uri";
-import { Parameter } from "../definition/KickPreprocessors";
 import StringUtils from "../utils/StringUtils";
+import PathUtils from '../utils/PathUtils'; 
 
 export default class CompletionProvider extends Provider {
 
@@ -51,7 +55,7 @@ export default class CompletionProvider extends Provider {
 		super(connection, projectInfo);
 
 		// 	show the initial list of items
-		connection.onCompletion((textDocumentPosition:TextDocumentPositionParams): CompletionItem[] => {
+		connection.onCompletion((textDocumentPosition:TextDocumentPositionParams): Thenable<CompletionItem[]> => {
 			if (projectInfo.getSettings().valid) {
 				this.documentPosition = textDocumentPosition;
 				return this.createCompletionItems();
@@ -66,7 +70,7 @@ export default class CompletionProvider extends Provider {
 		});
     }
     
-	private createCompletionItems():CompletionItem[] {
+	private async createCompletionItems():Promise<CompletionItem[]> {
 
 		/*
 			working out some new pseudo code for completion logic
@@ -108,11 +112,41 @@ export default class CompletionProvider extends Provider {
 		var tokensLeft = StringUtils.GetWordsBefore(this.triggerLine, this.triggerCharacterPos);
 //		var tokensRight = StringUtils.GetWordsAfter(this.triggerLine, triggerCharacterPos);
 
-		// No autocomplete in line comments or within strings
-		if ((tokensLeft && tokensLeft.indexOf("//") !== -1) ||
-			this.triggerToken.substr(0,1).match(/["']/) ||
-			this.triggerToken.substr(-1).match(/["']/) ||
-			this.triggerToken.substr(0,2) == "//") {
+		// No autocomplete in comments
+		var blockCommentStart = this.triggerLine.indexOf('/*');
+		var blockCommentEnd = this.triggerLine.lastIndexOf('*/');
+		if ((blockCommentStart < this.triggerCharacterPos && blockCommentEnd > this.triggerCharacterPos ) ||
+			(tokensLeft && tokensLeft.filter(token => token.indexOf("//") !== -1).length > 0) ||
+			this.triggerToken.substr(0,2) == "//" ||
+			this.triggerToken == "/*"
+			) {
+			return;
+		}
+		var cl=this.documentPosition.position.line-1;
+		var inComment=false;
+		while(cl>=0) {
+			blockCommentStart = this.documentSource[cl].indexOf('/*');
+			blockCommentEnd = this.documentSource[cl].lastIndexOf('*/');
+			if (blockCommentStart < blockCommentEnd) break;
+			if (blockCommentStart > blockCommentEnd) {
+				inComment=true;
+				break;
+			}
+			cl--;
+		}
+		if(inComment) return;
+
+		var inStringTest = this.triggerLine.substr(0,this.triggerCharacterPos).replace(/("([^\\"]|\\")*"|'([^\\']|\\')*')/g,"");
+		if (inStringTest.match(/["'"]/) || this.triggerToken=='""' || this.triggerToken=="''") {
+//inside a string quote, now check if its a file selection, its the only allowed intellisense possibility here
+			if((tokensLeft && 
+				(tokensLeft[0].substr(1,6) == "import") || 
+				tokensLeft[tokensLeft.length-1].substr(0,4) == "Load")
+			 ) {
+				var extensionFilter = '';
+				const currentUri = PathUtils.getPathFromFilename(this.getProjectInfo().getCurrentProject().getUri());
+				return this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(currentUri));
+			}
 			return;
 		}
 
@@ -122,7 +156,7 @@ export default class CompletionProvider extends Provider {
 		} 
 
 		if(this.trigger == "."){
-			var preparedToken = this.triggerToken.replace(/\(.*?\)/g,"");
+			var preparedToken = StringUtils.GetWordAt(this.triggerLine, this.triggerCharacterPos, false).replace(/\(.*?\)/g,"");
 			var possibleInternalClass = LineUtils.getTokenAtLinePosition(preparedToken,preparedToken.length - 1);
 			if(possibleInternalClass) {
 				var symbolInstance = "", instancePos;
@@ -245,7 +279,38 @@ export default class CompletionProvider extends Provider {
 
 		return items;
 	}
-	
+
+	private async loadFileSystem(extensionFilter:string, dir:string,base?:string):Promise<CompletionItem[]> {
+		if (!base) base = dir;
+		const dirents = await readdir(dir, { withFileTypes: true });
+		const files = await Promise.all(
+			dirents
+			.filter((dirent: fs.Dirent) => {
+				const ext = path.extname(dirent.name);
+				const extReg = new RegExp("\\.("+extensionFilter+")", "i");
+				return dirent.name[0] !== '.' && (extensionFilter == "" || dirent.isDirectory() || ext.match(extReg));
+			})
+			.map((dirent: fs.Dirent) => {
+				const res = resolve(dir, dirent.name);
+				const ext = path.extname(dirent.name);
+				const relPath = res.replace(base,"").substr(1);
+				const documentation = ext.match(/\.(jpg|png|gif)/i) ? {
+					value: `![](file://${res})\n\n\n\n\n\n\n\n\#### Preview`,
+					kind: 'markdown'
+				} : '';
+				return dirent.isDirectory() ? this.loadFileSystem(extensionFilter,res,base) : <CompletionItem> {
+					label: relPath,
+					kind: CompletionItemKind.File,
+					documentation,
+					data: {
+						payload:{}
+					}
+				};
+			})
+		);
+		return Array.prototype.concat(...files);
+	}
+
 	private createCompletionItem(label:string, type:LanguageCompletionTypes, payload:any, kind:CompletionItemKind):CompletionItem {
 		
 		let filterText = label;
@@ -283,6 +348,10 @@ export default class CompletionProvider extends Provider {
 			filterText: filterText,
 			textEdit: textEdit,
 			insertTextFormat: 2,
+			command: {
+				title: '',
+				command: payload.snippet && payload.snippet.indexOf('$1') !== -1 ? 'editor.action.triggerSuggest' : ''
+			},
 			data: {
 				type,
 				payload

@@ -74,7 +74,8 @@ export const PreProcessors:PreProcessor[] = [
 				name: "name",
 				type: "string",
 			}
-		]
+		],
+		snippet: ' "$0"'
 	},
 	{
 		name: "#importif",
@@ -90,7 +91,7 @@ export const PreProcessors:PreProcessor[] = [
 				type: "string"
 			}
 		],
-		snippet: ' ${1:symbol} "${2:filename}"'
+		snippet: ' ${1:symbol} "$0"'
 	},
 	{
 		name: "#importonce",
