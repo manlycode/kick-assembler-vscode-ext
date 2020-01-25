@@ -105,18 +105,28 @@ export default class ClientUtils {
         var outputDirectory:string = this.GetSettings().get("outputDirectory");
         var sourceDirectory:string  = PathUtils.GetPathFromFilename(this.GetSourceUri().path);
 
-        if (outputDirectory == "") {
-            outputDirectory = sourceDirectory;
+        var outputParse = path.parse(outputDirectory);
+        var outputDir:string = path.dirname(outputDirectory);
+        var outputPath:string = path.join(sourceDirectory, outputDirectory);
+
+        // starts at base folder
+        if (outputParse.root.length > 0) {
+            outputPath = outputDirectory;
         }
 
-        outputDirectory = path.resolve(outputDirectory);
+        // when left blank use the source directory
+        if (outputDirectory.trim() == "") {
+            outputPath = sourceDirectory;            
+        }
+
+        // outputPath = path.resolve(outputPath);
 
         var fs = require('fs');
-        if (!fs.existsSync(outputDirectory)) {
-            fs.mkdirSync(outputDirectory);
+        if (!fs.existsSync(outputPath)) {
+            fs.mkdirSync(outputPath);
         }
 
-        return outputDirectory;
+        return outputPath;
     }
 
     /**
