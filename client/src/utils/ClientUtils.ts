@@ -101,7 +101,7 @@ export default class ClientUtils {
 
 
         var outputDirectory:string = this.GetSettings().get("outputDirectory");
-        var sourceDirectory:string  = PathUtils.GetPathFromFilename(this.GetSourceUri().fsPath);
+        var sourceDirectory:string  = PathUtils.GetPathFromFilename(this.GetOpenDocument().fileName);
 
         var outputParse = path.parse(outputDirectory);
         var outputDir:string = path.dirname(outputDirectory);
