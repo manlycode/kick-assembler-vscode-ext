@@ -150,7 +150,10 @@ export default class HoverProvider extends Provider {
 			case SymbolType.NamedLabel:
 				_type = '(label)';
 				break;
-			}				
+			case SymbolType.Boolean:
+				_type = '(boolean)';
+				break;
+				}				
 
 		return [
 			`	${_type} ${symbol.name} ${_original} ${_file}`,
@@ -319,7 +322,7 @@ export default class HoverProvider extends Provider {
 
 					// directive line?
 
-					if (assemblerSyntax.type === 'directive') {
+					if (assemblerSyntax.type === 'directive' || assemblerSyntax.type === 'ppDirective') {
 
 						/*
 							when hovering over something on a 
@@ -339,12 +342,17 @@ export default class HoverProvider extends Provider {
 								_contents
 							];						
 
-						var _symbol = this.findSymbolOfType(token, SymbolType.Variable);
-						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Constant);
-						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Label);
+						var _symbol; 
 						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.NamedLabel);
-						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Macro);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Label);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Constant);
 						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Function);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Macro);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.PseudoCommand);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Variable);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Namespace);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Parameter);
+						if (!_symbol) _symbol = this.findSymbolOfType(token, SymbolType.Boolean);
 
 						if (_symbol) {
 
