@@ -4,10 +4,12 @@
 */
 
 import { spawn, spawnSync } from 'child_process';
-import { workspace, window, Disposable, ExtensionContext, commands, WorkspaceConfiguration } from 'vscode';
+import { Uri, workspace, window, Disposable, ExtensionContext, commands, WorkspaceConfiguration } from 'vscode';
 import PathUtils from '../utils/PathUtils';  
 import * as vscode from 'vscode';
 import * as path from 'path';
+import ClientUtils from '../utils/ClientUtils';
+import * as fs from 'fs';
 
 
 export class CommandBuild { 
@@ -20,49 +22,54 @@ export class CommandBuild {
 
     public build(output:vscode.OutputChannel):number {
 
-        //  is the java path set?
+        // get the java runtime
         let javaRuntime:string = this._configuration.get("javaRuntime");
 
-        //  is the kickass path set?
+        // get the path to the kickass jar
         let assemblerJar:string = this._configuration.get("assemblerJar");
 
-        //  create output name
-        var outputDirectory: string = this._configuration.get("outputDirectory");
-        var sourceFile: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString());
-        let prg = path.basename(sourceFile);
-        prg = prg.replace(".asm", ".prg");
-        prg = prg.replace(".kick", ".prg");
-        prg = prg.replace(".a", ".prg");
-        prg = prg.replace(".ka", ".prg");
-        let outputFile = outputDirectory +  path.sep + prg;
+        // get the output filename
+        let outputFile = ClientUtils.GetWorkspaceProgramUri().fsPath;
 
-        //  create symbol directory
-        let symbolDir = outputDirectory;
+        // delete old output
+        // TODO: remove any program output like symbols
+        if (fs.existsSync(outputFile)) {
+            fs.unlinkSync(outputFile);
+        }
 
-        //  get the path of the source
-        var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(window.activeTextEditor.document.uri.toString()));
+        // create symbol directory
+        let symbolDir:string = ClientUtils.GetOutputPath();
 
-        //  locate file, does it exist?
+        // get the path of the source
+        var sourcePath: string = PathUtils.GetPathFromFilename(PathUtils.uriToPlatformPath(window.activeTextEditor.document.uri.toString()));
+
+        // locate file, does it exist?
         let doc = window.activeTextEditor.document;
         let file = PathUtils.uriToFileSystemPath(doc.uri.toString());
 
-        //  create new output channel
+        // create new output channel
         output.clear();
         output.show(true);
 
-        //  spawn new child process
+        // spawn new child process to compile the program
+
         let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfile", "-symbolfiledir", symbolDir];
+
+        // add option to dump debugger info
         if (this._configuration.get("debuggerDumpFile")){
             javaOptions.push('-debugdump');
         }
+
+        // add setting to allow java file creation
         if (this._configuration.get("javaAllowFileCreation")){
             javaOptions.push('-afo');
         }
+
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
         let errorCode = java.status;
 
         if (errorCode > 0) {
-            window.showErrorMessage('Compilation failed with errors.');
+            window.showWarningMessage('Compile Failed with Errors.');
             output.append(java.stdout.toString());
         } else {
             output.append(java.stdout.toString());

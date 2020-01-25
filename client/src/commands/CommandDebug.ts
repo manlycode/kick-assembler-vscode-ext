@@ -6,6 +6,7 @@
 import { spawn } from 'child_process';
 import { workspace, window, Disposable, ExtensionContext, commands, Uri } from 'vscode';
 import PathUtils from '../utils/PathUtils';
+import ClientUtils from '../utils/ClientUtils';
 import * as vscode from 'vscode';
 import * as path from 'path';
 
@@ -26,29 +27,38 @@ export class CommandDebug {
         let debuggerOptionsString: string = this._configuration.get("debuggerOptions");
         let debuggerOptions = debuggerOptionsString.match(/\S+/g) || [];
         
-        //  build source and output dirs
-        var outputDirectory: string = this._configuration.get("outputDirectory");
-        var sourcePath: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString());
+        // //  build source and output dirs
+        // var outputDirectory: string = this._configuration.get("outputDirectory");
+        // var sourcePath: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString());
 
-        if (outputDirectory == "") {
-            outputDirectory = sourcePath;
-        }
+        // if (outputDirectory == "") {
+        //     outputDirectory = sourcePath;
+        // }
 
-        //  build file path
-        //  the below code is dumb, but will work for now
-        let prg = path.basename(sourcePath);
-        prg = prg.replace(".asm", ".prg");
-        prg = prg.replace(".kick", ".prg");
-        prg = prg.replace(".a", ".prg");
-        prg = prg.replace(".ka", ".prg");
+        // //  build file path
+        // //  the below code is dumb, but will work for now
+        // let prg = path.basename(sourcePath);
+        // prg = prg.replace(".asm", ".prg");
+        // prg = prg.replace(".kick", ".prg");
+        // prg = prg.replace(".a", ".prg");
+        // prg = prg.replace(".ka", ".prg");
 
-        let vsf = prg.replace(".prg", ".vs");
-        
-        var newPath = path.join(path.dirname(sourcePath), outputDirectory);
-        prg = path.join(newPath, path.basename(prg));
-        prg = path.resolve(prg);
+        // var newPath = path.join(path.dirname(sourcePath), outputDirectory);
+        // prg = path.join(newPath, path.basename(prg));
+        // prg = path.resolve(prg);
+
+        // get the program filename and path
+        let prg = ClientUtils.GetWorkspaceProgramUri().fsPath;
 
         console.log(`- looking for file ${prg}`);
+
+        var fs = require('fs');
+        if (!fs.existsSync(prg)) {
+            window.showWarningMessage(`Could not Locate the Program to Debug.`,`${prg}`);
+            return;
+        }
+
+        let vsf = prg.replace(".prg", ".vs");
 
         //  spawn child process for win32
         if (process.platform == "win32") {

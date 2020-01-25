@@ -28,7 +28,7 @@ export default class PathUtils {
      * Returns the Path from a Filename
      * @param filename 
      */
-    public static getPathFromFilename(filename: string) {
+    public static GetPathFromFilename(filename: string) {
         return dirname(filename);
     }
 }
