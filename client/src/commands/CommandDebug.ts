@@ -27,28 +27,8 @@ export class CommandDebug {
         let debuggerOptionsString: string = this._configuration.get("debuggerOptions");
         let debuggerOptions = debuggerOptionsString.match(/\S+/g) || [];
         
-        // //  build source and output dirs
-        // var outputDirectory: string = this._configuration.get("outputDirectory");
-        // var sourcePath: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString());
-
-        // if (outputDirectory == "") {
-        //     outputDirectory = sourcePath;
-        // }
-
-        // //  build file path
-        // //  the below code is dumb, but will work for now
-        // let prg = path.basename(sourcePath);
-        // prg = prg.replace(".asm", ".prg");
-        // prg = prg.replace(".kick", ".prg");
-        // prg = prg.replace(".a", ".prg");
-        // prg = prg.replace(".ka", ".prg");
-
-        // var newPath = path.join(path.dirname(sourcePath), outputDirectory);
-        // prg = path.join(newPath, path.basename(prg));
-        // prg = path.resolve(prg);
-
         // get the program filename and path
-        let prg = ClientUtils.GetWorkspaceProgramUri().fsPath;
+        let prg = ClientUtils.GetWorkspaceProgramFilename();
 
         console.log(`- looking for file ${prg}`);
 

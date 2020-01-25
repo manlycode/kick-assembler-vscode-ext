@@ -66,7 +66,7 @@ export default class ClientUtils {
      * 
      *      /home/user/build/coolgame.asm
      */
-    public static GetWorkspaceProgramUri():Uri {
+    public static GetWorkspaceProgramFilename():string {
 
         // get the output path
         var outputPath:string = this.GetOutputPath();
@@ -83,10 +83,7 @@ export default class ClientUtils {
         // build the filename
         var outputFile:string = outputPath + path.sep + prg;
 
-        // convert to uri and return
-        var uri:Uri = Uri.parse(outputFile);
-        return uri;
-
+        return outputFile;
     }
 
     /**
@@ -103,7 +100,7 @@ export default class ClientUtils {
 
 
         var outputDirectory:string = this.GetSettings().get("outputDirectory");
-        var sourceDirectory:string  = PathUtils.GetPathFromFilename(this.GetSourceUri().path);
+        var sourceDirectory:string  = PathUtils.GetPathFromFilename(this.GetSourceUri().fsPath);
 
         var outputParse = path.parse(outputDirectory);
         var outputDir:string = path.dirname(outputDirectory);

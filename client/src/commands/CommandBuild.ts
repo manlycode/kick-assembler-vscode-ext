@@ -29,7 +29,7 @@ export class CommandBuild {
         let assemblerJar:string = this._configuration.get("assemblerJar");
 
         // get the output filename
-        let outputFile = ClientUtils.GetWorkspaceProgramUri().fsPath;
+        let outputFile = ClientUtils.GetWorkspaceProgramFilename();
 
         // delete old output
         // TODO: remove any program output like symbols

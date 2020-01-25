@@ -25,7 +25,7 @@ export class CommandRun {
         let emulatorRuntime: string  = this._configuration.get("emulatorRuntime");
 
         // get the program filename and path
-        let prg = ClientUtils.GetWorkspaceProgramUri().fsPath;
+        let prg = ClientUtils.GetWorkspaceProgramFilename();
 
         console.log(`- looking for file ${prg}`);
 
