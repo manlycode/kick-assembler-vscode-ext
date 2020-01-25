@@ -4,7 +4,7 @@
 
 This release addresses the issues some folks have been having with the new setting "kickassembler.outputDirectory", which was intended to control where compiled artifacts are put on the filesystem. We also looked at a problem related to symbols with same name only showing the first type registered in the code. So, if you had a `.macro` and a `.const` both name the same, if the `.macro` was declared first, that is what would be shown on a hover for the `.const`, etc.
 
-There were a number of issues related to compiling, and the subsequent running of an Emulator or the C64Debugger because of some issues with how the final PRG file was named. These problewms have been addressed, and it should be a little smarter now when it is building the final path for your compiled program. Here are scenarios that the extension tries to handle with respect to this setting. The scenarios work the same on all filesystems (we hope).
+There were a number of issues related to compiling, and the subsequent running of an Emulator or the C64Debugger because of some issues with how the final PRG file was named. These problems have been addressed, and it should be a little smarter now when it is building the final path for your compiled program. Here are scenarios that the extension tries to handle with respect to this setting. The scenarios work the same on all filesystems (we hope).
 
 """
 Example 1:
