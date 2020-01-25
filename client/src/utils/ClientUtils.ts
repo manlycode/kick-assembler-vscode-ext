@@ -71,7 +71,7 @@ export default class ClientUtils {
 
         // get the output path
         var outputPath:string = this.GetOutputPath();
-        var sourceFile: string = this.GetSourceUri().toString();
+        var sourceFile: string = this.GetOpenDocument().fileName;
 
         // hack to make the extension a PRG file
         // TODO: make this betterer
