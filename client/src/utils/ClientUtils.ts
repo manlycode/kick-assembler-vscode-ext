@@ -3,10 +3,11 @@
 	Licensed under the MIT License. See License.txt in the project root for license information.
 */
 
-import { Uri, WorkspaceConfiguration, window, workspace} from 'vscode';
+import { Uri, WorkspaceConfiguration, window, workspace, TextDocument, TextEditor } from 'vscode';
 import * as fs from 'fs';
 import PathUtils from "./PathUtils"
 import * as path from "path";
+//import { TextDocument } from 'vscode-languageclient';
 
 /**
  * A Collection of Useful Client Functions
@@ -136,6 +137,47 @@ export default class ClientUtils {
      */
     public static GetSourceUri():Uri {
         return window.activeTextEditor.document.uri;
+    }
+
+    /**
+     * Find the Active Open Document
+     */
+    public static GetOpenDocument():TextDocument | undefined{
+
+        var document:TextDocument;
+
+        /*
+            first try the active window text editor
+
+            if it has a valid viewColumn (! undefined) then
+            we can pretty safely assume it is one of the
+            open source code windows
+        */
+
+        let activeEditor = window.activeTextEditor;
+
+        // get the document and return it to the caller
+        if (activeEditor.viewColumn != undefined) {
+            document = activeEditor.document;
+            return document;
+        }
+
+        let textEditors = window.visibleTextEditors;
+
+        if (textEditors.length < 0) {
+            return undefined;
+        }
+
+        for (var i = 0; i < textEditors.length; i++ ) {
+            var editor:TextEditor = textEditors[i];
+            if (editor.viewColumn == 1) {
+                document = editor.document;
+                return document;
+            }
+        }
+
+        return undefined;
+
     }
 
     /**

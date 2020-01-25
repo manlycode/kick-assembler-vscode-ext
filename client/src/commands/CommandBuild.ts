@@ -44,14 +44,37 @@ export class CommandBuild {
         var sourcePath: string = PathUtils.GetPathFromFilename(PathUtils.uriToPlatformPath(window.activeTextEditor.document.uri.toString()));
 
         // locate file, does it exist?
+        let af = window.activeTextEditor;
+        let ws = workspace;
+        let docs = ws.textDocuments;
+        let te = window.visibleTextEditors;
         let doc = window.activeTextEditor.document;
-        let file = PathUtils.uriToFileSystemPath(doc.uri.toString());
+        let openDocument = ClientUtils.GetOpenDocument();
+
+        var file:string;
+
+        if (openDocument) {
+            file = openDocument.fileName;    
+        }
+
+        // file = PathUtils.uriToFileSystemPath(doc.uri.toString());
+
+        if (!file) {
+            window.showWarningMessage('Unable to Build.');
+            return 1;
+        }
+
+        let base = path.basename(file).toUpperCase();
+
+        window.showInformationMessage(`Building ${base}`);
 
         // create new output channel
         output.clear();
         output.show(true);
 
         // spawn new child process to compile the program
+
+        var start = process.hrtime();
 
         let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfile", "-symbolfiledir", symbolDir];
 
@@ -66,12 +89,18 @@ export class CommandBuild {
         }
 
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
+
+        var end = process.hrtime(start);
+
         let errorCode = java.status;
 
+        let time = `(${end[0]}s ${end[1].toString().substr(0,3)}ms)`;
+
         if (errorCode > 0) {
-            window.showWarningMessage('Compile Failed with Errors.');
+            window.showWarningMessage(`Build of ${base} Failed ${time}`);
             output.append(java.stdout.toString());
         } else {
+            window.showInformationMessage(`Build of ${base} Complete ${time}`);
             output.append(java.stdout.toString());
         }
 
