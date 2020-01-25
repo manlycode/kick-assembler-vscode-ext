@@ -180,7 +180,7 @@ export default class CompletionProvider extends Provider {
 
 				if(prevToken == "") {
 					const preProcessorMatch = KickLanguage.PreProcessors.find((preProcessor) => {
-						return preProcessor.name.toLowerCase() === lastToken && preProcessor.parameters.length > 0;
+						return preProcessor.name.toLowerCase().substring(1) === lastToken && preProcessor.parameters.length > 0;
 					});
 					if (preProcessorMatch) {
 						prevToken = "preprocessor";
@@ -237,7 +237,7 @@ export default class CompletionProvider extends Provider {
 				items = items.concat(this.loadSymbols(SymbolType.Namespace));
 			}
 
-			if (prevToken == "preprocessor" && lastToken !== "#define") {
+			if (prevToken == "preprocessor" && lastToken !== "define") {
 				items = items.concat(this.loadSymbols(SymbolType.Boolean));
 			}
 
