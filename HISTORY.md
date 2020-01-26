@@ -1,6 +1,15 @@
 
 ## Visual Studio Code Extension for Kick Assembler 
 
+## v0.2.7
+### Changed
++ added new version info to the asminfo file for future use
++ better overall formatting for hovers
+### Fixed
++ issue #34 -- correct multiple problems with the outtputDirectory setting
++ issue #24 -- symbols with same name only showing the first type registered (hover refactoring)
++ fix preprocessor completion items not showing because of name mismatch
+
 ## v0.2.6
 ### Changed
 + some small changes to the code snippets for whitepace and value completion for .var and .label directives

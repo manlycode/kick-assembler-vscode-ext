@@ -4,10 +4,12 @@
 */
 
 import { spawn, spawnSync } from 'child_process';
-import { workspace, window, Disposable, ExtensionContext, commands, WorkspaceConfiguration } from 'vscode';
+import { Uri, workspace, window, Disposable, ExtensionContext, commands, WorkspaceConfiguration } from 'vscode';
 import PathUtils from '../utils/PathUtils';  
 import * as vscode from 'vscode';
 import * as path from 'path';
+import ClientUtils from '../utils/ClientUtils';
+import * as fs from 'fs';
 
 
 export class CommandBuild { 
@@ -20,51 +22,85 @@ export class CommandBuild {
 
     public build(output:vscode.OutputChannel):number {
 
-        //  is the java path set?
+        // get the java runtime
         let javaRuntime:string = this._configuration.get("javaRuntime");
 
-        //  is the kickass path set?
+        // get the path to the kickass jar
         let assemblerJar:string = this._configuration.get("assemblerJar");
 
-        //  create output name
-        var outputDirectory: string = this._configuration.get("outputDirectory");
-        var sourceFile: string = PathUtils.uriToFileSystemPath(window.activeTextEditor.document.uri.toString());
-        let prg = path.basename(sourceFile);
-        prg = prg.replace(".asm", ".prg");
-        prg = prg.replace(".kick", ".prg");
-        prg = prg.replace(".a", ".prg");
-        prg = prg.replace(".ka", ".prg");
-        let outputFile = outputDirectory +  path.sep + prg;
+        // get the output filename
+        let outputFile = ClientUtils.GetWorkspaceProgramFilename();
 
-        //  create symbol directory
-        let symbolDir = outputDirectory;
+        // delete old output
+        // TODO: remove any program output like symbols
+        if (fs.existsSync(outputFile)) {
+            fs.unlinkSync(outputFile);
+        }
 
-        //  get the path of the source
-        var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(window.activeTextEditor.document.uri.toString()));
+        // create symbol directory
+        let symbolDir:string = ClientUtils.GetOutputPath();
 
-        //  locate file, does it exist?
+        // get the path of the source
+        var sourcePath: string = PathUtils.GetPathFromFilename(PathUtils.uriToPlatformPath(window.activeTextEditor.document.uri.toString()));
+
+        // locate file, does it exist?
+        let af = window.activeTextEditor;
+        let ws = workspace;
+        let docs = ws.textDocuments;
+        let te = window.visibleTextEditors;
         let doc = window.activeTextEditor.document;
-        let file = PathUtils.uriToFileSystemPath(doc.uri.toString());
+        let openDocument = ClientUtils.GetOpenDocument();
 
-        //  create new output channel
+        var file:string;
+
+        if (openDocument) {
+            file = openDocument.fileName;    
+        }
+
+        // file = PathUtils.uriToFileSystemPath(doc.uri.toString());
+
+        if (!file) {
+            window.showWarningMessage('Unable to Build.');
+            return 1;
+        }
+
+        let base = path.basename(file).toUpperCase();
+
+        window.showInformationMessage(`Building ${base}`);
+
+        // create new output channel
         output.clear();
         output.show(true);
 
-        //  spawn new child process
+        // spawn new child process to compile the program
+
+        var start = process.hrtime();
+
         let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfile", "-symbolfiledir", symbolDir];
+
+        // add option to dump debugger info
         if (this._configuration.get("debuggerDumpFile")){
             javaOptions.push('-debugdump');
         }
+
+        // add setting to allow java file creation
         if (this._configuration.get("javaAllowFileCreation")){
             javaOptions.push('-afo');
         }
+
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
+
+        var end = process.hrtime(start);
+
         let errorCode = java.status;
 
+        let time = `(${end[0]}s ${end[1].toString().substr(0,3)}ms)`;
+
         if (errorCode > 0) {
-            window.showErrorMessage('Compilation failed with errors.');
+            window.showWarningMessage(`Build of ${base} Failed ${time}`);
             output.append(java.stdout.toString());
         } else {
+            window.showInformationMessage(`Build of ${base} Complete ${time}`);
             output.append(java.stdout.toString());
         }
 

@@ -1,9 +1,54 @@
 # Release Notes
 
-## v0.2.6
+## v0.2.7
 
-This release was focused on a few bugs as well as improving the README file that is displayed on the Marketplace. This should give developers a better idea of what is available in the extension.
+This release addresses the issues some folks have been having with the new setting "kickassembler.outputDirectory", which was intended to control where compiled artifacts are put on the filesystem. We also looked at a problem related to symbols with same name only showing the first type registered in the code. So, if you had a `.macro` and a `.const` both name the same, if the `.macro` was declared first, that is what would be shown on a hover for the `.const`, etc.
 
-Of note in this release is the addition of making sure that code completion is working correctly when it is enabled. In most cases labels and variables were not showing up in the completion list.
+There were a number of issues related to compiling, and the subsequent running of an Emulator or the C64Debugger because of some issues with how the final PRG file was named. These problems have been addressed, and it should be a little smarter now when it is building the final path for your compiled program. Here are scenarios that the extension tries to handle with respect to this setting. The scenarios work the same on all filesystems (we hope).
 
-Also keep in mind that this feature will not even work unless you have the editor setting "editor.suggest.snippetsPreventQuickSuggestions" disabled.
+"""
+Example 1:
+
+With an Output setting of 
+
+    "" (blank) 
+
+and a source filename of 
+
+    /home/user/workspace/coolgame.asm
+
+this method will return
+
+    /home/user/workspace/coolgame.prg
+
+
+Example 2:
+
+with an output of 
+
+    "output" or "./output"
+
+and a source filename of
+
+    /home/user/workspace/coolgame.asm
+
+this method will return
+
+
+    /home/user/workspace/output/coolgame.prg
+
+
+Example 3:
+
+with an output of
+
+    "/home/user/build"
+
+and a source filename of 
+
+    /home/user/workspace/coolgame.asm
+
+this method will return
+
+    /home/user/build/coolgame.asm
+"""
