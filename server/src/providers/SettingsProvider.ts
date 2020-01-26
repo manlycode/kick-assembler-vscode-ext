@@ -34,7 +34,9 @@ export interface Settings {
     fileTypesBinary: string;
     fileTypesSid: string;
     fileTypesPicture: string;
-    fileTypesImport: string;
+    fileTypesSource: string;
+    fileTypesC64: string;
+    fileTypesText: string;
 }
 
 export default class SettingsProvider extends Provider {

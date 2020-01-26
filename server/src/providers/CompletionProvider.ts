@@ -140,24 +140,27 @@ export default class CompletionProvider extends Provider {
 		if (inStringTest.match(/["']/) || this.triggerToken=='""' || this.triggerToken=="''") {
 //inside a string quote, now check if its a file selection, its the only allowed intellisense possibility here
 			if((tokensLeft && 
-				(tokensLeft[0].substr(1,6) == "import") || 
+				tokensLeft[0].match(/\.*import(if)*/) ||
 				tokensLeft[tokensLeft.length-1].substr(0,4) == "Load")
 			) {
 				var extensionFilter = '';
-				if(tokensLeft[0].substr(1,6) == "import") {
-					extensionFilter = settings.fileTypesImport;
-				} else {
-					switch(tokensLeft[tokensLeft.length-1].substr(0,6)) {
-						case "LoadBin":
-							extensionFilter = settings.fileTypesBinary;
-							break;
-						case "LoadSid":
-							extensionFilter = settings.fileTypesSid;
-							break;
-						case "LoadPic":
-							extensionFilter = settings.fileTypesPicture;
-							break;
-					}
+				if(tokensLeft[0].substr(0,6) === "import" || (tokensLeft[0] === ".import" && tokensLeft[1] === "source") ){
+					extensionFilter = settings.fileTypesSource;
+				}
+				if(tokensLeft[tokensLeft.length-1].substr(0,10) == "LoadBinary" || (tokensLeft[0] === ".import" && tokensLeft[1] === "binary") ){
+					extensionFilter = settings.fileTypesBinary;
+				}
+				if(tokensLeft[tokensLeft.length-1].substr(0,7) == "LoadSid"){
+					extensionFilter = settings.fileTypesSid;
+				}
+				if(tokensLeft[tokensLeft.length-1].substr(0,11) == "LoadPicture"){
+					extensionFilter = settings.fileTypesPicture;
+				}
+				if(tokensLeft[0] === ".import" && tokensLeft[1] === "c64"){
+					extensionFilter = settings.fileTypesC64;
+				}
+				if(tokensLeft[0] === ".import" && tokensLeft[1] === "text"){
+					extensionFilter = settings.fileTypesText;
 				}
 
 				extensionFilter = extensionFilter.trim()	
@@ -308,13 +311,14 @@ export default class CompletionProvider extends Provider {
 		if (!base) base = dir;
 		// make setting entries dynamic :)
 		const outputDirectory = this.getProjectInfo().getSettings().outputDirectory;
+		const currentEditorFile = path.basename(this.getProjectInfo().getCurrentProject().getUri());
 		const dirents = await readdir(dir, { withFileTypes: true });
 		const files = await Promise.all(
 			dirents
 			.filter((dirent: fs.Dirent) => {
 				const ext = path.extname(dirent.name);
 				const extReg = new RegExp("\\.("+extensionFilter+")", "i");
-				return dirent.name !== outputDirectory && dirent.name[0] !== '.' && (extensionFilter == "" || dirent.isDirectory() || ext.match(extReg));
+				return dirent.name !== currentEditorFile && dirent.name !== outputDirectory && dirent.name[0] !== '.' && (extensionFilter == "" || dirent.isDirectory() || ext.match(extReg));
 			})
 			.map((dirent: fs.Dirent) => {
 				const res = resolve(dir, dirent.name);
@@ -371,7 +375,7 @@ export default class CompletionProvider extends Provider {
 		if(payload.snippet) {
 			if (payload.snippet[0] === "(" && payload.snippet[1] !== '"' && payload.parameters && payload.parameters.length > 0) {
 				command = 'editor.action.triggerParameterHints';
-			} else if (payload.snippet.substr(0,2) !== "()") {
+			} else if (payload.snippet.substr(0,2) !== "()" && payload.snippet !== "\n") {
 				command = 'editor.action.triggerSuggest';
 			}
 		}

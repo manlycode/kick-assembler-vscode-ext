@@ -183,7 +183,7 @@ export default class StringUtils {
 		text = text.replace(/\(/g, " ");
 		text = text.replace(/\)/g, " ");
 		text = text.replace(/\\/g, " ");
-		text = text.replace(/(?<!^\s*)#/g, " ");
+		text = text.replace(/\#/g, " ");
 		text = text.replace(/\;/g, " ");
 		text = text.replace(/\:/g, " ");
 		text = text.replace(/\[/g, " ");

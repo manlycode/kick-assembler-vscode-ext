@@ -75,7 +75,7 @@ export const PreProcessors:PreProcessor[] = [
 				kind: SymbolKind.File
 			}
 		],
-		snippet: ' "$0"\n'
+		snippet: ' "$1"\n'
 	},
 	{
 		name: "#importif",

@@ -140,22 +140,32 @@
 				"kickassembler.fileTypesBinary": {
 					"type": "string",
 					"default": "",
-					"description": "Comma separated list of file extensions for LoadBinary()"
+					"markdownDescription": "Comma separated list of file extensions for **LoadBinary()** or **.import binary**"
 				},
 				"kickassembler.fileTypesSid": {
 					"type": "string",
 					"default": "sid,prg",
-					"description": "Comma separated list of file extensions for LoadSid()"
+					"markdownDescription": "Comma separated list of file extensions for **LoadSid()**"
 				},
 				"kickassembler.fileTypesPicture": {
 					"type": "string",
 					"default": "gif,jpg",
-					"description": "Comma separated list of file extensions for LoadPicture()"
+					"markdownDescription": "Comma separated list of file extensions for **LoadPicture()**"
 				},
-				"kickassembler.fileTypesImport": {
+				"kickassembler.fileTypesSource": {
 					"type": "string",
 					"default": "asm,src,s,kick,a,ka",
-					"description": "Comma separated list of file extensions for .import/#import"
+					"markdownDescription": "Comma separated list of file extensions for **.import source** or **#import**"
+				},
+				"kickassembler.fileTypesC64": {
+					"type": "string",
+					"default": "prg,c64",
+					"markdownDescription": "Comma separated list of file extensions for **.import c64**"
+				},
+				"kickassembler.fileTypesText": {
+					"type": "string",
+					"default": "txt",
+					"markdownDescription": "Comma separated list of file extensions for **.import text**"
 				}
 			}
 		},
