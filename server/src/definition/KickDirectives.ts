@@ -74,7 +74,7 @@ export const Directives:Directive[] = [
 	},
 	{
 		name: '.disk',
-		example: '.disk [..disk pararamters..] {..fileparameters..}',
+		example: '.disk [..disk parameters..] {..fileparameters..}',
 		description: 'Creates a d64 image file.',
 		snippet: ' [${1:diskparameters}] {\n\t${2:fileparameters\n}\n'
 	},

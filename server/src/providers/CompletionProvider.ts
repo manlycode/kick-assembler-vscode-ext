@@ -55,7 +55,7 @@ export default class CompletionProvider extends Provider {
 		super(connection, projectInfo);
 
 		// 	show the initial list of items
-		connection.onCompletion((textDocumentPosition:TextDocumentPositionParams): Thenable<CompletionItem[]> => {
+		connection.onCompletion((textDocumentPosition:TextDocumentPositionParams): undefined|Thenable<CompletionItem[]> => {
 			if (projectInfo.getSettings().valid) {
 				this.documentPosition = textDocumentPosition;
 				return this.createCompletionItems();
@@ -137,13 +137,34 @@ export default class CompletionProvider extends Provider {
 		if(inComment) return;
 
 		var inStringTest = this.triggerLine.substr(0,this.triggerCharacterPos).replace(/("([^\\"]|\\")*"|'([^\\']|\\')*')/g,"");
-		if (inStringTest.match(/["'"]/) || this.triggerToken=='""' || this.triggerToken=="''") {
+		if (inStringTest.match(/["']/) || this.triggerToken=='""' || this.triggerToken=="''") {
 //inside a string quote, now check if its a file selection, its the only allowed intellisense possibility here
 			if((tokensLeft && 
 				(tokensLeft[0].substr(1,6) == "import") || 
 				tokensLeft[tokensLeft.length-1].substr(0,4) == "Load")
-			 ) {
+			) {
 				var extensionFilter = '';
+				if(tokensLeft[0].substr(1,6) == "import") {
+					extensionFilter = settings.fileTypesImport;
+				} else {
+					switch(tokensLeft[tokensLeft.length-1].substr(0,6)) {
+						case "LoadBin":
+							extensionFilter = settings.fileTypesBinary;
+							break;
+						case "LoadSid":
+							extensionFilter = settings.fileTypesSid;
+							break;
+						case "LoadPic":
+							extensionFilter = settings.fileTypesPicture;
+							break;
+					}
+				}
+
+				extensionFilter = extensionFilter.trim()	
+					.replace(/  +/g,' ')	// reduce multiple spaces to one
+					.replace(".","")		// remove possible extension dots
+					.replace(/[, ]/,"|")	//convert them to regex or
+				;
 				const currentUri = PathUtils.getPathFromFilename(this.getProjectInfo().getCurrentProject().getUri());
 				return this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(currentUri));
 			}
@@ -276,19 +297,24 @@ export default class CompletionProvider extends Provider {
 			}
 
 		}
-
+// to prevent confusing word proposals (it's a central setting in vscode) return at least one item 
+		if(items.length===0){
+			items.push(this.createCompletionItem(" ",LanguageCompletionTypes.Symbol,{},CompletionItemKind.Text));
+		}
 		return items;
 	}
 
 	private async loadFileSystem(extensionFilter:string, dir:string,base?:string):Promise<CompletionItem[]> {
 		if (!base) base = dir;
+		// make setting entries dynamic :)
+		const outputDirectory = this.getProjectInfo().getSettings().outputDirectory;
 		const dirents = await readdir(dir, { withFileTypes: true });
 		const files = await Promise.all(
 			dirents
 			.filter((dirent: fs.Dirent) => {
 				const ext = path.extname(dirent.name);
 				const extReg = new RegExp("\\.("+extensionFilter+")", "i");
-				return dirent.name[0] !== '.' && (extensionFilter == "" || dirent.isDirectory() || ext.match(extReg));
+				return dirent.name !== outputDirectory && dirent.name[0] !== '.' && (extensionFilter == "" || dirent.isDirectory() || ext.match(extReg));
 			})
 			.map((dirent: fs.Dirent) => {
 				const res = resolve(dir, dirent.name);
@@ -341,16 +367,24 @@ export default class CompletionProvider extends Provider {
 			documentation += "\n*(deprecated)*"
 		}
 
+		let command: string = "";
+		if(payload.snippet) {
+			if (payload.snippet[0] === "(" && payload.snippet[1] !== '"' && payload.parameters && payload.parameters.length > 0) {
+				command = 'editor.action.triggerParameterHints';
+			} else if (payload.snippet.substr(0,2) !== "()") {
+				command = 'editor.action.triggerSuggest';
+			}
+		}
 		return {
 			label,
 			kind,
-			documentation: documentation,
-			filterText: filterText,
-			textEdit: textEdit,
+			documentation,
+			filterText,
+			textEdit,
 			insertTextFormat: 2,
 			command: {
 				title: '',
-				command: payload.snippet && payload.snippet.indexOf('$1') !== -1 ? 'editor.action.triggerSuggest' : ''
+				command
 			},
 			data: {
 				type,

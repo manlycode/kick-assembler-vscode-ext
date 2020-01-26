@@ -30,6 +30,11 @@ export interface Settings {
     outputDirectory: string;
     autoAssembleTrigger: string;
     debuggerDumpFile: boolean;
+    javaAllowFileCreation: boolean;
+    fileTypesBinary: string;
+    fileTypesSid: string;
+    fileTypesPicture: string;
+    fileTypesImport: string;
 }
 
 export default class SettingsProvider extends Provider {

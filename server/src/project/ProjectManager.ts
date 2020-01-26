@@ -21,6 +21,7 @@ import {
     DidSaveTextDocumentParams,
     Connection,
     DidCloseTextDocumentParams,
+    SignatureHelp
 } from "vscode-languageserver";
 
 import SettingsProvider, { Settings } from "../providers/SettingsProvider";
@@ -33,7 +34,7 @@ import PathUtils from "../utils/PathUtils";
 import { createHash } from "crypto";
 import DocumentSymbolProvider from "../providers/DocumentSymbolProvider";
 import CompletionProvider from "../providers/CompletionProvider";
-import { BADFLAGS } from "dns";
+import SignatureHelpProvider from "../providers/SignatureHelpProvider";
 
 export default class ProjectManager {
 
@@ -48,6 +49,7 @@ export default class ProjectManager {
     private diagnosticProvider: DiagnosticProvider;
     private documentSymbolProvider: DocumentSymbolProvider;
     private completionProvider: CompletionProvider;
+    private signatureHelpProvider: SignatureHelpProvider;
 
     constructor(connection: Connection) {
 
@@ -71,6 +73,7 @@ export default class ProjectManager {
         this.diagnosticProvider = new DiagnosticProvider(connection, projectInfoProvider);
         this.documentSymbolProvider = new DocumentSymbolProvider(connection, projectInfoProvider);
         this.completionProvider = new CompletionProvider(connection, projectInfoProvider);
+        this.signatureHelpProvider = new SignatureHelpProvider(connection, projectInfoProvider);
 
         connection.onInitialize((params: InitializeParams): InitializeResult => {
             return {
@@ -78,9 +81,12 @@ export default class ProjectManager {
                     textDocumentSync: this.documents.syncKind,
                     hoverProvider: true,
                     documentSymbolProvider: true,
+                    signatureHelpProvider: {
+                        triggerCharacters: ["(",","]
+                    },
                     completionProvider: {
                         resolveProvider: true,
-                        triggerCharacters: ["#", ".", " ", "<", ">", ",", "*"],
+                        triggerCharacters: ["#", ".", " ", "<", ">", ",", "*", '"', "("],
                     }
                 }
             };

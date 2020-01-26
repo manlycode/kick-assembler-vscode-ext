@@ -189,6 +189,7 @@ export default class StringUtils {
 		text = text.replace(/\[/g, " ");
 		text = text.replace(/\]/g, " ");
 		text = text.replace(/\@/g, " ");
+		text = text.replace(/\=/g, " ");
 		return text ;
 	}
 
@@ -200,12 +201,6 @@ export default class StringUtils {
 	public static BuildSymbolParameterString(symbol: Symbol): string {
 
 		var parm_text = [];
-
-		if (symbol.data) {
-			for (var parm1 of symbol.data.parms) {
-				parm_text.push(parm1.name);
-			}
-		}
 
 		if (symbol.parameters) {
 			for (var parm2 of symbol.parameters) {
