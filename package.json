@@ -136,6 +136,36 @@
 					],
 					"default": "off",
 					"description": "Traces the communication between VS Code and the language server."
+				},
+				"kickassembler.fileTypesBinary": {
+					"type": "string",
+					"default": "",
+					"markdownDescription": "Comma separated list of file extensions for **LoadBinary()** or **.import binary**"
+				},
+				"kickassembler.fileTypesSid": {
+					"type": "string",
+					"default": "sid,prg",
+					"markdownDescription": "Comma separated list of file extensions for **LoadSid()**"
+				},
+				"kickassembler.fileTypesPicture": {
+					"type": "string",
+					"default": "gif,jpg",
+					"markdownDescription": "Comma separated list of file extensions for **LoadPicture()**"
+				},
+				"kickassembler.fileTypesSource": {
+					"type": "string",
+					"default": "asm,src,s,kick,a,ka",
+					"markdownDescription": "Comma separated list of file extensions for **.import source** or **#import**"
+				},
+				"kickassembler.fileTypesC64": {
+					"type": "string",
+					"default": "prg,c64",
+					"markdownDescription": "Comma separated list of file extensions for **.import c64**"
+				},
+				"kickassembler.fileTypesText": {
+					"type": "string",
+					"default": "txt",
+					"markdownDescription": "Comma separated list of file extensions for **.import text**"
 				}
 			}
 		},
@@ -177,7 +207,7 @@
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.7",
-		"@types/node": "^8.10.59",
+		"@types/node": "^10.10.0",
 		"typescript": "2.8.3",
 		"webpack": "^4.41.5",
 		"webpack-cli": "^3.3.10"

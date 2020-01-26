@@ -104,9 +104,11 @@ export default class StringUtils {
 	 * @param text 
 	 * @param position 
 	 */
-	public static GetWordAt(text:string, position:number):string {
+	public static GetWordAt(text:string, position:number, cleanText:boolean=true):string {
 
-		text = this.CleanText(text);
+		if(cleanText){
+			text = this.CleanText(text);
+		}
 
 		// make pos point to a character of the word
 		while (text[position] == " ") position--;
@@ -187,6 +189,7 @@ export default class StringUtils {
 		text = text.replace(/\[/g, " ");
 		text = text.replace(/\]/g, " ");
 		text = text.replace(/\@/g, " ");
+		text = text.replace(/\=/g, " ");
 		return text ;
 	}
 
@@ -198,12 +201,6 @@ export default class StringUtils {
 	public static BuildSymbolParameterString(symbol: Symbol): string {
 
 		var parm_text = [];
-
-		if (symbol.data) {
-			for (var parm1 of symbol.data.parms) {
-				parm_text.push(parm1.name);
-			}
-		}
 
 		if (symbol.parameters) {
 			for (var parm2 of symbol.parameters) {

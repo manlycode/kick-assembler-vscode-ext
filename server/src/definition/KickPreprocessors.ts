@@ -1,8 +1,8 @@
-import { TextEdit } from "vscode-languageserver";
+import { SymbolKind } from "vscode-languageserver";
 
 export interface Parameter {
 	name: string;
-	type: "string" | "value" | "enum" | "label";
+	kind: SymbolKind;
 	values?: string[];
 	description?: string;
 	optional?: boolean;
@@ -12,7 +12,7 @@ export interface PreProcessor {
 	name: string;
 	description: string;
 	example: string;
-	parameters: Parameter[];
+	parameters?: Parameter[];
 	snippet?: string;
 }
 
@@ -24,10 +24,10 @@ export const PreProcessors:PreProcessor[] = [
 		parameters : [
 			{
 				name: "symbol",
-				type: "string",
+				kind: SymbolKind.String
 			}
 		],
-		snippet: ' ${1:symbol}'
+		snippet: ' ${1:symbol}\n'
 	},
 	{
 		name: "#elif",
@@ -36,22 +36,22 @@ export const PreProcessors:PreProcessor[] = [
 		parameters : [
 			{
 				name: "symbol",
-				type: "string",
+				kind: SymbolKind.Constant
 			}
 		],
-		snippet: ' ${1:symbol}'
+		snippet: ' $0\n'
 	},
 	{
 		name: "#else",
 		description: "Used after an \#if\ to start an else block which is executed if the condition is false.",
 		example: "",
-		parameters: []
+		snippet: '\n'
 	},
 	{
 		name: "#endif",
 		description: "Marks the end of an #if/#else block.",
 		example: "",
-		parameters: []
+		snippet: '\n'
 	},
 	{
 		name: "#if",
@@ -60,10 +60,10 @@ export const PreProcessors:PreProcessor[] = [
 		parameters : [
 			{
 				name: "symbol",
-				type: "string",
+				kind: SymbolKind.Constant
 			}
 		],
-		snippet: ' ${1:symbol}'
+		snippet: ' '
 	},
 	{
 		name: "#import",
@@ -72,9 +72,10 @@ export const PreProcessors:PreProcessor[] = [
 		parameters : [
 			{
 				name: "name",
-				type: "string",
+				kind: SymbolKind.File
 			}
-		]
+		],
+		snippet: ' "$1"\n'
 	},
 	{
 		name: "#importif",
@@ -83,31 +84,31 @@ export const PreProcessors:PreProcessor[] = [
 		parameters : [
 			{
 				name: "symbol",
-				type: "string",
+				kind: SymbolKind.Constant
 			},
 			{
 				name: "filename",
-				type: "string"
+				kind: SymbolKind.File
 			}
 		],
-		snippet: ' ${1:symbol} "${2:filename}"'
+		snippet: ' $1 "$2"\n'
 	},
 	{
 		name: "#importonce",
 		description: "Make the assembler skip the current file if it has already been imported.",
 		example: "",
-		parameters: []
+		snippet: '\n'
 	},
 	{
 		name: "#undef",
-		description: "	Removes the definition of a preprocessor symbol.",
+		description: "Removes the definition of a preprocessor symbol.",
 		example: "",
 		parameters : [
 			{
 				name: "symbol",
-				type: "string",
+				kind: SymbolKind.Constant
 			}
 		],
-		snippet: ' ${1:symbol}'
+		snippet: ' $0\n'
 	}
 ];

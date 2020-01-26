@@ -74,7 +74,7 @@ export const Directives:Directive[] = [
 	},
 	{
 		name: '.disk',
-		example: '.disk [..disk pararamters..] {..fileparameters..}',
+		example: '.disk [..disk parameters..] {..fileparameters..}',
 		description: 'Creates a d64 image file.',
 		snippet: ' [${1:diskparameters}] {\n\t${2:fileparameters\n}\n'
 	},
@@ -112,7 +112,7 @@ export const Directives:Directive[] = [
 		name: '.errorif',
 		example: '.errorif x>10 "not good!"',
 		description: 'Creates an user raised error if condition is evaluated to true.',
-		snippet: ' ${1:expression} "${2:error}"\n'
+		snippet: ' $1 "${2:error}"\n'
 	},
 	{
 		name: '.eval',
@@ -168,13 +168,13 @@ export const Directives:Directive[] = [
 		name: '.if',
 		example: '.if(x>10) {...}',
 		description: 'Executes code if the given condition is true.',
-		snippet: ' (${1:expression}) {\n\t$0\n}\n'
+		snippet: ' ($1) {\n\t$0\n}\n'
 	},
 	{
 		name: '.import binary',
 		example: '.import binary "Music.bin"',
 		description: 'Imports a binary file.',
-		snippet: ' "${1:filename}"\n'
+		snippet: ' "$1"\n'
 	},
 	{
 		name: '.import c64',
@@ -182,20 +182,20 @@ export const Directives:Directive[] = [
 		description: "Imports a c64 files. Same as '.import binary', but " +
 			'ignores the two address bytes at the start of the ' +
 			'file.',
-		snippet: ' "${1:filename}"\n'
+		snippet: ' "$1"\n'
 	},
 	{
 		name: '.import source',
 		example: '.import source "MyLib.asm"',
 		description: 'Imports another source file. (Deprecated, use #import instead)',
 		deprecated: true,
-		snippet: ' "${1:filename}"\n'
+		snippet: ' "$1"\n'
 	},
 	{
 		name: '.import text',
 		example: '.import text "scroll.txt"',
 		description: 'Imports a text file.',
-		snippet: ' "${1:filename}"\n'
+		snippet: ' "$1"\n'
 	},
 	{
 		name: '.importonce',
@@ -210,7 +210,7 @@ export const Directives:Directive[] = [
 		name: '.label',
 		example: '.label color=$d020',
 		description: 'Assigns a given expression to a label.',
-		snippet: ' ${1:name} = ${2:value}'
+		snippet: ' ${1:name} = '
 	},
 	{
 		name: '.lohifill',
@@ -327,13 +327,13 @@ export const Directives:Directive[] = [
 		name: '.var',
 		example: '.var x=27',
 		description: 'Defines a variable.',
-		snippet: ' ${1:name} = ${2:value}'
+		snippet: ' ${1:name} = '
 	},
 	{
 		name: '.while',
 		example: '.while(i<10) {...}',
 		description: 'Creates a while loop.',
-		snippet: ' (${1:expression}) {\n\t$0\n}\n'
+		snippet: ' ($1) {\n\t$0\n}\n'
 	},
 	{
 		name: '.wo',

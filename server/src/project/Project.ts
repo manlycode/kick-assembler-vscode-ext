@@ -248,6 +248,29 @@ export default class Project {
 
             symbol.line = projectFile.getLines()[syntax.range.startLine];
             symbol.comments = this.getComments(range, projectFile.getLines());
+
+            //check for param descriptions (@param (type) parameter description)
+            if(symbol.parameters && symbol.comments && (symbol.type === SymbolType.Macro || symbol.type === SymbolType.Function)) {
+                let paramDocs = symbol.comments.match(/@param(eter)*.*(\r\n|\r|\n|)/g);
+                if (paramDocs) {
+                    paramDocs.forEach((pDoc) => {
+                        let paraDocsToken = StringUtils.splitIntoTokens(pDoc.replace(/(@param(eter)*\s+|\r)/,""));
+                        let setStringKind = false;
+                        if(paraDocsToken[0].match(/(string|number|value)/)) {
+                            paraDocsToken.shift();
+                            if(paraDocsToken[0] == "string") {
+                                setStringKind = true;
+                            }
+                        }
+                        symbol.parameters.forEach( (p,i) => {
+                            if (p.name == paraDocsToken[0]){
+                                symbol.parameters[i].description = paraDocsToken.slice(1).join(" ");
+                                if(setStringKind) symbol.parameters[i].kind = SymbolKind.String;
+                            }
+                        });
+                    });
+                }
+            }
             return symbol;
         }
     }
@@ -320,7 +343,7 @@ export default class Project {
                     symbol.type = SymbolType.Function;
                     symbol.kind = SymbolKind.Function;
                     symbol.completionKind = CompletionItemKind.Function;
-  
+
                 } else {
                     symbol.type = SymbolType.Macro;
                     symbol.kind = SymbolKind.Method;
@@ -330,10 +353,13 @@ export default class Project {
                 symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
                 symbol.isMain = main;
                 var parms = [];
-                var paramSnippet: string[] = [];
 
                 for (var i = 2; i < split.length; i++) {
-                    var parm = { "name": split[i] };
+                    var parm = <Parameter> {
+                        name: split[i],
+                        kind: SymbolKind.Number
+                     };
+
                     parms.push(parm);
 
                     var parm_symbol = <Symbol>{};
@@ -343,11 +369,13 @@ export default class Project {
                     parm_symbol.scope = symbol.scope;
                     parm_symbol.isMain = main;
                     
-                    paramSnippet.push("${"+(i-1)+":"+parm_symbol.name+"}");
                 }
-                symbol.snippet = '(' + paramSnippet.join(',') + ')';
-
-                symbol.data = { "parms": parms };
+                if(parms.length > 0) {
+                    symbol.parameters = parms;
+                    symbol.snippet = '($0)';
+                } else {
+                    symbol.snippet = '()';
+                }
 
                 return symbol;
             }
