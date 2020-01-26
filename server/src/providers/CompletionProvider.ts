@@ -362,14 +362,13 @@ export default class CompletionProvider extends Provider {
 		}
 
 		let documentation: string | MarkupContent = payload.description || payload.comments ? {
-			value:(payload.description || payload.comments) + (payload.example ? "\n***\n"+payload.example : ""),
+			value:	(payload.description || payload.comments) +
+					(payload.example ? "\n***\n"+payload.example : "") +
+					(payload.deprecated ? "\n*(deprecated)*" : ""),
 			kind: 'markdown'
 		} : "";
 
 		textEdit.newText += (payload.snippet || "");
-		if(payload.deprecated) {
-			documentation += "\n*(deprecated)*"
-		}
 
 		let command: string = "";
 		if(payload.snippet) {
