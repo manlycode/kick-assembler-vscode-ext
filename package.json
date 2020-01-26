@@ -136,6 +136,26 @@
 					],
 					"default": "off",
 					"description": "Traces the communication between VS Code and the language server."
+				},
+				"kickassembler.fileTypesBinary": {
+					"type": "string",
+					"default": "",
+					"description": "Comma separated list of file extensions for LoadBinary()"
+				},
+				"kickassembler.fileTypesSid": {
+					"type": "string",
+					"default": "sid,prg",
+					"description": "Comma separated list of file extensions for LoadSid()"
+				},
+				"kickassembler.fileTypesPicture": {
+					"type": "string",
+					"default": "gif,jpg",
+					"description": "Comma separated list of file extensions for LoadPicture()"
+				},
+				"kickassembler.fileTypesImport": {
+					"type": "string",
+					"default": "asm,src,s,kick,a,ka",
+					"description": "Comma separated list of file extensions for .import/#import"
 				}
 			}
 		},
