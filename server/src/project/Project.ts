@@ -290,9 +290,10 @@ export default class Project {
     private createFromDirective(sourceRange: AssemblerSourceRange, text: string, main: boolean): Symbol {
 
         const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition).toLowerCase();
+        var afterDirectiveString = text.substr(sourceRange.endPosition).trim();
 
         if (directive == "#define") {
-            var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+            var symbol = this.createFromSimpleValue(afterDirectiveString);
             symbol.kind = SymbolKind.Boolean;
             symbol.type = SymbolType.Boolean;
             symbol.isMain = main;
@@ -300,8 +301,9 @@ export default class Project {
             return symbol;
         }
 
-        if (directive == ".var") {
-            var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+        var isEvalVar = (directive == ".eval" && afterDirectiveString.substr(0,4)=="var ");
+        if (directive == ".var" || isEvalVar) {
+            var symbol = this.createFromSimpleValue(isEvalVar ? afterDirectiveString.substr(4): afterDirectiveString);
             symbol.kind = SymbolKind.Variable;
             symbol.type = SymbolType.Variable;
             symbol.isMain = main;
@@ -310,7 +312,7 @@ export default class Project {
         }
 
         if (directive == ".const") {
-            var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+            var symbol = this.createFromSimpleValue(afterDirectiveString);
             symbol.kind = SymbolKind.Constant;
             symbol.type = SymbolType.Constant;
             symbol.isMain = main;
@@ -319,7 +321,7 @@ export default class Project {
         }
 
         if (directive == ".label") {
-            var symbol = this.createFromSimpleValue(text.substr(sourceRange.endPosition));
+            var symbol = this.createFromSimpleValue(afterDirectiveString);
             symbol.kind = SymbolKind.Object;
             symbol.type = SymbolType.Label;
             symbol.isMain = main;
