@@ -372,7 +372,15 @@ export default class CompletionProvider extends Provider {
 			kind: 'markdown'
 		} : "";
 
-		textEdit.newText += (payload.snippet || "");
+		let adjustedSnippet = (payload.snippet || "");
+		if(payload.snippet && payload.snippet === "($0)" && payload.parameters && this.getProjectInfo().getSettings().completionParameterPlaceholders){
+			var paramSnippet: string[] = [];
+			for (var i=0,iL=payload.parameters.length;i<iL;i++){
+				paramSnippet.push("${"+(i+1)+":"+payload.parameters[i].name+"}");
+			}
+			adjustedSnippet=			'('+paramSnippet.join(',')+')';
+		}
+		textEdit.newText += adjustedSnippet;
 
 		let command: string = "";
 		if(payload.snippet) {

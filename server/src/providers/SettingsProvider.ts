@@ -31,6 +31,7 @@ export interface Settings {
     autoAssembleTrigger: string;
     debuggerDumpFile: boolean;
     javaAllowFileCreation: boolean;
+    completionParameterPlaceholders: boolean;
     fileTypesBinary: string;
     fileTypesSid: string;
     fileTypesPicture: string;

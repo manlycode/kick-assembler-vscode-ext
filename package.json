@@ -137,6 +137,11 @@
 					"default": "off",
 					"description": "Traces the communication between VS Code and the language server."
 				},
+				"kickassembler.completionParameterPlaceholders": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Insert placeholder parameters on function/macro completions.\n>Attention: Intellisense in placeholders won't work until you disable `#editor.suggest.snippetsPreventQuickSuggestions#`"
+				},
 				"kickassembler.fileTypesBinary": {
 					"type": "string",
 					"default": "",
