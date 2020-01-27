@@ -35,6 +35,7 @@ import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import StringUtils from "../utils/StringUtils";
 import PathUtils from '../utils/PathUtils'; 
+import { InstructionType } from '../definition/KickInstructions';
 
 export default class CompletionProvider extends Provider {
 
@@ -364,7 +365,10 @@ export default class CompletionProvider extends Provider {
 		let documentation: string | MarkupContent = payload.description || payload.comments ? {
 			value:	(payload.description || payload.comments) +
 					(payload.example ? "\n***\n"+payload.example : "") +
-					(payload.deprecated ? "\n*(deprecated)*" : ""),
+					(payload.deprecated ? "\n*(deprecated)*" : "") + 
+					(payload.type && payload.type == InstructionType.Illegal ? "\n*(illegal opcode)*" : "") + 
+					(payload.type && payload.type == InstructionType.Illegal ? "\n*(DTV opcode)*" : "") + 
+					(payload.type && payload.type == InstructionType.Illegal ? "\n*(65c02 opcode)*" : ""),
 			kind: 'markdown'
 		} : "";
 

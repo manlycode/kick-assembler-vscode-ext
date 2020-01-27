@@ -154,7 +154,7 @@
 				},
 				"kickassembler.fileTypesSource": {
 					"type": "string",
-					"default": "asm,src,s,kick,a,ka",
+					"default": "asm,src,s,kick,a,ka,lib,inc",
 					"markdownDescription": "Comma separated list of file extensions for **.import source** or **#import**"
 				},
 				"kickassembler.fileTypesC64": {
@@ -181,7 +181,14 @@
 				],
 				"extensions": [
 					".asm",
-					".macro"
+					".macro",
+					".s",
+					".src",
+					".inc",
+					".kick",
+					".ka",
+					".a",
+					".lib"
 				],
 				"configuration": "./client/syntaxes/language-configuration.json"
 			}

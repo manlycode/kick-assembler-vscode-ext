@@ -12,6 +12,8 @@ import {
 	Provider, ProjectInfoProvider
 } from "./Provider";
 
+import { InstructionType } from '../definition/KickInstructions';
+
 import {
 	IConnection,
 	TextDocumentPositionParams,
@@ -430,7 +432,11 @@ export default class HoverProvider extends Provider {
 		});
 		if (tokenMatch) {
 			return [
-				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}`
+				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}`,
+				(tokenMatch.type && tokenMatch.type == InstructionType.Illegal ? "**(illegal opcode)**" : ""), 
+				(tokenMatch.type && tokenMatch.type == InstructionType.Illegal ? "**(DTV opcode)**" : ""), 
+				(tokenMatch.type && tokenMatch.type == InstructionType.Illegal ? "**(65c02 opcode)**" : ""),
+
 			];
 		}
 	}
