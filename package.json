@@ -171,6 +171,21 @@
 					"type": "string",
 					"default": "txt",
 					"markdownDescription": "Comma separated list of file extensions for **.import text**"
+				},
+				"kickassembler.opcodes.illegal": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "Support illegal 6502 opcodes"
+				},
+				"kickassembler.opcodes.DTV": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Support DTV opcodes"
+				},
+				"kickassembler.opcodes.65c02": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Support 65c02 opcodes"
 				}
 			}
 		},

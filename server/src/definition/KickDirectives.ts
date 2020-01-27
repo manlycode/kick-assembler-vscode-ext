@@ -66,6 +66,12 @@ export const Directives:Directive[] = [
 		snippet: ' ${1:name}='
 	},
 	{
+		name: '.cpu',
+		example: '.cpu dtv',
+		description: 'Switces to a set of opcodes',
+		snippet: ' ${1|_6502NoIllegals,_6502,dtv,_65c02|}\n'
+	},
+	{
 		name: '.define',
 		example: '.define width, height {...}',
 		description: 'Executes a block of directives in ' +

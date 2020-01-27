@@ -434,8 +434,8 @@ export default class HoverProvider extends Provider {
 			return [
 				`*(instruction)* **${tokenMatch.name}** : ${tokenMatch.description}`,
 				(tokenMatch.type && tokenMatch.type == InstructionType.Illegal ? "**(illegal opcode)**" : ""), 
-				(tokenMatch.type && tokenMatch.type == InstructionType.Illegal ? "**(DTV opcode)**" : ""), 
-				(tokenMatch.type && tokenMatch.type == InstructionType.Illegal ? "**(65c02 opcode)**" : ""),
+				(tokenMatch.type && tokenMatch.type == InstructionType.DTV ? "**(DTV opcode)**" : ""), 
+				(tokenMatch.type && tokenMatch.type == InstructionType.C02 ? "**(65c02 opcode)**" : ""),
 
 			];
 		}
