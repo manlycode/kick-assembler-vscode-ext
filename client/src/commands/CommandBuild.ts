@@ -82,7 +82,9 @@ export class CommandBuild {
         if (this._configuration.get("debuggerDumpFile")){
             javaOptions.push('-debugdump');
         }
-
+        if (this._configuration.get("emulatorViceSymbols")){
+            javaOptions.push('-vicesymbols');
+        }
         // add setting to allow java file creation
         if (this._configuration.get("javaAllowFileCreation")){
             javaOptions.push('-afo');
@@ -93,6 +95,7 @@ export class CommandBuild {
         if(!this._configuration.get("opcodes.illegal")){
             javaOptions.push('-excludeillegal');
         }
+        javaOptions.push();
 
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
 
