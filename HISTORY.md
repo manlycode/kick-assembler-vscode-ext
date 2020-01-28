@@ -1,12 +1,25 @@
 
 ## Visual Studio Code Extension for Kick Assembler 
 
+## v0.3.0
+### Changed
++ added support for 65c02, DTV and Illegal opcodes
++ optional parameter completion hints
++ better output setting support for relative and fixed paths
++ [Issue 27](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/27) completion for filenames when using `.import` or `#import`
++ [Issue 33](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/17) support for .eval var
+
+### Fixed
++ [Issue 26](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/26) code completion for macros and functions was broken
++ [Issue 29](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/29) supress intellisense and code completion inside remarks/comments
++ [Issue 32](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/32) building when focused on output window produced errors
++ [Issue 34](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/34) empty output file setting would cause issues
+
 ## v0.2.7
 ### Changed
 + added new version info to the asminfo file for future use
 + better overall formatting for hovers
 ### Fixed
-+ issue #34 -- correct multiple problems with the outtputDirectory setting
 + issue #24 -- symbols with same name only showing the first type registered (hover refactoring)
 + fix preprocessor completion items not showing because of name mismatch
 

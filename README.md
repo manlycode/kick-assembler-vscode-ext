@@ -15,6 +15,7 @@ A [Kick Assembler](http://www.theweb.dk/KickAssembler/Main.html#frontpage) exten
 * hover Support
 * code outline
 * code snippets
+* illegal opcode support
 
 ## Feature Details
 The following features are currently working relatively well.
@@ -50,10 +51,13 @@ See an outline of your current source code, and jump to those items in your code
 
 #### Imported File Support
 
+Code completion for all of your code files for the `.import` and `#import` directives.
+
+![](/images/fileimport.gif)
+
 Any imported files will have their variables, macros and functions available in auto completion for your current file. The heading of the hover will let you know which file the item was imported from.
 
 ![](/images/include-file-information.gif)
-
 
 #### Error Checking
 
@@ -73,19 +77,25 @@ Hover support has been added to help you with your daily coding. From simple thi
 
 Most comments for defined variables, macros and functions are captured and displayed as a comment. There is some very basic MARKDOWN support so that you can include things like parameters in your comments.
 
-![Macro Comment Hover](/images/comments.gif)
+![](/images/comments.gif)
 
 #### Values
 
 Most values will give you comments about the variable itself, but also decimal, hex and binary values as well.
 
-![Macro Comment Hover](/images/ka-hover2.gif)
+![](/images/ka-hover2.gif)
 
 #### Hi/Lo Byte Values
 
 Useful when creating jump tables.
 
-![Macro Comment Hover](/images/ka-hover3.gif)
+![](/images/ka-hover3.gif)
+
+#### Additional/Illegal Opcodes
+
+Additional opcodes for 65c02, DTV and Illegal opcodes supported. Be a Rebel!
+
+![](/images/opcodes.gif)
 
 
 ## TODO

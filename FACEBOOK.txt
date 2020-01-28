@@ -3,12 +3,28 @@ Use this template when posting to Facebook.
 ~~~
 
 Kick Assembler (C64) For Visual Studio Code
-Release <0.2.6>
+Release <0.3.0>
 
 https://marketplace.visualstudio.com/items?itemName=paulhocker.kick-assembler-vscode-ext
 
 
-<release information here>
+This is a big release that is adding a lot of functionality to make your coding experience with the extension more complete. I feel that were are getting very close to a final release soon.
+
+In this release Lubber did some amazing work adding in support for Illegal, 65c02 and DTV opcodes. Of course, this also means that he added support for the `.cpu` directive as well.
+
+Support for these opcodes are controlled using three new settings.
+
+Whenever you build your program now, a short informational window will popup letting you know when it has started, and then when it has completed. The completion message also gives you an estimate of the time it took to compile.
+
+Also added in this release is code completion for the `.import` directive and `#import` pre-processor command. This is a VERY welcome addition to make it easier to add all of those code and macro libraries with much less typing.
+
+The types of files that will show for the directives is controlled by a number of new settings.
+
+An update to the hints for parameters has also been added to help you when you are using any macros, functions or internal functions now.
+
+As always, there was also some code cleanup made as well.
+
+Again, a big thank you to @Lubber for all of his help and support for this extension. Without his hard work many of these new awesome features would not be available.
 
 A full text of the release information can be found here.
 
@@ -18,5 +34,7 @@ https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/R
 A full list of changes can be viewed in the extensions history notes.
 
 https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/HISTORY.md.
+
+Please consider Rating the extension on the Marketplace.
 
 Feedback, Bug Reports and Reviews are always welcome.

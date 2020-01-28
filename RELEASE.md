@@ -1,54 +1,35 @@
 # Release Notes
 
-## v0.2.7
+## v0.3.0
 
-This release addresses the issues some folks have been having with the new setting "kickassembler.outputDirectory", which was intended to control where compiled artifacts are put on the filesystem. We also looked at a problem related to symbols with same name only showing the first type registered in the code. So, if you had a `.macro` and a `.const` both name the same, if the `.macro` was declared first, that is what would be shown on a hover for the `.const`, etc.
+This is a big release that is adding a lot of functionality to make your coding experience with the extension more complete. I feel that were are getting very close to a final release soon.
 
-There were a number of issues related to compiling, and the subsequent running of an Emulator or the C64Debugger because of some issues with how the final PRG file was named. These problems have been addressed, and it should be a little smarter now when it is building the final path for your compiled program. Here are scenarios that the extension tries to handle with respect to this setting. The scenarios work the same on all filesystems (we hope).
+In this release Lubber did some amazing work adding in support for Illegal, 65c02 and DTV opcodes. Of course, this also means that he added support for the `.cpu` directive as well.
 
-"""
-Example 1:
+![](/images/cpu-directive.gif)
 
-With an Output setting of 
+Support for these opcodes are controlled using three new settings.
 
-    "" (blank) 
+![](/images/cpu-directive-settings.png)
 
-and a source filename of 
+Whenever you build your program now, a short informational window will popup letting you know when it has started, and then when it has completed. The completion message also gives you an estimate of the time it took to compile.
 
-    /home/user/workspace/coolgame.asm
+![](/images/build-message.gif)
 
-this method will return
+Also added in this release is code completion for the `.import` directive and `#import` pre-processor command. This is a VERY welcome addition to make it easier to add all of those code and macro libraries with much less typing.
 
-    /home/user/workspace/coolgame.prg
+![](/images/fileimport.gif)
 
+The types of files that will show for the directives is controlled by a number of new settings.
 
-Example 2:
+![](/images/import-file-types.png)
 
-with an output of 
+An update to the hints for parameters has also been added to help you when you are using any macros, functions or internal functions now.
 
-    "output" or "./output"
+![](/images/parameterhints.gif)
 
-and a source filename of
+As always, there was also some code cleanup made as well.
 
-    /home/user/workspace/coolgame.asm
+Again, a big thank you to @Lubber for all of his help and support for this extension. Without his hard work many of these new awesome features would not be available.
 
-this method will return
-
-
-    /home/user/workspace/output/coolgame.prg
-
-
-Example 3:
-
-with an output of
-
-    "/home/user/build"
-
-and a source filename of 
-
-    /home/user/workspace/coolgame.asm
-
-this method will return
-
-    /home/user/build/coolgame.asm
-"""
+And a big thank you to everyone using the extension. Your feedback and bug reports are making this tool better.
