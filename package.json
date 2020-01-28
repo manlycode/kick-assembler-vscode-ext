@@ -159,7 +159,7 @@
 				},
 				"kickassembler.fileTypesSource": {
 					"type": "string",
-					"default": "asm,src,s,kick,a,ka",
+					"default": "asm,src,s,kick,a,ka,lib,inc",
 					"markdownDescription": "Comma separated list of file extensions for **.import source** or **#import**"
 				},
 				"kickassembler.fileTypesC64": {
@@ -171,6 +171,21 @@
 					"type": "string",
 					"default": "txt",
 					"markdownDescription": "Comma separated list of file extensions for **.import text**"
+				},
+				"kickassembler.opcodes.illegal": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "Support illegal 6502 opcodes"
+				},
+				"kickassembler.opcodes.DTV": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Support DTV opcodes"
+				},
+				"kickassembler.opcodes.65c02": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Support 65c02 opcodes"
 				}
 			}
 		},
@@ -186,7 +201,14 @@
 				],
 				"extensions": [
 					".asm",
-					".macro"
+					".macro",
+					".s",
+					".src",
+					".inc",
+					".kick",
+					".ka",
+					".a",
+					".lib"
 				],
 				"configuration": "./client/syntaxes/language-configuration.json"
 			}

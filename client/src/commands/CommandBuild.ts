@@ -87,6 +87,12 @@ export class CommandBuild {
         if (this._configuration.get("javaAllowFileCreation")){
             javaOptions.push('-afo');
         }
+        if(this._configuration.get("opcodes.DTV")){
+            javaOptions.push('-dtv');
+        }
+        if(!this._configuration.get("opcodes.illegal")){
+            javaOptions.push('-excludeillegal');
+        }
 
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
 

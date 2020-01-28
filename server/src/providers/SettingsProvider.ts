@@ -18,6 +18,11 @@ interface GlobalSettings {
     ['kickassembler']:Settings;
 }
 
+interface SettingsOpcodes {
+    "65c02":boolean;
+    DTV: boolean;
+    illegal: boolean;
+}
 export interface Settings {
     assemblerJar: string
     javaRuntime: string;
@@ -38,6 +43,7 @@ export interface Settings {
     fileTypesSource: string;
     fileTypesC64: string;
     fileTypesText: string;
+    opcodes:SettingsOpcodes;
 }
 
 export default class SettingsProvider extends Provider {

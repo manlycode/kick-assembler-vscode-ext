@@ -35,6 +35,7 @@ import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import StringUtils from "../utils/StringUtils";
 import PathUtils from '../utils/PathUtils'; 
+import { InstructionType } from '../definition/KickInstructions';
 
 export default class CompletionProvider extends Provider {
 
@@ -364,7 +365,10 @@ export default class CompletionProvider extends Provider {
 		let documentation: string | MarkupContent = payload.description || payload.comments ? {
 			value:	(payload.description || payload.comments) +
 					(payload.example ? "\n***\n"+payload.example : "") +
-					(payload.deprecated ? "\n*(deprecated)*" : ""),
+					(payload.deprecated ? "\n***\n*(deprecated)*" : "") + 
+					(payload.type && payload.type == InstructionType.Illegal ? "\n***\n**(Illegal opcode)**" : "") + 
+					(payload.type && payload.type == InstructionType.DTV ? "\n***\n**(DTV opcode)**" : "") + 
+					(payload.type && payload.type == InstructionType.C02 ? "\n***\n**(65c02 opcode)**" : ""),
 			kind: 'markdown'
 		} : "";
 
@@ -374,7 +378,7 @@ export default class CompletionProvider extends Provider {
 			for (var i=0,iL=payload.parameters.length;i<iL;i++){
 				paramSnippet.push("${"+(i+1)+":"+payload.parameters[i].name+"}");
 			}
-			adjustedSnippet=			'('+paramSnippet.join(',')+')';
+			adjustedSnippet='('+paramSnippet.join(',')+')';
 		}
 		textEdit.newText += adjustedSnippet;
 
@@ -413,10 +417,15 @@ export default class CompletionProvider extends Provider {
 	private loadInstructions(): CompletionItem[] {
 
 		var items: CompletionItem[] = [];
-
+		var settings = this.getProjectInfo().getSettings();
 		for (let instruction of KickLanguage.Instructions) {
 			const name = instruction.name.toLocaleLowerCase();
-			items.push(this.createCompletionItem(name, LanguageCompletionTypes.Instruction, instruction, CompletionItemKind.Text));
+			if (!instruction.type ||
+				(instruction.type === InstructionType.Illegal && settings.opcodes.illegal) ||
+				(instruction.type === InstructionType.DTV && settings.opcodes.DTV) ||
+				instruction.type === InstructionType.C02 && settings.opcodes["65c02"]) { 
+				items.push(this.createCompletionItem(name, LanguageCompletionTypes.Instruction, instruction, CompletionItemKind.Text));
+			}
 		}
 
 		return items;

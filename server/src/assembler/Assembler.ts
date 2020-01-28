@@ -64,8 +64,7 @@ export class Assembler {
         var asminfo = path.join(outputDirectory, ".asminfo.txt");
         asminfo = path.resolve(asminfo);
 
-        //  assemble by running java process
-        let java = spawnSync(settings.javaRuntime, [
+        let javaOptions = [
             "-jar",
             settings.assemblerJar,
             filename,
@@ -74,7 +73,16 @@ export class Assembler {
             '-asminfo',
             'allSourceSpecific|version',
             '-asminfofile',
-            asminfo], { cwd: path.resolve(sourcePath) });
+            asminfo
+        ];
+        if(settings.opcodes.DTV){
+            javaOptions.push('-dtv');
+        }
+        if(!settings.opcodes.illegal){
+            javaOptions.push('-excludeillegal');
+        }        
+        //  assemble by running java process
+        let java = spawnSync(settings.javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
 
         //  get contents of asminfo
         var asminfo_data = readFileSync(asminfo, 'utf8');
