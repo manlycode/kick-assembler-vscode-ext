@@ -2,7 +2,7 @@
 
 ## v0.3.0
 
-This is a big release that is adding a lot of functionality to make your coding experience with the extension more complete. I feel that were are getting very close to a final release soon.
+This is a big release that is adding a lot of functionality to make your coding experience with the extension more complete.
 
 In this release Lubber did some amazing work adding in support for Illegal, 65c02 and DTV opcodes. Of course, this also means that he added support for the `.cpu` directive as well.
 
