@@ -30,6 +30,7 @@ export interface Settings {
     valid: boolean;
     emulatorRuntime: string;
     emulatorOptions: string;
+    emulatorViceSymbols: boolean;
     debuggerRuntime: string;
     debuggerOptions: string;
     outputDirectory: string;
