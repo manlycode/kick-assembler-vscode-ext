@@ -94,8 +94,13 @@
 				},
 				"kickassembler.emulatorOptions": {
 					"type": "string",
-					"default": "-a",
+					"default": "",
 					"description": "Runtime options for your emulator."
+				},
+				"kickassembler.emulatorViceSymbols": {
+					"type": "boolean",
+					"default": true,
+					"description": "Export labels to a file which can be read by VICE"
 				},
 				"kickassembler.debuggerRuntime": {
 					"type": "string",

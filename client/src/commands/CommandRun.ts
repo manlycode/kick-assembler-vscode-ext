@@ -35,9 +35,18 @@ export class CommandRun {
             return;
         }
 
+        let vsf = prg.replace(".prg", ".vs");
+
+        let emulatorOptionsString: string = this._configuration.get("emulatorOptions");
+        let emulatorOptions = emulatorOptionsString.match(/\S+/g) || [];
+
+        if (this._configuration.get("emulatorViceSymbols")){
+            emulatorOptions.push('-moncommands',vsf);
+        }
+
         //  spawn child process for win32
         if (process.platform == "win32") {
-            let emu = spawn(emulatorRuntime, ["-autostartprgmode", "1", "-autostart", prg], {
+            let emu = spawn(emulatorRuntime, ["-autostartprgmode", "1", "-autostart", prg, ...emulatorOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: false
@@ -50,7 +59,7 @@ export class CommandRun {
 
         //  spawn child process for osx
         if (process.platform == "darwin") {
-            let emu = spawn("open", [emulatorRuntime, "--args", "-autostartprgmode", "1", "-autostart", prg], {
+            let emu = spawn("open", [emulatorRuntime, "--args", "-autostartprgmode", "1", "-autostart", prg, ...emulatorOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: true
@@ -63,7 +72,7 @@ export class CommandRun {
         //  spawn child process for linux
         if (process.platform == "linux") {
 
-            let emu = spawn(emulatorRuntime, ["-autostartprgmode", "1", "-autostart", prg], {
+            let emu = spawn(emulatorRuntime, ["-autostartprgmode", "1", "-autostart", prg, ...emulatorOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: false

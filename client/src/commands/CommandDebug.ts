@@ -42,7 +42,7 @@ export class CommandDebug {
 
         //  spawn child process for win32
         if (process.platform == "win32") {
-            let emu = spawn(debuggerRuntime, ["-breakpoints", "breakpoints.txt", "-vicesymbols", vsf, "-prg", prg, ...debuggerOptions], {
+            let emu = spawn(debuggerRuntime, ["-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", prg, ...debuggerOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: false
@@ -55,7 +55,7 @@ export class CommandDebug {
 
         //  spawn child process for osx
         if (process.platform == "darwin") {
-            let emu = spawn("open", [debuggerRuntime, "--args", "-breakpoints", "breakpoints.txt", "-vicesymbols", vsf, "-prg", prg, ...debuggerOptions], {
+            let emu = spawn("open", [debuggerRuntime, "--args", "-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", prg, ...debuggerOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: true
@@ -68,7 +68,7 @@ export class CommandDebug {
         //  spawn child process for linux
         if (process.platform == "linux") {
 
-            let emu = spawn(debuggerRuntime, ["-breakpoints", "breakpoints.txt", "-vicesymbols", vsf, "-prg", prg, ...debuggerOptions], {
+            let emu = spawn(debuggerRuntime, ["-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", prg, ...debuggerOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: false
