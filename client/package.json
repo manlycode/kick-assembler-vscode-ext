@@ -3,24 +3,20 @@
 	"description": "Kick Assembler Extension for Visual Studio Code - Client",
 	"author": "Microsoft Corporation",
 	"license": "MIT",
-	"version": "0.1.0",
+	"version": "0.3.0",
 	"publisher": "vscode",
 	"repository": {
 		"type": "git",
 		"url": "https://gitlab.com/retro-coder/kick-assembler-vscode-ext"
 	},
 	"engines": {
-		"vscode": "^1.33.0"
-	},
-	"scripts": {
-		"update-vscode": "vscode-install",
-		"postinstall": "vscode-install"
+		"vscode": "^1.37.0"
 	},
 	"dependencies": {
 		"semver": "^7.1.1",
 		"vscode-languageclient": "^5.2.1"
 	},
 	"devDependencies": {
-		"vscode": "^1.1.35"
+		"@types/vscode": "^1.37.0"
 	}
 }
