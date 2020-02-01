@@ -9,9 +9,15 @@ This extension is a work in progress, there is much left to be done.
 * generate breakpoints and watches for vice and c64debugger
 * scope and namespace support (http://www.theweb.dk/KickAssembler/webhelp/content/cpt_Namespaces.html)
 * multi label support (http://www.theweb.dk/KickAssembler/webhelp/content/ch03s04.html)
+* hot load into VICE emulator
 
 ### Ideas
+* document link provider (https://code.visualstudio.com/api/references/vscode-api#languages.registerDocumentLinkProvider)
+* rename provider (https://code.visualstudio.com/api/references/vscode-api#languages.registerRenameProvider)
+* symbol definitions
 * memory layout (https://kickassmemoryview.insoft.se/)
+* remote monitor to active VICE emulator
+* kickass options settings (for things like -libdir, etc)
 
 ### Completed
 * ~~auto-completion scope support~~
