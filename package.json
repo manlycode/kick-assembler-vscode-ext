@@ -159,7 +159,7 @@
 				},
 				"kickassembler.fileTypesPicture": {
 					"type": "string",
-					"default": "gif,jpg",
+					"default": "gif,jpg,png",
 					"markdownDescription": "Comma separated list of file extensions for **LoadPicture()**"
 				},
 				"kickassembler.fileTypesSource": {

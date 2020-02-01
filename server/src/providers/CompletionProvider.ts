@@ -167,7 +167,7 @@ export default class CompletionProvider extends Provider {
 				extensionFilter = extensionFilter.trim()	
 					.replace(/  +/g,' ')	// reduce multiple spaces to one
 					.replace(".","")		// remove possible extension dots
-					.replace(/[, ]/,"|")	//convert them to regex or
+					.replace(/[, ]/g,"|")	//convert them to regex or
 				;
 				const currentUri = PathUtils.getPathFromFilename(this.getProjectInfo().getCurrentProject().getUri());
 				return this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(currentUri));
@@ -309,6 +309,7 @@ export default class CompletionProvider extends Provider {
 	}
 
 	private async loadFileSystem(extensionFilter:string, dir:string,base?:string):Promise<CompletionItem[]> {
+		let isRoot = !base;
 		if (!base) base = dir;
 		// make setting entries dynamic :)
 		const outputDirectory = this.getProjectInfo().getSettings().outputDirectory;
@@ -339,7 +340,20 @@ export default class CompletionProvider extends Provider {
 				};
 			})
 		);
-		return Array.prototype.concat(...files);
+		var cleanedFiles = files.filter((entry:CompletionItem) => {
+			return !!entry.label;
+		});
+		if(isRoot && cleanedFiles.length === 0){
+		// to prevent confusing word proposals (it's a central setting in vscode) return at least one item 
+			cleanedFiles.push(<CompletionItem> {
+				label: "No matching files found",
+				kind: CompletionItemKind.File,
+				data: {
+					payload:{}
+				}
+			});
+		}
+		return Array.prototype.concat(...cleanedFiles);
 	}
 
 	private createCompletionItem(label:string, type:LanguageCompletionTypes, payload:any, kind:CompletionItemKind):CompletionItem {
