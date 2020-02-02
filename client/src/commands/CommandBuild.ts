@@ -95,7 +95,11 @@ export class CommandBuild {
         if(!this._configuration.get("opcodes.illegal")){
             javaOptions.push('-excludeillegal');
         }
-        javaOptions.push();
+        
+        var libdirPaths:string[] = this._configuration.get("assemblerLibraryPaths");
+        libdirPaths.forEach((path) => {
+            javaOptions.push('-libdir',path);
+        });
 
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
 

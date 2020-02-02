@@ -180,17 +180,24 @@
 				"kickassembler.opcodes.illegal": {
 					"type": "boolean",
 					"default": true,
-					"markdownDescription": "Support illegal 6502 opcodes"
+					"description": "Support illegal 6502 opcodes"
 				},
 				"kickassembler.opcodes.DTV": {
 					"type": "boolean",
 					"default": false,
-					"markdownDescription": "Support DTV opcodes"
+					"description": "Support DTV opcodes"
 				},
 				"kickassembler.opcodes.65c02": {
 					"type": "boolean",
 					"default": false,
-					"markdownDescription": "Support 65c02 opcodes"
+					"description": "Support 65c02 opcodes"
+				},
+				"kickassembler.assemblerLibraryPaths": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Library paths where Kick Assembler will look when it tries to open external files and does not find the given file in the current directory path first."
 				}
 			}
 		},

@@ -46,6 +46,7 @@ export interface Settings {
     fileTypesC64: string;
     fileTypesText: string;
     opcodes:SettingsOpcodes;
+    assemblerLibraryPaths:string[];
 }
 
 export default class SettingsProvider extends Provider {
