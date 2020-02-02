@@ -137,7 +137,7 @@ export default class CompletionProvider extends Provider {
 		}
 		if(inComment) return;
 
-		var inStringTest = this.triggerLine.substr(0,this.triggerCharacterPos).replace(/("([^\\"]|\\")*"|'([^\\']|\\')*')/g,"");
+		var inStringTest = this.triggerLine.substr(0,this.triggerCharacterPos).replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g,"");
 		if (inStringTest.match(/["']/) || this.triggerToken=='""' || this.triggerToken=="''") {
 //inside a string quote, now check if its a file selection, its the only allowed intellisense possibility here
 			if((tokensLeft && 
