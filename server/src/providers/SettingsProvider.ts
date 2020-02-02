@@ -7,8 +7,9 @@ import {
     DidChangeConfigurationParams
  } from "vscode-languageserver";
 import Project from "../project/Project";
-
+import { Assembler } from "../assembler/Assembler"
 import { existsSync } from "fs";
+import * as opn from "open";
 
 /*
 
@@ -50,6 +51,7 @@ export interface Settings {
 export default class SettingsProvider extends Provider {
 
     private settings:Settings;
+    private latestKickassVersion:number = 5.12;
 
     constructor(connection:IConnection, projectInfo:ProjectInfoProvider) {
 
@@ -80,15 +82,35 @@ export default class SettingsProvider extends Provider {
      */
     private validateSettings(settings:Settings):boolean|undefined {
 
-        var valid = true;
-        var accessResult;
-
-        accessResult = existsSync(settings.assemblerJar);
-        if (!accessResult) valid = false;
-
-        accessResult = existsSync(settings.javaRuntime);
-        if (!accessResult) valid = false;
-
-        return valid;
+        if (!existsSync(settings.assemblerJar)) return false;
+        if (!existsSync(settings.javaRuntime)) return false;
+        
+        let assembler = new Assembler();
+        let assemblerResults = assembler.assemble(this.settings, settings.assemblerJar, "",true);
+        var kickassVersion = assemblerResults.assemblerInfo.getAssemblerVersion();
+        if(kickassVersion === 0) {
+            // version lower than 5.12, parse output
+            var parsedKickassVersion = assemblerResults.stdout.match(/\d+\.\d+/);
+            if(parsedKickassVersion) {
+                kickassVersion = parseFloat(parsedKickassVersion[0]);
+            }
+        }
+        if (kickassVersion < 5) {
+            var offerKickassDownload = this.getConnection().window.showWarningMessage('Your KickAssembler Version '+kickassVersion+' is ' + (kickassVersion <4 ?'not supported': 'outdated')+'.', {
+                title: 'Get latest KickAssembler Version'
+            });
+            offerKickassDownload.then((value) => {
+                if (value){
+                    opn('http://theweb.dk/KickAssembler/');
+                }
+            });
+            if(kickassVersion < 4) return false;       
+        }
+        else if (kickassVersion < this.latestKickassVersion) {
+            this.getConnection().window.showInformationMessage('Your KickAssembler Version '+kickassVersion+' is not current ('+this.latestKickassVersion+')');
+        }
+      
+        return true;
     }
+
 }

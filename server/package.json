@@ -12,6 +12,7 @@
 		"url": "https://gitlab.com/retro-coder/kick-assembler-vscode-ext"
 	},
 	"dependencies": {
+		"open": "^7.0.2",
 		"vscode-languageserver": "^5.2.1"
 	},
 	"scripts": {}
