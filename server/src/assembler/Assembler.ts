@@ -38,12 +38,12 @@ export class Assembler {
     constructor() {
     }
 
-    public assemble(settings: Settings, uri:string, text: string): AssemblerResults | undefined {
+    public assemble(settings: Settings, uri:string, text: string, ignoreOutputPathSetting: boolean = false): AssemblerResults | undefined {
 
         var outputDirectory: string = settings.outputDirectory;
         var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));
 
-        if (outputDirectory == "") {
+        if (outputDirectory == "" || ignoreOutputPathSetting) {
             outputDirectory = sourcePath;
         }
 

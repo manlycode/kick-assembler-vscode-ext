@@ -31,6 +31,7 @@ export enum AssemblerSections {
     AssemblerFiles,
     AssemblerSyntax,
     AssemblerErrors,
+    AssemblerVersion
 }
 
 export enum AssemblerEntryType {
@@ -70,6 +71,7 @@ export class AssemblerInfo {
     private AssemblerFiles:AssemblerFile[] = [];
     private AssemblerSyntax:AssemblerSyntax[] = [];
     private AssemblerErrors:AssemblerError[] = [];
+    private AssemblerVersion:string = "0";
 
     constructor(data:string) {
         this.processData(data); 
@@ -85,6 +87,10 @@ export class AssemblerInfo {
 
     public getAssemblerErrors():AssemblerError[] {
         return this.AssemblerErrors;
+    }
+
+    public getAssemblerVersion():string {
+        return this.AssemblerVersion;
     }
 
     private processData(data:string) {
@@ -113,6 +119,10 @@ export class AssemblerInfo {
                 section = AssemblerSections.AssemblerFiles;
                 continue;
             }
+            if (line.toLowerCase() == "[version]") {
+                section = AssemblerSections.AssemblerVersion;
+                continue;
+            }
 
             switch(section) {
                 case AssemblerSections.AssemblerErrors:
@@ -125,6 +135,10 @@ export class AssemblerInfo {
 
                 case AssemblerSections.AssemblerFiles:
                     this.addAssemblerFile(line);
+                    break;
+
+                case AssemblerSections.AssemblerVersion:
+                    this.AssemblerVersion = line;
                     break;
             }
         }
