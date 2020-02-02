@@ -1,13 +1,26 @@
 
 ## Visual Studio Code Extension for Kick Assembler 
 
+## v0.3.1
+### Changed
++ debugger uses `-symbols` not `-vicesymbols`
++ named labels `label:` where being suggested for preprocessors
++ kick assembler version checking
++ support additional library paths
+### Fixed
++ optional vice symbols
++ fixed emulator option not being used
++ removed `-a` parameter for emulator
++ fix backslashes in strings breaking completion
++ prevent word suggestion on empty file lists
+
 ## v0.3.0
 ### Changed
 + added support for 65c02, DTV and Illegal opcodes
 + optional parameter completion hints
 + better output setting support for relative and fixed paths
 + [Issue 27](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/27) completion for filenames when using `.import` or `#import`
-+ [Issue 33](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/17) support for .eval var
++ [Issue 17](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/17) support for .eval var
 
 ### Fixed
 + [Issue 26](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/26) code completion for macros and functions was broken

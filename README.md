@@ -97,6 +97,13 @@ Additional opcodes for 65c02, DTV and Illegal opcodes supported. Be a Rebel!
 
 ![](/images/opcodes.gif)
 
+#### Support For `-libdir` Option
+
+Work with external code libraries in your project, and then ensure they are added to your compile using the `-libdir` parameter on Kick.
+
+![](/images/library-paths.png)
+
+
 
 ## TODO
 See [the Roadmap](/ROADMAP.md)

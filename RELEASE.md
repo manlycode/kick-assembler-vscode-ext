@@ -1,35 +1,20 @@
 # Release Notes
 
-## v0.3.0
+## v0.3.1
 
-This is a big release that is adding a lot of functionality to make your coding experience with the extension more complete.
+This small release fixes a number of small bugs that were found in the 0.3.0 release last week. In addition to these, a couple of nifty features were added by @Lubber.
 
-In this release Lubber did some amazing work adding in support for Illegal, 65c02 and DTV opcodes. Of course, this also means that he added support for the `.cpu` directive as well.
+First up, the extension will now check what version of Kick you are running, and will inform you if your version is not supported, too old or when a newer version is available. It also provides a convenient button for you to take you to the website to download the latest version.
 
-![](/images/cpu-directive.gif)
+![](/images/version.png)
 
-Support for these opcodes are controlled using three new settings.
+![](/images/version-old.png)
 
-![](/images/cpu-directive-settings.png)
+![](/images/version-not-supported.png)
 
-Whenever you build your program now, a short informational window will popup letting you know when it has started, and then when it has completed. The completion message also gives you an estimate of the time it took to compile.
+Another great addition is the ability to add additional paths in your project when you want to get external code libraries. This will then add those to the `-libdir` path when you compile your project.
 
-![](/images/build-message.gif)
+![](/images/library-paths.png)
 
-Also added in this release is code completion for the `.import` directive and `#import` pre-processor command. This is a VERY welcome addition to make it easier to add all of those code and macro libraries with much less typing.
-
-![](/images/fileimport.gif)
-
-The types of files that will show for the directives is controlled by a number of new settings.
-
-![](/images/import-file-types.png)
-
-An update to the hints for parameters has also been added to help you when you are using any macros, functions or internal functions now.
-
-![](/images/parameterhints.gif)
-
-As always, there was also some code cleanup made as well.
-
-Again, a big thank you to @Lubber for all of his help and support for this extension. Without his hard work many of these new awesome features would not be available.
 
 And a big thank you to everyone using the extension. Your feedback and bug reports are making this tool better.
