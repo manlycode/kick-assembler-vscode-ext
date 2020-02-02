@@ -8,6 +8,7 @@ import {
  } from "vscode-languageserver";
 import Project from "../project/Project";
 import { Assembler } from "../assembler/Assembler"
+import PathUtils from "../utils/PathUtils";
 import * as fs from "fs";
 import * as opn from "open";
 
@@ -87,7 +88,7 @@ export default class SettingsProvider extends Provider {
         if (!fs.existsSync(settings.assemblerJar)) return false;
         if (!fs.existsSync(settings.javaRuntime)) return false;
         try {
-            fs.accessSync(settings.assemblerJar, fs.constants.W_OK);
+            fs.accessSync(PathUtils.getPathFromFilename(settings.assemblerJar), fs.constants.W_OK);
 
             let assembler = new Assembler();
             let assemblerResults = assembler.assemble(this.settings, settings.assemblerJar, "",true);
