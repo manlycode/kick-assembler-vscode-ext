@@ -1,6 +1,10 @@
 
 ## Visual Studio Code Extension for Kick Assembler 
 
+## v0.3.2
+### Fixed
++ small bug in the version checker that was added in 0.3.1
+
 ## v0.3.1
 ### Changed
 + debugger uses `-symbols` not `-vicesymbols`

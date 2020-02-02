@@ -1,5 +1,12 @@
 # Release Notes
 
+## v0.3.2
+
+Small fix for the version checking that was added in 0.3.1.
+
+:)
+
+
 ## v0.3.1
 
 This small release fixes a number of small bugs that were found in the 0.3.0 release last week. In addition to these, a couple of nifty features were added by @Lubber.
