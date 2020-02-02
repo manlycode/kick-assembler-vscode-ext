@@ -257,9 +257,10 @@ export default class CompletionProvider extends Provider {
 				}
 			}
 
-			// always insert named labels
-			items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
-
+			// always insert named labels if not preprocessors
+			if (prevToken !== "preprocessor") {
+				items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
+			}
 			// completion items for unhandled previous tokens
 			if (prevToken == "") {
 
