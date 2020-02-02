@@ -71,7 +71,7 @@ export class AssemblerInfo {
     private AssemblerFiles:AssemblerFile[] = [];
     private AssemblerSyntax:AssemblerSyntax[] = [];
     private AssemblerErrors:AssemblerError[] = [];
-    private AssemblerVersion:number = 0;
+    private AssemblerVersion:string = "0";
 
     constructor(data:string) {
         this.processData(data); 
@@ -89,7 +89,7 @@ export class AssemblerInfo {
         return this.AssemblerErrors;
     }
 
-    public getAssemblerVersion():number {
+    public getAssemblerVersion():string {
         return this.AssemblerVersion;
     }
 
@@ -138,7 +138,7 @@ export class AssemblerInfo {
                     break;
 
                 case AssemblerSections.AssemblerVersion:
-                    this.AssemblerVersion = parseFloat(line);
+                    this.AssemblerVersion = line;
                     break;
             }
         }

@@ -8,7 +8,7 @@ import {
  } from "vscode-languageserver";
 import Project from "../project/Project";
 import { Assembler } from "../assembler/Assembler"
-import { existsSync } from "fs";
+import * as fs from "fs";
 import * as opn from "open";
 
 /*
@@ -51,7 +51,8 @@ export interface Settings {
 export default class SettingsProvider extends Provider {
 
     private settings:Settings;
-    private latestKickassVersion:number = 5.12;
+    private kickAssemblerLatestVersion:string = "5.12";
+    private kickAssemblerWebsite: string = "http://theweb.dk/KickAssembler/";
 
     constructor(connection:IConnection, projectInfo:ProjectInfoProvider) {
 
@@ -82,35 +83,69 @@ export default class SettingsProvider extends Provider {
      */
     private validateSettings(settings:Settings):boolean|undefined {
 
-        if (!existsSync(settings.assemblerJar)) return false;
-        if (!existsSync(settings.javaRuntime)) return false;
-        
-        let assembler = new Assembler();
-        let assemblerResults = assembler.assemble(this.settings, settings.assemblerJar, "",true);
-        var kickassVersion = assemblerResults.assemblerInfo.getAssemblerVersion();
-        if(kickassVersion === 0) {
-            // version lower than 5.12, parse output
-            var parsedKickassVersion = assemblerResults.stdout.match(/\d+\.\d+/);
-            if(parsedKickassVersion) {
-                kickassVersion = parseFloat(parsedKickassVersion[0]);
+        if (!fs.existsSync(settings.assemblerJar)) return false;
+        if (!fs.existsSync(settings.javaRuntime)) return false;
+        try {
+            fs.accessSync(settings.assemblerJar, fs.constants.W_OK);
+
+            let assembler = new Assembler();
+            let assemblerResults = assembler.assemble(this.settings, settings.assemblerJar, "",true);
+            var kickassVersion = assemblerResults.assemblerInfo.getAssemblerVersion();
+            if(kickassVersion === "0") {
+                // version lower than 5.12, parse output
+                var parsedKickassVersion = assemblerResults.stdout.match(/\d+\.\d+/);
+                if(parsedKickassVersion) {
+                    kickassVersion = parsedKickassVersion[0];
+                }
+            }
+            var compareVersions = require('compare-versions');
+            if(compareVersions.compare(kickassVersion,"4","<")) {
+                this.kickAssBelow4Error(kickassVersion);
+                return false;       
+            }
+            if(compareVersions.compare(kickassVersion,"5","<")) {
+                var offerKickassDownload = this.getConnection().window.showWarningMessage(`Your KickAssembler Version ${kickassVersion} is outdated.`, {
+                    title: 'Upgrade KickAssembler'
+                });
+                offerKickassDownload.then((value) => {
+                    if (value){
+                        opn(this.kickAssemblerWebsite);
+                    }
+                });   
+            }        
+            else if(compareVersions.compare(kickassVersion,this.kickAssemblerLatestVersion,"<")) {
+                var offerKickassDownload = this.getConnection().window.showInformationMessage(`Your KickAssembler Version ${kickassVersion} can be updated to ${this.kickAssemblerLatestVersion}.`, {
+                    title: 'Download Update' 
+                });
+                offerKickassDownload.then((value) => {
+                    if (value){
+                        opn(this.kickAssemblerWebsite);
+                    }
+                }); 
             }
         }
-        if (kickassVersion < 5) {
-            var offerKickassDownload = this.getConnection().window.showWarningMessage('Your KickAssembler Version '+kickassVersion+' is ' + (kickassVersion <4 ?'not supported': 'outdated')+'.', {
-                title: 'Get latest KickAssembler Version'
-            });
-            offerKickassDownload.then((value) => {
-                if (value){
-                    opn('http://theweb.dk/KickAssembler/');
-                }
-            });
-            if(kickassVersion < 4) return false;       
+        catch (err) {
+// at least try to guess the version by jar size
+            const jarFileStats = fs.statSync(settings.assemblerJar);
+            //Kickass 2.x and 3.x are smaller than 400k in size
+            if (jarFileStats.size < 400000) {
+                this.kickAssBelow4Error('lower than 4.0')
+                return false;
+            }
+            this.getConnection().window.showWarningMessage('Cannot check KickAssembler version. No write permissions to jar folder.');
         }
-        else if (kickassVersion < this.latestKickassVersion) {
-            this.getConnection().window.showInformationMessage('Your KickAssembler Version '+kickassVersion+' is not current ('+this.latestKickassVersion+')');
-        }
-      
         return true;
+    }
+
+    private kickAssBelow4Error(kickassVersion:string){
+        var offerKickassDownload = this.getConnection().window.showErrorMessage(`Your KickAssembler Version ${kickassVersion} is not supported.`, {
+            title: 'Get supported KickAssembler Version'
+        });
+        offerKickassDownload.then((value) => {
+            if (value){
+                opn(this.kickAssemblerWebsite);
+            }
+        });
     }
 
 }
