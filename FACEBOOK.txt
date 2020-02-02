@@ -3,21 +3,19 @@ Use this template when posting to Facebook.
 ~~~
 
 Kick Assembler (C64) For Visual Studio Code
-Release <0.3.0>
+Release 0.3.2
 
 https://marketplace.visualstudio.com/items?itemName=paulhocker.kick-assembler-vscode-ext
 
 
-First up, the extension will now check what version of Kick you are running, and will inform you if your version is not supported, too old or when a newer version is available. It also provides a convenient button for you to take you to the website to download the latest version.
+This was release to correct a very small bug in the new Version Checking that was added in the last release.
 
-
-Another great addition is the ability to add additional paths in your project when you want to get external code libraries. This will then add those to the `-libdir` path when you compile your project.
-
+A full list of release information can be found here
 
 https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/RELEASE.md.
 
 
-A full list of changes can be viewed in the extensions history notes.
+A full list of historical changes can be viewed here
 
 https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/HISTORY.md.
 
