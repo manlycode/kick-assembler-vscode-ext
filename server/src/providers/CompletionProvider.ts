@@ -36,6 +36,7 @@ import { KickLanguage } from "../definition/KickLanguage";
 import StringUtils from "../utils/StringUtils";
 import PathUtils from '../utils/PathUtils'; 
 import { InstructionType } from '../definition/KickInstructions';
+import Uri from "vscode-uri";
 
 export default class CompletionProvider extends Provider {
 
@@ -170,7 +171,26 @@ export default class CompletionProvider extends Provider {
 					.replace(/[, ]/g,"|")	//convert them to regex or
 				;
 				const currentUri = PathUtils.getPathFromFilename(this.getProjectInfo().getCurrentProject().getUri());
-				return this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(currentUri));
+				var foundFiles = await this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(currentUri));
+
+				var libpathDirentries;
+				for(let i=0, il=settings.assemblerLibraryPaths.length; i < il; i++){
+					libpathDirentries = await this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(Uri.file(settings.assemblerLibraryPaths[i]).toString()));
+					if(libpathDirentries.length>0) {
+						foundFiles.push(...libpathDirentries);
+					}
+				}
+				if(foundFiles.length === 0){
+					// to prevent confusing word proposals (it's a central setting in vscode) return at least one item 
+					foundFiles.push(<CompletionItem> {
+						label: "No matching files found",
+						kind: CompletionItemKind.File,
+						data: {
+							payload:{}
+						}
+					});
+				}
+				return foundFiles;
 			}
 			return;
 		}
@@ -310,7 +330,6 @@ export default class CompletionProvider extends Provider {
 	}
 
 	private async loadFileSystem(extensionFilter:string, dir:string,base?:string):Promise<CompletionItem[]> {
-		let isRoot = !base;
 		if (!base) base = dir;
 		// make setting entries dynamic :)
 		const outputDirectory = this.getProjectInfo().getSettings().outputDirectory;
@@ -341,20 +360,10 @@ export default class CompletionProvider extends Provider {
 				};
 			})
 		);
-		var cleanedFiles = files.filter((entry:CompletionItem) => {
+		var cleanedFiles = Array.prototype.concat(...files).filter((entry:CompletionItem) => {
 			return !!entry.label;
 		});
-		if(isRoot && cleanedFiles.length === 0){
-		// to prevent confusing word proposals (it's a central setting in vscode) return at least one item 
-			cleanedFiles.push(<CompletionItem> {
-				label: "No matching files found",
-				kind: CompletionItemKind.File,
-				data: {
-					payload:{}
-				}
-			});
-		}
-		return Array.prototype.concat(...cleanedFiles);
+		return cleanedFiles;
 	}
 
 	private createCompletionItem(label:string, type:LanguageCompletionTypes, payload:any, kind:CompletionItemKind):CompletionItem {
