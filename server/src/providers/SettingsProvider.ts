@@ -93,6 +93,12 @@ export default class SettingsProvider extends Provider {
         // is the java runtime empty?
         if (!fs.existsSync(settings.javaRuntime)) return false;
 
+        for(let i=0, il=settings.assemblerLibraryPaths.length; i < il; i++){
+            if (!fs.existsSync(settings.assemblerLibraryPaths[i])) {
+                this.getConnection().window.showWarningMessage(`KickAssembler Library Path "${settings.assemblerLibraryPaths[i]}" does not exist. Ignoring.`);
+            }
+        }
+
         try {
 
             fs.accessSync(PathUtils.getPathFromFilename(settings.assemblerJar), fs.constants.W_OK);

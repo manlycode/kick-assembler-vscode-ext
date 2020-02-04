@@ -175,9 +175,11 @@ export default class CompletionProvider extends Provider {
 
 				var libpathDirentries;
 				for(let i=0, il=settings.assemblerLibraryPaths.length; i < il; i++){
-					libpathDirentries = await this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(Uri.file(settings.assemblerLibraryPaths[i]).toString()));
-					if(libpathDirentries.length>0) {
-						foundFiles.push(...libpathDirentries);
+					if (fs.existsSync(settings.assemblerLibraryPaths[i])) {
+						libpathDirentries = await this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(Uri.file(settings.assemblerLibraryPaths[i]).toString()));
+						if(libpathDirentries.length>0) {
+							foundFiles.push(...libpathDirentries);
+						}
 					}
 				}
 				if(foundFiles.length === 0){
