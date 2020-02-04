@@ -43,8 +43,10 @@ export default class PathUtils {
 	 */
 	public static fileExists(filename: string) {
 
-		// account for forward slashes
-		filename = filename.replace("\\", "");
+		// account for forward slashes on non-windows platforms 
+        if (process.platform != "win32") 
+			filename = filename.replace("\\", "");
+
 		return fs.existsSync(filename);
 
 	}
