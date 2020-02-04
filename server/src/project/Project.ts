@@ -34,7 +34,7 @@ import { Directive } from "../definition/KickDirectives";
 import { readFileSync } from "fs";
 import { KickInternalSymbols, Property, Method } from "../definition/KickInternalSymbols";
 import { createHash } from "crypto";
-import { CompletionItemKind, SymbolKind, Location } from "vscode-languageserver";
+import { CompletionItemKind, SymbolKind, Range, Position } from "vscode-languageserver";
 import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 import { Parameter } from "../definition/KickPreprocessors";
@@ -71,6 +71,8 @@ export interface Symbol {
     kind?: SymbolKind;
     completionKind?: CompletionItemKind;
     line?: Line;
+    range?: Range;
+    fileIndex?: number;
     scope?: number;
     comments?: string;
     parameters?: Parameter[];
@@ -247,6 +249,11 @@ export default class Project {
             symbol.data["uri"] = projectFile.getUri();
 
             symbol.line = projectFile.getLines()[syntax.range.startLine];
+            symbol.range = Range.create(
+                Position.create(syntax.range.startLine,syntax.range.startPosition),
+                Position.create(syntax.range.endLine,syntax.range.endPosition)
+            );
+            symbol.fileIndex = syntax.range.fileIndex;
             symbol.comments = this.getComments(range, projectFile.getLines());
 
             //check for param descriptions (@param (type) parameter description)

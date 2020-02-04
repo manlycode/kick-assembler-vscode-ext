@@ -5,13 +5,9 @@ import {
 import { 
     DocumentSymbolParams,
     Connection,
-    SymbolInformation,
-    Range,
-    Position,
+    SymbolInformation
  } from "vscode-languageserver";
  
-import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from "constants";
-
 /**
  * Provides a List of Symbols in the Document
  * 
@@ -30,7 +26,8 @@ export default class DocumentSymbolProvider extends Provider {
             var symbols: SymbolInformation[];
             symbols = [];
 
-            for(var symbol of projectInfo.getCurrentProject().getSymbols()) {
+            var currentProject = projectInfo.getCurrentProject();
+            for(var symbol of currentProject.getSymbols()) {
 
                 //  only include symbols from the main project file
                 if (symbol.isMain && symbol.line.scope == 0) {
@@ -38,11 +35,8 @@ export default class DocumentSymbolProvider extends Provider {
                     var s1 = SymbolInformation.create(
                         symbol.name,
                         symbol.kind,
-                        Range.create(
-                            Position.create(symbol.line.number, 1),
-                            Position.create(symbol.line.number,1)
-                        ),
-                        this.getProjectInfo().getCurrentProject().getUri(),
+                        symbol.range,
+                        symbol.isMain ? currentProject.getUri() : currentProject.getSourceFiles()[symbol.fileIndex].getUri(),
                         ""
                     );
 
