@@ -5,6 +5,9 @@
 
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import { Uri } from "vscode"; 
+import PathUtils from './PathUtils';
+
 
 export default class ConfigUtils {
 
@@ -12,12 +15,12 @@ export default class ConfigUtils {
 
 		let settings = vscode.workspace.getConfiguration("kickassembler");
 
-		if (!fs.existsSync(settings.get("assemblerJar"))) {
+		if (!PathUtils.fileExists(settings.get("assemblerJar"))) {
 			vscode.window.showErrorMessage("Could Not Find the KickAss Jar in the assemblerJar setting.");
 			return false;
 		}
 		
-		if (!fs.existsSync(settings.get("javaRuntime"))) {
+		if (!PathUtils.fileExists(settings.get("javaRuntime"))) {
 			vscode.window.showErrorMessage("Could Not Find the Java Runtime in the javaRuntime setting.");
 			return false;
 		}
@@ -29,7 +32,7 @@ export default class ConfigUtils {
 
 		let settings = vscode.workspace.getConfiguration("kickassembler");
 
-		if (!fs.existsSync(settings.get("emulatorRuntime"))) {
+		if (!PathUtils.fileExists(settings.get("emulatorRuntime"))) {
 			vscode.window.showErrorMessage("Could Not Find the Emulator Runtime in the emulatorRuntime setting.");
 			return false;
 		}
@@ -41,8 +44,8 @@ export default class ConfigUtils {
 
 		let settings = vscode.workspace.getConfiguration("kickassembler");
 
-		if (!fs.existsSync(settings.get("debuggerRuntime"))) {
-			vscode.window.showErrorMessage("Could Not Find the C64Debugger Runtime in the emulatorRuntime setting.");
+		if (!PathUtils.fileExists(settings.get("debuggerRuntime"))) {
+			vscode.window.showErrorMessage("Could Not Find the C64Debugger Runtime in the debuggerRuntime setting.");
 			return false;
 		}
 

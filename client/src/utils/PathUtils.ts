@@ -5,6 +5,8 @@
 
 import { dirname } from 'path';
 import { Uri } from "vscode"; 
+import * as fs from 'fs';
+
 
 export default class PathUtils {
 
@@ -30,5 +32,20 @@ export default class PathUtils {
      */
     public static GetPathFromFilename(filename: string) {
         return dirname(filename);
-    }
+	}
+	
+	/**
+	 * Returns True if the File Exists
+	 * 
+	 * Accomodates filenames that might have forward
+	 * slashes in thier name for posix transformations
+	 * 
+	 */
+	public static fileExists(filename: string) {
+
+		// account for forward slashes
+		filename = filename.replace("\\", "");
+		return fs.existsSync(filename);
+
+	}
 }
