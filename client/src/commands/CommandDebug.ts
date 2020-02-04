@@ -24,9 +24,11 @@ export class CommandDebug {
         // is the emulator path set?
         let debuggerRuntime: string = this._configuration.get("debuggerRuntime");
 
-        // enclose in quotes to accomodate filenames with spaces
-		debuggerRuntime = '"' + debuggerRuntime + '"';
-		debuggerRuntime = debuggerRuntime.replace("\\", "");
+        // enclose in quotes to accomodate filenames with spaces on non-windows platforms
+        if (process.platform != "win32") {
+            debuggerRuntime = '"' + debuggerRuntime + '"';
+		    debuggerRuntime = debuggerRuntime.replace("\\", "");
+        }
 
         let debuggerOptionsString: string = this._configuration.get("debuggerOptions");
         let debuggerOptions = debuggerOptionsString.match(/\S+/g) || [];

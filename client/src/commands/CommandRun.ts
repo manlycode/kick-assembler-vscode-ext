@@ -24,6 +24,12 @@ export class CommandRun {
         //  is the emulator path set?
         let emulatorRuntime: string  = this._configuration.get("emulatorRuntime");
 
+        // enclose in quotes to accomodate filenames with spaces on non-windows platforms
+        if (process.platform != "win32") {
+            emulatorRuntime = '"' + emulatorRuntime + '"';
+		    emulatorRuntime = emulatorRuntime.replace("\\", "");
+        }
+
         // get the program filename and path
         let prg = ClientUtils.GetWorkspaceProgramFilename();
 
