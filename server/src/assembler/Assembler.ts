@@ -82,7 +82,9 @@ export class Assembler {
             javaOptions.push('-excludeillegal');
         }
         settings.assemblerLibraryPaths.forEach((path) => {
-            javaOptions.push('-libdir',path);
+            if (fs.existsSync(path)) {
+                javaOptions.push('-libdir',path);
+            }
         }); 
         //  assemble by running java process
         let java = spawnSync(settings.javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });

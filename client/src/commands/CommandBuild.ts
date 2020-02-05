@@ -98,7 +98,9 @@ export class CommandBuild {
         
         var libdirPaths:string[] = this._configuration.get("assemblerLibraryPaths");
         libdirPaths.forEach((path) => {
-            javaOptions.push('-libdir',path);
+            if (fs.existsSync(path)) {
+                javaOptions.push('-libdir',path);
+            }
         });
 
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
