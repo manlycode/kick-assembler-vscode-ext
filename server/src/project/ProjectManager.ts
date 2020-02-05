@@ -20,8 +20,7 @@ import {
     DidOpenTextDocumentParams,
     DidSaveTextDocumentParams,
     Connection,
-    DidCloseTextDocumentParams,
-    SignatureHelp
+    DidCloseTextDocumentParams
 } from "vscode-languageserver";
 
 import SettingsProvider, { Settings } from "../providers/SettingsProvider";
@@ -35,6 +34,7 @@ import { createHash } from "crypto";
 import DocumentSymbolProvider from "../providers/DocumentSymbolProvider";
 import CompletionProvider from "../providers/CompletionProvider";
 import SignatureHelpProvider from "../providers/SignatureHelpProvider";
+import DefinitionProvider from "../providers/DefinitionProvider";
 
 export default class ProjectManager {
 
@@ -50,6 +50,7 @@ export default class ProjectManager {
     private documentSymbolProvider: DocumentSymbolProvider;
     private completionProvider: CompletionProvider;
     private signatureHelpProvider: SignatureHelpProvider;
+    private definitionProvider: DefinitionProvider;
 
     constructor(connection: Connection) {
 
@@ -74,6 +75,7 @@ export default class ProjectManager {
         this.documentSymbolProvider = new DocumentSymbolProvider(connection, projectInfoProvider);
         this.completionProvider = new CompletionProvider(connection, projectInfoProvider);
         this.signatureHelpProvider = new SignatureHelpProvider(connection, projectInfoProvider);
+        this.definitionProvider = new DefinitionProvider(connection, projectInfoProvider);
 
         connection.onInitialize((params: InitializeParams): InitializeResult => {
             return {
@@ -81,6 +83,7 @@ export default class ProjectManager {
                     textDocumentSync: this.documents.syncKind,
                     hoverProvider: true,
                     documentSymbolProvider: true,
+                    definitionProvider : true,
                     signatureHelpProvider: {
                         triggerCharacters: ["(",","]
                     },
