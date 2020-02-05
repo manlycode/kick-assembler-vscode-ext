@@ -226,7 +226,7 @@ export default class HoverProvider extends Provider {
 
 		// find the current source file index in the asminfo file
 		// TODO: figure this out after assembly instead of here
-		var files = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerFiles();
+		var files = this.project.getAssemblerInfo().getAssemblerFiles();
 		for (var i: number = 0; i < files.length; i++) {
 			var file: AssemblerFile = files[i];
 			if (file.main) {
@@ -236,7 +236,7 @@ export default class HoverProvider extends Provider {
 		}
 
 		// get current assembler syntax
-		var syntaxList: AssemblerSyntax[] = this.getProjectInfo().getCurrentProject().getAssemblerInfo().getAssemblerSyntax();
+		var syntaxList: AssemblerSyntax[] = this.project.getAssemblerInfo().getAssemblerSyntax();
 
 		for (var i: number = 0; i < syntaxList.length; i++) {
 
