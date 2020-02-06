@@ -40,6 +40,7 @@ import Uri from "vscode-uri";
 
 export default class CompletionProvider extends Provider {
 
+	private project: Project;
 	private textDocumentPosition: TextDocumentPositionParams;
 
 	private documentPosition:TextDocumentPositionParams;
@@ -59,6 +60,7 @@ export default class CompletionProvider extends Provider {
 		// 	show the initial list of items
 		connection.onCompletion((textDocumentPosition:TextDocumentPositionParams): undefined|Thenable<CompletionItem[]> => {
 			if (projectInfo.getSettings().valid) {
+				this.project = projectInfo.getProject(textDocumentPosition.textDocument.uri);
 				this.documentPosition = textDocumentPosition;
 				return this.createCompletionItems();
 			}
@@ -105,7 +107,7 @@ export default class CompletionProvider extends Provider {
 
 		this.triggerCharacterPos = this.documentPosition.position.character - 1;
 
-		this.documentSource = this.getProjectInfo().getCurrentProject().getSourceLines();
+		this.documentSource = this.project.getSourceLines();
 		this.triggerLine = this.documentSource[this.documentPosition.position.line];
 		this.trigger = this.triggerCharacterPos >=0 ? this.triggerLine[this.triggerCharacterPos] : "";
 
@@ -170,7 +172,7 @@ export default class CompletionProvider extends Provider {
 					.replace(".","")		// remove possible extension dots
 					.replace(/[, ]/g,"|")	//convert them to regex or
 				;
-				const currentUri = PathUtils.getPathFromFilename(this.getProjectInfo().getCurrentProject().getUri());
+				const currentUri = PathUtils.getPathFromFilename(this.project.getUri());
 				var foundFiles = await this.loadFileSystem(extensionFilter,PathUtils.uriToPlatformPath(currentUri));
 
 				var libpathDirentries;
@@ -207,7 +209,7 @@ export default class CompletionProvider extends Provider {
 			var possibleInternalClass = LineUtils.getTokenAtLinePosition(preparedToken,preparedToken.length - 1);
 			if(possibleInternalClass) {
 				var symbolInstance = "", instancePos;
-				for (let symbol of this.getProjectInfo().getCurrentProject().getSymbols()) {
+				for (let symbol of this.project.getSymbols()) {
 					if (symbol.name == possibleInternalClass) {
 						instancePos = symbol.originalValue.indexOf("(");
 						if(instancePos > 0) {
@@ -216,7 +218,7 @@ export default class CompletionProvider extends Provider {
 						}
 					}
 				}				
-				for (let symbol of this.getProjectInfo().getCurrentProject().getBuiltInSymbols()) {
+				for (let symbol of this.project.getBuiltInSymbols()) {
 					if (symbol.name == possibleInternalClass || symbol.name == symbolInstance) {
 						if(symbol.properties) {
 							symbol.properties.forEach((property)=> {
@@ -250,7 +252,7 @@ export default class CompletionProvider extends Provider {
 				}
 
 				if(prevToken == "") {
-					const symbolMatch = this.getProjectInfo().getCurrentProject().getSymbols().find((the_symbol) => {
+					const symbolMatch = this.project.getSymbols().find((the_symbol) => {
 						return the_symbol.name.toLowerCase() === lastToken;
 					});
 					if (symbolMatch) {
@@ -335,7 +337,7 @@ export default class CompletionProvider extends Provider {
 		if (!base) base = dir;
 		// make setting entries dynamic :)
 		const outputDirectory = this.getProjectInfo().getSettings().outputDirectory;
-		const currentEditorFile = path.basename(this.getProjectInfo().getCurrentProject().getUri());
+		const currentEditorFile = path.basename(this.project.getUri());
 		const dirents = await readdir(dir, { withFileTypes: true });
 		const files = await Promise.all(
 			dirents
@@ -490,7 +492,7 @@ export default class CompletionProvider extends Provider {
 	private loadSymbols(symbolType:SymbolType): CompletionItem[] {
 
 		var items: CompletionItem[] = [];
-		var symbols = this.getProjectInfo().getCurrentProject().getSymbols();
+		var symbols = this.project.getSymbols();
 
 		// project symbols
 		for (let symbol of symbols) {
@@ -500,7 +502,7 @@ export default class CompletionProvider extends Provider {
 		}
 
 		// built-in symbols
-		for (let symbol of this.getProjectInfo().getCurrentProject().getBuiltInSymbols()) {
+		for (let symbol of this.project.getBuiltInSymbols()) {
 			if (symbol.type == symbolType) {
 				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, symbol.completionKind || CompletionItemKind.Class));
 			}

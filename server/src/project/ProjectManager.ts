@@ -39,7 +39,6 @@ import DefinitionProvider from "../providers/DefinitionProvider";
 export default class ProjectManager {
 
     private projects: Project[];
-    private currentProject: Project;
 
     private connection: Connection;
 
@@ -65,7 +64,6 @@ export default class ProjectManager {
         //  setup project information provider
         const projectInfoProvider: ProjectInfoProvider = {
             getProject: this.getProject.bind(this),
-            getCurrentProject: this.getCurrentProject.bind(this),
             getSettings: this.getSettings.bind(this)
         };
 
@@ -101,7 +99,6 @@ export default class ProjectManager {
 
         connection.onDidOpenTextDocument((open: DidOpenTextDocumentParams) => {
             var project = new Project(open.textDocument.uri);
-            this.currentProject = project;
             this.projects.push(project);
             if (this.settingsProvider.getSettings().valid) {
                 project.assemble(this.settingsProvider.getSettings(), open.textDocument.text);
@@ -111,7 +108,6 @@ export default class ProjectManager {
 
         connection.onDidChangeTextDocument((change: DidChangeTextDocumentParams) => {
             var project = this.findProject(change.textDocument.uri);
-            this.currentProject = project;
             var kickAssSettings = this.settingsProvider.getSettings();
             var source = change.contentChanges[0].text;
             if (kickAssSettings.valid && kickAssSettings.autoAssembleTrigger.indexOf('onChange') !== -1) {
@@ -125,7 +121,6 @@ export default class ProjectManager {
 
         connection.onDidSaveTextDocument((change: DidSaveTextDocumentParams) => {
             var project = this.findProject(change.textDocument.uri);
-            this.currentProject = project;
             var file = readFileSync(PathUtils.uriToPlatformPath(change.textDocument.uri), 'utf8');
             if (this.settingsProvider.getSettings().valid) {
                 project.assemble(this.settingsProvider.getSettings(), file);
@@ -174,10 +169,6 @@ export default class ProjectManager {
 
     public getProject(uri: string): Project {
         return this.findProject(uri);
-    }
-
-    public getCurrentProject(): Project {
-        return this.currentProject;
     }
 
     public getCompletionProvider(): CompletionProvider {

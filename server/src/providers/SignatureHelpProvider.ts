@@ -1,6 +1,7 @@
 import { Provider, ProjectInfoProvider } from "./Provider";
 import StringUtils from "../utils/StringUtils";
 import { Parameter } from "../definition/KickPreprocessors";
+import Project from "../project/Project";
 
 import {
 	Connection,
@@ -15,6 +16,7 @@ import { close } from "fs";
 
 
 export default class SignatureHelpProvider extends Provider {
+	private project: Project;
 
 	private documentPosition:TextDocumentPositionParams;
 	private documentSource:string[];
@@ -29,6 +31,7 @@ export default class SignatureHelpProvider extends Provider {
 
 		connection.onSignatureHelp((textDocumentPosition: TextDocumentPositionParams): SignatureHelp => {
 			if (projectInfo.getSettings().valid) {
+				this.project = projectInfo.getProject(textDocumentPosition.textDocument.uri);
 				this.documentPosition = textDocumentPosition;
 				return this.createSignatureHelp()
 			}
@@ -42,7 +45,7 @@ export default class SignatureHelpProvider extends Provider {
 
 		this.triggerCharacterPos = this.documentPosition.position.character - 1;
 
-		this.documentSource = this.getProjectInfo().getCurrentProject().getSourceLines();
+		this.documentSource = this.project.getSourceLines();
 		this.triggerLine = this.documentSource[this.documentPosition.position.line];
 
 		// support functions as parameters as well so correctly find the parenthesis to the function name
@@ -79,7 +82,7 @@ export default class SignatureHelpProvider extends Provider {
 			for(var i=0,iL=parenthesisString.length; i<iL;i++) {
 				if (parenthesisString[i] === "," && this.triggerCharacterPos-parenthesisStart+1 > i) activeParameter++;
 			}
-			for (let symbol of this.getProjectInfo().getCurrentProject().getAllSymbols()) {
+			for (let symbol of this.project.getAllSymbols()) {
 				if (symbol.name == this.triggerToken && symbol.parameters && (symbol.type == SymbolType.Macro || symbol.type == SymbolType.Function)) {
 					signatures.push(this.createSignatureItem(symbol));
 					break;
