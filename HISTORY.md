@@ -2,7 +2,12 @@
 ## Visual Studio Code Extension for Kick Assembler 
 
 ## v0.3.3
-
+### Changed
++ implemented definition provider for "goto definition" and "ctrl+click" jump
++ [added support for -libdir command](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/37)
+### Fixed
++ [Issue 33](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/33) switching tabs on opened files breaks everything
++ [Issue 30](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/30) space in paths on emulator and debugger could cause problems on mac/linux
 
 ## v0.3.2
 ### Fixed
