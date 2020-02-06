@@ -26,8 +26,8 @@ export default class DocumentSymbolProvider extends Provider {
             var symbols: SymbolInformation[];
             symbols = [];
 
-            var currentProject = projectInfo.getCurrentProject();
-            for(var symbol of currentProject.getSymbols()) {
+            var project = projectInfo.getProject(request.textDocument.uri);
+            for(var symbol of project.getSymbols()) {
 
                 //  only include symbols from the main project file
                 if (symbol.isMain && symbol.line.scope == 0) {
@@ -36,7 +36,7 @@ export default class DocumentSymbolProvider extends Provider {
                         symbol.name,
                         symbol.kind,
                         symbol.range,
-                        symbol.isMain ? currentProject.getUri() : currentProject.getSourceFiles()[symbol.fileIndex].getUri(),
+                        symbol.isMain ? project.getUri() : project.getSourceFiles()[symbol.fileIndex].getUri(),
                         ""
                     );
 
