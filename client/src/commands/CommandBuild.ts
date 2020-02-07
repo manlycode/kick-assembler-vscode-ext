@@ -28,7 +28,7 @@ export class CommandBuild {
         // get the path to the kickass jar
         let assemblerJar:string = this._configuration.get("assemblerJar");
 
-        // get the output filename
+        // get the output filename from the current filename
         let outputFile = ClientUtils.GetWorkspaceProgramFilename();
 
         // delete old output
@@ -54,7 +54,7 @@ export class CommandBuild {
         var file:string;
 
         if (openDocument) {
-            file = openDocument.fileName;    
+            file = openDocument.fsPath;    
         }
 
         // file = PathUtils.uriToFileSystemPath(doc.uri.toString());

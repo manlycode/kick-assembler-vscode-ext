@@ -40,6 +40,8 @@ export class Assembler {
 
     public assemble(settings: Settings, uri:string, text: string, ignoreOutputPathSetting: boolean = false): AssemblerResults | undefined {
 
+        let sourceText:string = text;
+        let buildMaster:string = settings.buildMaster;
         var outputDirectory: string = settings.outputDirectory;
         var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri));
 
@@ -58,7 +60,14 @@ export class Assembler {
         // var basePath = path.join(outputDirectory, "");
         var filename = path.join(outputDirectory, ".source.txt");
         filename = path.resolve(filename);
-        writeFileSync(filename, text);
+
+        if (buildMaster) {
+            let masterFilename = sourcePath + path.sep + buildMaster;
+            sourceText = readFileSync(masterFilename, 'utf8');
+        }
+
+        writeFileSync(filename, sourceText);
+        
 
         //  setup the asminfo.txt output
         var asminfo = path.join(outputDirectory, ".asminfo.txt");

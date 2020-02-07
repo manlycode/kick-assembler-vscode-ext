@@ -50,6 +50,7 @@ export interface Settings {
     fileTypesText: string;
     opcodes:SettingsOpcodes;
     assemblerLibraryPaths:string[];
+    buildMaster:string;
 }
 
 export default class SettingsProvider extends Provider {

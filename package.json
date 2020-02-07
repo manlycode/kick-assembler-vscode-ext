@@ -198,6 +198,11 @@
 						"type": "string"
 					},
 					"description": "Library paths where Kick Assembler will look when it tries to open external files and does not find the given file in the current directory path first."
+				},
+				"kickassembler.buildMaster": {
+					"type": "string",
+					"default": "",
+					"description": "This setting will override the current open file for assembling, and will instead use this file. This can be considered your master or startup file for your project. In the future this might be replaced with a generic project configuration file."
 				}
 			}
 		},
