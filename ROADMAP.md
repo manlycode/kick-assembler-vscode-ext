@@ -3,6 +3,7 @@
 This extension is a work in progress, there is much left to be done.
 
 ### In Progress
+* [master build source file](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/35)
 
 ### Backburner
 * [rename provider](https://code.visualstudio.com/api/references/vscode-api#languages.registerRenameProvider)
@@ -12,12 +13,12 @@ This extension is a work in progress, there is much left to be done.
 * hot load into VICE emulator
 
 ### Ideas
-* [document link provider](https://code.visualstudio.com/api/references/vscode-api#languages.registerDocumentLinkProvider)
 * [memory layout](https://kickassmemoryview.insoft.se/)
 * remote monitor to active VICE emulator
 * welcome page (beginners guide)
 
 ### Completed
+* ~~[document link provider](https://code.visualstudio.com/api/references/vscode-api#languages.registerDocumentLinkProvider)~~
 * ~~kickass options settings (for things like -libdir, etc)~~
 * ~~auto-completion scope support~~
 * ~~auto-completion support from all imports~~

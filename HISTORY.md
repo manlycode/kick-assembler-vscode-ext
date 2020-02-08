@@ -3,8 +3,9 @@
 
 ## v0.3.3
 ### Changed
-+ implemented definition provider for "goto definition" and "ctrl+click" jump
-+ [added support for -libdir command](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/37)
++ [added definition provider for goto support](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/44)
++ [added more support for -libdir command](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/37)
++ [added goto support for imports](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/46)
 ### Fixed
 + [Issue 33](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/33) switching tabs on opened files breaks everything
 + [Issue 30](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/30) space in paths on emulator and debugger could cause problems on mac/linux
