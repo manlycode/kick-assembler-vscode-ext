@@ -72,8 +72,10 @@ export class AssemblerInfo {
     private AssemblerSyntax:AssemblerSyntax[] = [];
     private AssemblerErrors:AssemblerError[] = [];
     private AssemblerVersion:string = "0";
+    private filename:string = "";
 
-    constructor(data:string) {
+    constructor(data:string, filename:string) {
+        this.filename = filename;
         this.processData(data); 
     }
 
@@ -175,6 +177,9 @@ export class AssemblerInfo {
         //  is this the main project file?
         if (assemblerFile.uri.fsPath.indexOf('.source.txt') > 0)
             assemblerFile.main = true;
+
+        if (assemblerFile.uri.fsPath === this.filename)
+            assemblerFile.main = true
 
         this.AssemblerFiles.push(assemblerFile);
     }

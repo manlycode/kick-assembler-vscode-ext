@@ -34,7 +34,7 @@ import { Directive } from "../definition/KickDirectives";
 import { readFileSync } from "fs";
 import { KickInternalSymbols, Property, Method } from "../definition/KickInternalSymbols";
 import { createHash } from "crypto";
-import { CompletionItemKind, SymbolKind, Range, Position } from "vscode-languageserver";
+import { CompletionItemKind, SymbolKind, Range, Position, Connection } from "vscode-languageserver";
 import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 import { Parameter } from "../definition/KickPreprocessors";
@@ -96,6 +96,7 @@ export default class Project {
     private assemblerInfo: AssemblerInfo;
     private projectFiles: ProjectFile[];
     private symbols: Symbol[];
+    connection: Connection;
 
     constructor(uri: string) {
         this.uri = uri;
@@ -105,6 +106,10 @@ export default class Project {
     public assemble(settings: Settings, text: string) {
 
         if (!settings.valid) return;
+
+        if (settings.buildMaster.trim().length > 0) {
+            this.connection.window.showWarningMessage(`Build Master [${settings.buildMaster}] has been Specified.`);
+        }
 
         let assembler = new Assembler();
         this.assemblerResults = assembler.assemble(settings, this.uri, text);

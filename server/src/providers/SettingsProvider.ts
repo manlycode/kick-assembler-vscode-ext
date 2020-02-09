@@ -49,8 +49,9 @@ export interface Settings {
     fileTypesC64: string;
     fileTypesText: string;
     opcodes:SettingsOpcodes;
-    assemblerLibraryPaths:string[];
-    buildMaster:string;
+    assemblerLibraryPaths: string[];
+    buildMaster: string;
+    keepWorkFiles: boolean;
 }
 
 export default class SettingsProvider extends Provider {
@@ -76,8 +77,10 @@ export default class SettingsProvider extends Provider {
     }
 
     private process(settings:Settings) {
+        
         this.settings = settings;
         this.settings.valid = this.validateSettings(settings);
+
     }
 
     /**

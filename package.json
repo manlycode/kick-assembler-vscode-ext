@@ -4,7 +4,7 @@
 	"description": "Kick Assembler (C64) IDE Extension for Visual Studio Code",
 	"author": "Paul Hocker",
 	"license": "MIT",
-	"version": "0.3.3-dev",
+	"version": "0.3.4-dev",
 	"repository": {
 		"type": "git",
 		"url": "https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext"
@@ -203,6 +203,11 @@
 					"type": "string",
 					"default": "",
 					"description": "This setting will override the current open file for assembling, and will instead use this file. This can be considered your master or startup file for your project. In the future this might be replaced with a generic project configuration file."
+				},
+				"kickassembler.keepWorkFiles": {
+					"type": "boolean",
+					"default": false,
+					"description": "Setting this option will make sure that none of the temporary work files that are created during compile time are removed. Useful for debugging when you are contributing and testing this extension."
 				}
 			}
 		},
