@@ -1,5 +1,12 @@
 
-## Visual Studio Code Extension for Kick Assembler 
+## Kick Assembler Visual Studio Code Extension for C64
+### History Of Changes
+
+## v0.3.4
+### Changed
++ [added some missing syntax highlighting](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/47)
++ [support directive on same line after labels](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/48)
+### Fixed
 
 ## v0.3.3
 ### Changed
