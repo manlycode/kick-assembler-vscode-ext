@@ -21,8 +21,8 @@
 
 import Uri from "vscode-uri";
 import StringUtils from "../utils/StringUtils";
-import { Line } from "./Project";
-import LineUtils from "../utils/LineUtils";
+import { Line, Scope, Comment } from "./Project";
+import { AssemblerSyntax } from "../assembler/AssemblerInfo";
 
 export class ProjectFile {
 
@@ -34,14 +34,18 @@ export class ProjectFile {
 
     //  lines of text
     private lines:Line[];
+    private comments: Comment[];
 
     //  is the main project file
     private main:boolean;
 
-    public constructor(uri: Uri, text: string, main: boolean) {
+    private scopes: Scope[];
+
+    public constructor(uri: Uri, text: string, main: boolean, nextScope: number, assemblerSyntax:AssemblerSyntax[]) {
         this.uri = uri
         this.text = text;
-        this.lines = this.createLines(text);
+        this.comments = this.fetchComments(assemblerSyntax);
+        this.lines = this.createLines(nextScope);
         this.main = main;
     }
 
@@ -67,45 +71,102 @@ export class ProjectFile {
         return this.uri.toString();
     }
 
-    private createLines(source:string):Line[] {
+    public getScopes(): Scope[] {
+        return this.scopes;
+    }
+
+    private fetchComments(assemblerSyntax:AssemblerSyntax[]):Comment[] {
+        var comments:Comment[] = [];
+        for (var syntax of assemblerSyntax) {
+            if(syntax.type === 'comment') {
+                comments.push({range:syntax.range});
+            }
+        }
+        return comments;
+    }
+
+    private createLines(next:number):Line[] {
 
         let lines = [];
         let sourceLines = this.getSourceLines();
-        let next = 0;
+        let cleanedSourceLines = this.removeComments(this.getSourceLines());
         let last = [];
         let scope = 0;
-        let scopeName = "";
+        let lastPossibleScopeName = {
+            name:'',
+            line:0 
+        };
 
-        if (source) {
-            
-            for (var i = 0; i < sourceLines.length; i++) {
+        var possibleLabel;
 
-                var sourceLine = LineUtils.removeComments(sourceLines[i]); 
+        for (var i = 0; i < cleanedSourceLines.length; i++) {
 
-                let line = <Line>{};
-                line.number = i;
-                line.scope = scope;
-                line.scopeName = scopeName;
-                line.text = sourceLines[i];
+            let line = <Line>{};
 
-                if (sourceLine) {
+            line.scope = scope;
+            line.text = sourceLines[i];
 
-                    //	search for { - add to scope
-                    if (sourceLine.indexOf("{") >= 0) {
-                        last.push(scope);
-                        next += 1;
-                        scope = next;
-                    }
-                    
-                    //	search for } - remove from scope
-                    if (sourceLine.indexOf("}") >= 0) {
-                        scope = last.pop();
-                    }
-                }
-
-                lines.push(line);
+            let sourceLine = cleanedSourceLines[i].trim();
+            if(sourceLine.substr(0,10).toLowerCase() === '.namespace'){
+                possibleLabel=sourceLine.substr(10).match(/\w*/);
+            } else {
+                possibleLabel=sourceLine.match(/^\w*:/);
             }
+            if(possibleLabel){
+                lastPossibleScopeName = {
+                    name:possibleLabel[0],
+                    line: i
+                }
+            }
+            
+            let openingBrace = sourceLine.indexOf("{");
+            let closingBrace = sourceLine.indexOf("}");
+//make sure to support a closing abd opening in brace in the same line
+            if (closingBrace >= 0 && closingBrace < openingBrace) {
+                scope = last.pop();
+            }
+            //	search for {  - add to scope
+            if (openingBrace >= 0) {
+                last.push(scope);
+                scope = next++;
+                this.scopes.push({
+                    id: scope,
+                    name: lastPossibleScopeName.name,
+                    line: lastPossibleScopeName.line
+                });
+                lastPossibleScopeName = {
+                    name:'',
+                    line: 0
+                };
+            }
+            
+            //	search for } - remove from scope
+            if (closingBrace >= 0 && closingBrace > openingBrace) {
+                scope = last.pop();
+            }
+            lines.push(line);
         }
         return lines;
+    }
+
+    private removeComments(sourceLines: string[]):string[] {
+        this.comments.forEach(comment => {
+            for(var i=comment.range.startLine;i<=comment.range.endLine;i++) {
+                if(comment.range.startLine ==  comment.range.endLine) {
+                    // dont trim but replace with spaces to support a possible a block comment in one line only and still has code at the end and keep symbol range positioning
+                    sourceLines[i] = sourceLines[i].substr(0,comment.range.startPosition)+(' '.repeat(comment.range.endPosition-comment.range.startPosition+1))+sourceLines[i].substr(comment.range.endPosition);
+                } else {
+                  if (i == comment.range.startLine) {
+                    sourceLines[i] = sourceLines[i].substr(0,comment.range.startPosition);
+                  }
+                  if (i == comment.range.endLine) {
+                    sourceLines[i] = sourceLines[i].substr(comment.range.endPosition);
+                  } else {
+                    sourceLines[i] = "";  
+                  }
+                }
+            }
+        });
+        return sourceLines;
     }
 }

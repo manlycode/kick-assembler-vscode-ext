@@ -42,10 +42,19 @@ import { KickLanguage } from "../definition/KickLanguage";
 import Uri from "vscode-uri";
 
 export interface Line {
-    number: number;
     scope: number;
-    scopeName: string;
     text: string;
+}
+
+export interface Comment {
+    range: AssemblerSourceRange;
+    used?: boolean;
+}
+
+export interface Scope {
+    id: number;
+    line: number; // line where the scopename is defined (!) to match later with symbols
+    name: string;
 }
 
 export enum SymbolType {
@@ -70,10 +79,10 @@ export interface Symbol {
     originalValue: string;
     kind?: SymbolKind;
     completionKind?: CompletionItemKind;
-    line?: Line;
     range?: Range;
     fileIndex?: number;
-    scope?: number;
+    scope: number;
+    scopeSelf?: number;     // if this symbol a scopename itself
     comments?: string;
     parameters?: Parameter[];
     properties?: Property[];
@@ -96,6 +105,8 @@ export default class Project {
     private assemblerInfo: AssemblerInfo;
     private projectFiles: ProjectFile[];
     private symbols: Symbol[];
+    private scopes: Scope[];
+    private autoIncludeFileIndex:number = 0;
 
     constructor(uri: string) {
         this.uri = uri;
@@ -113,6 +124,12 @@ export default class Project {
 
         this.projectFiles = [];
 
+        this.scopes = [{
+            id:0,
+            line:0,
+            name:''
+        }];
+
         for (var file of this.assemblerInfo.getAssemblerFiles()) {
             if (!file.system) {
                 
@@ -120,9 +137,13 @@ export default class Project {
                 var _text: string  = readFileSync(file.uri.fsPath).toString();
                 var _main: boolean = file.main;
 
-                var projectFile = new ProjectFile(_uri, _text, _main);
-
+                var projectFile = new ProjectFile(_uri, _text, _main, this.scopes.length, this.assemblerInfo.getAssemblerSyntax().filter(syntax => {
+                    return syntax.range.fileIndex == file.index
+                }));
+                this.scopes.concat(projectFile.getScopes());
                 this.projectFiles[file.index] = projectFile;
+            } else {
+                this.autoIncludeFileIndex = file.index;
             }
         }
 
@@ -195,16 +216,10 @@ export default class Project {
     private createSymbols(): Symbol[] | undefined {
 
         var symbols = [];
-        var autoIncludeFileIndex = 0;
 
-        for (var file of this.assemblerInfo.getAssemblerFiles()) {
-            if (file.system) {
-                autoIncludeFileIndex = file.index;
-            }
-        }
 
         for (var syntax of this.getAssemblerResults().assemblerInfo.getAssemblerSyntax()) {
-            if (syntax.range.fileIndex != autoIncludeFileIndex) {
+            if (syntax.range.fileIndex != this.autoIncludeFileIndex) {
                 var symbol = this.createSymbol(syntax, this.projectFiles[syntax.range.fileIndex]);
                 if (symbol) {
                     symbols.push(symbol);
@@ -248,7 +263,6 @@ export default class Project {
 
             symbol.data["uri"] = projectFile.getUri();
 
-            symbol.line = projectFile.getLines()[syntax.range.startLine];
             symbol.range = Range.create(
                 Position.create(syntax.range.startLine,syntax.range.startPosition),
                 Position.create(syntax.range.endLine,syntax.range.endPosition)

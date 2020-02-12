@@ -30,7 +30,7 @@ export default class DocumentSymbolProvider extends Provider {
             for(var symbol of project.getSymbols()) {
 
                 //  only include symbols from the main project file
-                if (symbol.isMain && symbol.line.scope == 0) {
+                if (symbol.isMain) {
 
                     var s1 = SymbolInformation.create(
                         symbol.name,
