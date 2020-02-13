@@ -2178,30 +2178,35 @@ export class KickInternalSymbols {
                 name: "AT_ABSOLUTE",
                 value: 1,
                 originalValue: "",
+                scope: 0,
                 description: "Example: $1000"
             },{
                 type: SymbolType.Constant,
                 name: "AT_ABSOLUTEX",
                 value: 1,
                 originalValue: "",
+                scope: 0,
                 description: "Example: $1000,x"
             },{
                 type: SymbolType.Constant,
                 name: "AT_ABSOLUTEY",
                 value: 1,
                 originalValue: "",
+                scope: 0,
                 description: "Example: $1000,y"
             },{
                 type: SymbolType.Constant,
                 name: "AT_IMMEDIATE",
                 value: 1,
                 originalValue: "Immediate adressing",
+                scope: 0,
                 description: "#10"
             },{
                 type: SymbolType.Constant,
                 name: "AT_INDIRECT",
                 value: 1,
                 originalValue: "",
+                scope: 0,
                 description: "Indirect adressing mode",
                 comments: "Example: ($1000)"
             },{
@@ -2209,6 +2214,7 @@ export class KickInternalSymbols {
                 name: "AT_IZEROPAGEX",
                 value: 1,
                 originalValue: "",
+                scope: 0,
                 description: "Indirect zeropage x adressing",
                 comments: "Example: ($10,x)"
             },{
@@ -2216,13 +2222,16 @@ export class KickInternalSymbols {
                 name: "AT_IZEROPAGEY",
                 value: 1,
                 originalValue: "",
+                scope: 0,
                 description: "Indirect zeropage y adressing",
+
                 comments: "Example: ($10),y"
             },{
                 type: SymbolType.Constant,
                 name: "AT_NONE",
                 value: 1,
                 originalValue: "",
+                scope: 0,
                 description: "No adressing",
                 comments: "Example: NOP"
             }

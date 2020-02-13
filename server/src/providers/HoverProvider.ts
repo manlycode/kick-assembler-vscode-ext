@@ -85,7 +85,7 @@ export default class HoverProvider extends Provider {
 			return "";
 		}
 
-		var uri = symbol.data["uri"];
+		var uri = this.project.getSourceFiles()[symbol.fileIndex].getUri();
 		var filename = URI.parse(uri);
 		var path = require('path');
 

@@ -21,7 +21,7 @@
 
 import Uri from "vscode-uri";
 import StringUtils from "../utils/StringUtils";
-import { Line, Scope, Comment } from "./Project";
+import { Line, Scope, Comment, ScopeType } from "./Project";
 import { AssemblerSyntax } from "../assembler/AssemblerInfo";
 
 export class ProjectFile {
@@ -39,7 +39,7 @@ export class ProjectFile {
     //  is the main project file
     private main:boolean;
 
-    private scopes: Scope[];
+    private scopes: Scope[] = [];
 
     public constructor(uri: Uri, text: string, main: boolean, nextScope: number, assemblerSyntax:AssemblerSyntax[]) {
         this.uri = uri
@@ -94,10 +94,12 @@ export class ProjectFile {
         let scope = 0;
         let lastPossibleScopeName = {
             name:'',
-            line:0 
+            line:0,
+            type: ScopeType.NamedLabel
         };
 
-        var possibleLabel;
+        var possibleLabel: RegExpMatchArray;
+        var possibleScopeType: ScopeType;
 
         for (var i = 0; i < cleanedSourceLines.length; i++) {
 
@@ -105,17 +107,27 @@ export class ProjectFile {
 
             line.scope = scope;
             line.text = sourceLines[i];
+            line.cleanedText = cleanedSourceLines[i];
 
             let sourceLine = cleanedSourceLines[i].trim();
             if(sourceLine.substr(0,10).toLowerCase() === '.namespace'){
-                possibleLabel=sourceLine.substr(10).match(/\w*/);
+                possibleLabel=sourceLine.substr(10).trim().match(/\w*/);
+                possibleScopeType = ScopeType.Namespace;
+            } else if(sourceLine.substr(0,9).toLowerCase() === '.function'){
+                possibleLabel=sourceLine.substr(9).trim().match(/\w*/);
+                possibleScopeType = ScopeType.Function;
+            } else if(sourceLine.substr(0,6).toLowerCase() === '.macro'){
+                possibleLabel=sourceLine.substr(6).trim().match(/\w*/);
+                possibleScopeType = ScopeType.Macro;
             } else {
-                possibleLabel=sourceLine.match(/^\w*:/);
+                possibleLabel=sourceLine.match(/\w*:/);
+                possibleScopeType = ScopeType.NamedLabel;
             }
             if(possibleLabel){
                 lastPossibleScopeName = {
-                    name:possibleLabel[0],
-                    line: i
+                    name:possibleLabel[0].replace(":",""),
+                    line: i,
+                    type: possibleScopeType
                 }
             }
             
@@ -127,17 +139,20 @@ export class ProjectFile {
             }
             //	search for {  - add to scope
             if (openingBrace >= 0) {
-                last.push(scope);
-                scope = next++;
                 this.scopes.push({
-                    id: scope,
+                    id: next,
+                    parentScope: scope,
                     name: lastPossibleScopeName.name,
-                    line: lastPossibleScopeName.line
+                    line: lastPossibleScopeName.line,
+                    type: lastPossibleScopeName.type
                 });
                 lastPossibleScopeName = {
                     name:'',
-                    line: 0
+                    line: 0,
+                    type: ScopeType.NamedLabel
                 };
+                last.push(scope);
+                scope = next++;
             }
             
             //	search for } - remove from scope
