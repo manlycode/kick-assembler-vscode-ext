@@ -425,8 +425,8 @@ export default class Project {
                     var parm_symbol = <Symbol>{};
                     parm_symbol.name = split[i];
                     parm_symbol.type = SymbolType.Parameter;
-                    parm_symbol.kind = SymbolKind.Variable;
-                    parm_symbol.scope = scopeInfo.id || symbol.scope;   //scopeinfo should always be found though
+                    parm_symbol.kind = SymbolKind.Property;
+                    parm_symbol.scope = scopeInfo ? scopeInfo.id : symbol.scope;   //scopeinfo should always be found though
                     parm_symbol.isMain = projectFile.isMain();
 
                     parmsSymbols.push(parm_symbol);                   

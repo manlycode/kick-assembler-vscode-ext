@@ -93,8 +93,8 @@ export class ProjectFile {
         let last = [];
         let scope = 0;
         let lastPossibleScopeName = {
-            name:'',
-            line:0,
+            name: '',
+            line: 0,
             type: ScopeType.NamedLabel
         };
 
@@ -142,8 +142,8 @@ export class ProjectFile {
                 this.scopes.push({
                     id: next,
                     parentScope: scope,
-                    name: lastPossibleScopeName.name,
-                    line: lastPossibleScopeName.line,
+                    name: lastPossibleScopeName.name !== '' ? lastPossibleScopeName.name : 'Anonymous',
+                    line: lastPossibleScopeName.name !== '' ? lastPossibleScopeName.line : i,
                     type: lastPossibleScopeName.type
                 });
                 lastPossibleScopeName = {

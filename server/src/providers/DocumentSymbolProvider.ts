@@ -59,6 +59,18 @@ export default class DocumentSymbolProvider extends Provider {
                             }
                             break;
                         }
+                        //if not found, it was an anonymous namespace, so we need a parent symbol 
+                        if(j===jl-1){
+                            // Use range information from first symbol of that scope
+                            var tempSymbol = <DocumentSymbol> scopedSymbols[i][0];
+                            parentScopedSymbols.push({
+                                name: 'Anonymous',
+                                kind: SymbolKind.Namespace,
+                                range: tempSymbol.range,
+                                selectionRange: tempSymbol.range,
+                                children: scopedSymbols[i]
+                            });
+                        }
                     }
  
                 }
