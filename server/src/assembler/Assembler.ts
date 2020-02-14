@@ -39,9 +39,14 @@ export class Assembler {
     constructor() {
     }
 
-    public assemble(settings: Settings, filename:string, text: string, ignoreOutputPathSetting: boolean = false): AssemblerResults | undefined {
+    public assemble(settings: Settings, filename:string, text: string, ignoreOutputPathSetting: boolean = false, ignoreBuildMaster: boolean = false): AssemblerResults | undefined {
 
-        let buildMaster:string = settings.buildMaster;
+        let buildMaster: string = "";
+
+
+        if (!ignoreBuildMaster)
+            buildMaster = settings.buildMaster;
+
         let uri:Uri = Uri.parse(filename);
 
         var outputDirectory: string = settings.outputDirectory;
@@ -102,6 +107,9 @@ export class Assembler {
             let masterFilename = sourcePath + path.sep + buildMaster;
             srcFilename = masterFilename;
             // sourceText = readFileSync(masterFilename, 'utf8');
+            masterOptions.push('-replaceFile', uri.fsPath, tmpSource);
+        } else {
+            srcFilename = uri.fsPath;
             masterOptions.push('-replaceFile', uri.fsPath, tmpSource);
         }
 

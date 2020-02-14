@@ -229,7 +229,7 @@ export default class HoverProvider extends Provider {
 		var files = this.project.getAssemblerInfo().getAssemblerFiles();
 		for (var i: number = 0; i < files.length; i++) {
 			var file: AssemblerFile = files[i];
-			if (file.main) {
+			if (file.isCurrent) {
 				fileNumber = file.index;
 				break;
 			}

@@ -107,13 +107,29 @@ export default class Project {
 
         if (!settings.valid) return;
 
-        if (settings.buildMaster.trim().length > 0) {
-            this.connection.window.showWarningMessage(`Build Master [${settings.buildMaster}] has been Specified.`);
-        }
+        // if (settings.buildMaster.trim().length > 0) {
+        //     this.connection.window.showWarningMessage(`Build Master [${settings.buildMaster}] has been Specified.`);
+        // }
 
         let assembler = new Assembler();
+
+        // try basic assembly
         this.assemblerResults = assembler.assemble(settings, this.uri, text);
         this.assemblerInfo = this.assemblerResults.assemblerInfo;
+
+        /*
+            when the current file is not in the
+            list of files to be compile, we
+            try to assemble again but this
+            time ignoring the master
+        */
+
+        if (!this.assemblerInfo.hasCurrent) {
+            this.connection.window.showInformationMessage(`The Current file is not Part of the Build Master [${settings.buildMaster}]`);
+            this.assemblerResults = assembler.assemble(settings, this.uri, text, false, true);
+            this.assemblerInfo = this.assemblerResults.assemblerInfo;
+        }
+        
         this.source = text;
 
         this.projectFiles = [];
@@ -123,7 +139,7 @@ export default class Project {
                 
                 var _uri: Uri = file.uri;
                 var _text: string  = readFileSync(file.uri.fsPath).toString();
-                var _main: boolean = file.main;
+                var _main: boolean = file.isCurrent;
 
                 var projectFile = new ProjectFile(_uri, _text, _main);
 
