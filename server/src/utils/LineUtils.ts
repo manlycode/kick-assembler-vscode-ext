@@ -20,7 +20,6 @@ export default class LineUtils {
 	 */
 	public static getRemarksAboveLine(lines:Line[], lineNumber:number):string|undefined {
 
-		var found = false;
 		var remark = undefined;
 		var beg = -1;
 		var end = -1;
@@ -31,72 +30,61 @@ export default class LineUtils {
 		var possibleLineComment = _line.indexOf('//');
 
 		if (possibleLineComment > 0) {
-			return _line.substr(possibleLineComment + 2);
+			return _line.substr(possibleLineComment + 2).trim();
 		}
-		while (!found) {
+		while (lineNumber > 0) {
 
 			lineNumber -= 1;
-			if (lineNumber < 1)
-				break;
 
 			if(!lines[lineNumber].text)
 				continue;
 
 			_line = lines[lineNumber].text.trim();
-			// stop when another one-line declaration is found 
-			if(_line[0] == '.') {
-				break;
-			}
-
-			possibleLineComment = _line.indexOf('//');
-			// ignore pure line comments , those are supposed to be possible comments now 
-			if (possibleLineComment > 0) {
-				_line = _line.substr(0,possibleLineComment);
-			}
-			// last character on line is }
-			if (_line[_line.length - 1] == "}")
-				break;
-
-			if (_line.substr(0,2) == "//") {
-				//detect a possible outcomment of the same symbol delaration
-				if(_line.substr(2).trim()[0] !== '.') {
-					beg = lineNumber - 1;
-					end = lineNumber + 1;
-					found = true;
-				}
-			}
 
 			if (end < 0) {
-				var e = lines[lineNumber].text.indexOf("*/");
-				if (e >= 0)
+				if (_line.indexOf("*/") >= 0) {
 					end = lineNumber;
+				} else if (_line.substr(0,2) == "//") {
+					//detect a possible outcomment of the same symbol delaration
+					let lineComment = _line.substr(2).trim();
+					if(lineComment[0] !== '.') {
+						remark = lineComment;
+						break;
+					}
+				} else if(_line !== "") {
+				//stop at any normal code in between		
+					break;
+				}
 			}
 
 			if (beg < 0) {
-				var b = lines[lineNumber].text.indexOf("/**");
-				if (b >= 0)
+				if (_line.indexOf("/**") >= 0) {
 					beg = lineNumber;
+					break;
+				}
 			}
-
-			if (beg > 0 && end > 0)
-				found = true;
 		}
 
-		if (found) {
+		if (beg >= 0 && end >= 0) {
 			remark = "";
 			var remarkLine;
-			for (var i = beg + 1; i < end; i++) {
-				if(lines[i].text) {
-					remarkLine = this.removeComments( lines[i].text).trim();
+			for (var i = beg; i <= end; i++) {
+				remarkLine = lines[i].text;
+				if(remarkLine) {
+					if(i == beg){
+						remarkLine = remarkLine.substr(remarkLine.indexOf("/**")+3);
+					}
+					if(i == end){
+						remarkLine = remarkLine.substr(0,remarkLine.indexOf("*/"));
+					}
+					remarkLine = remarkLine.trim();					
 					if (remarkLine[0] == '*') {
-						remarkLine = remarkLine.substr(1).trim();
+						remarkLine = remarkLine.substr(1);
 					}
-					if (remarkLine.substr(0,2) == '//') {
-						remarkLine = remarkLine.substr(2).trim();
+					if(remarkLine!=="") {
+						remark += remarkLine + "\n\n";
 					}
-					remark += remarkLine;
 				}
-				remark += "\r";
 			}
 		}
 

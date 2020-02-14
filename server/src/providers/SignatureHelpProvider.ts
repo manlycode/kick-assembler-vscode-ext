@@ -72,7 +72,7 @@ export default class SignatureHelpProvider extends Provider {
 		// remove math operators here instead of CleanText,
 		// because + and - are possible multi labels which have to stay when GetWordAt/Before/After is used in other Providers
 		// but here we definately dont want them to make sure to fetch the function name before parenthesis
-		this.triggerToken = StringUtils.GetWordAt(this.triggerLine.replace(/[\+\-\*\/,]/," "), parenthesisStart);
+		this.triggerToken = StringUtils.GetWordAt(this.triggerLine.replace(/[\+\-\*\/,]/g," "), parenthesisStart);
 
 		let signatures: SignatureInformation[] = [];
 		let activeParameter = null;

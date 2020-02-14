@@ -18,21 +18,14 @@ import {
 	IConnection,
 	TextDocumentPositionParams,
 	Hover,
-	ResponseError,
-	MarkedString,
-	VersionedTextDocumentIdentifier,
-	WorkspaceChange,
-	RemoteWindow
+	ResponseError
 } from "vscode-languageserver";
 
 import Project, { Symbol, SymbolType } from "../project/Project";
-import NumberUtils from "../utils/NumberUtils";
-import LineUtils from "../utils/LineUtils";
 import StringUtils from "../utils/StringUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import URI from "vscode-uri";
 import { AssemblerSyntax, AssemblerFile } from "../assembler/AssemblerInfo";
-import { ProjectFile } from "../project/ProjectFile";
 
 export default class HoverProvider extends Provider {
 
@@ -124,7 +117,7 @@ export default class HoverProvider extends Provider {
 	private getSymbolDescription(symbol: Symbol): string | undefined {
 		var _description: string = "";
 		if (symbol.description) _description = symbol.description.trim();
-		if (symbol.comments) _description += (_description !== "" ? "\n":"") + symbol.comments.trim();
+		if (symbol.comments) _description += (_description !== "" ? "\n\n":"") + symbol.comments.trim();
 		return _description;
 	}
 
@@ -206,7 +199,7 @@ export default class HoverProvider extends Provider {
 
 		// we always need the token word at the cursor
 		var line = this.project.getSourceLines()[textDocumentPosition.position.line];
-		var token = StringUtils.GetWordAt(line, textDocumentPosition.position.character).trim();
+		var token = StringUtils.GetWordAt(line.replace(/[\.\+\-\*\/,]/g," "), textDocumentPosition.position.character).trim();
 
 		/*
 			and now -- some logic
@@ -400,7 +393,7 @@ export default class HoverProvider extends Provider {
 		}
 
 		if (symbol.description) description = symbol.description.trim();
-		if (symbol.comments) description += (description !== "" ? "\n":"") + symbol.comments.trim();
+		if (symbol.comments) description += (description !== "" ? "\n\n":"") + symbol.comments.trim();
 
 		return [
 			`	${symbolDirective} ${symbol.name} [${symbol.originalValue}] ${file}`,
