@@ -50,7 +50,7 @@ export interface Settings {
     fileTypesText: string;
     opcodes:SettingsOpcodes;
     assemblerLibraryPaths: string[];
-    buildMaster: string;
+    startup: string;
     keepWorkFiles: boolean;
 }
 

@@ -14,19 +14,21 @@ import * as fs from 'fs';
 
 export class CommandBuild { 
 
-    private _configuration: WorkspaceConfiguration;
+    private configuration: WorkspaceConfiguration;
+    private output: vscode.OutputChannel;
 
     constructor(context:ExtensionContext, output:vscode.OutputChannel) {
-        this._configuration = workspace.getConfiguration('kickassembler');
+        this.configuration = workspace.getConfiguration('kickassembler');
+        this.output = output;
     }
 
-    public build(output:vscode.OutputChannel):number {
+    public build():number {
 
         // get the java runtime
-        let javaRuntime:string = this._configuration.get("javaRuntime");
+        let javaRuntime:string = this.configuration.get("javaRuntime");
 
         // get the path to the kickass jar
-        let assemblerJar:string = this._configuration.get("assemblerJar");
+        let assemblerJar:string = this.configuration.get("assemblerJar");
 
         // get the output filename from the current filename
         let outputFile = ClientUtils.GetWorkspaceProgramFilename();
@@ -69,8 +71,8 @@ export class CommandBuild {
         window.showInformationMessage(`Building ${base}`);
 
         // create new output channel
-        output.clear();
-        output.show(true);
+        this.output.clear();
+        this.output.show(true);
 
         // spawn new child process to compile the program
 
@@ -79,24 +81,24 @@ export class CommandBuild {
         let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfile", "-symbolfiledir", symbolDir];
 
         // add option to dump debugger info
-        if (this._configuration.get("debuggerDumpFile")){
+        if (this.configuration.get("debuggerDumpFile")){
             javaOptions.push('-debugdump');
         }
-        if (this._configuration.get("emulatorViceSymbols")){
+        if (this.configuration.get("emulatorViceSymbols")){
             javaOptions.push('-vicesymbols');
         }
         // add setting to allow java file creation
-        if (this._configuration.get("javaAllowFileCreation")){
+        if (this.configuration.get("javaAllowFileCreation")){
             javaOptions.push('-afo');
         }
-        if(this._configuration.get("opcodes.DTV")){
+        if(this.configuration.get("opcodes.DTV")){
             javaOptions.push('-dtv');
         }
-        if(!this._configuration.get("opcodes.illegal")){
+        if(!this.configuration.get("opcodes.illegal")){
             javaOptions.push('-excludeillegal');
         }
         
-        var libdirPaths:string[] = this._configuration.get("assemblerLibraryPaths");
+        var libdirPaths:string[] = this.configuration.get("assemblerLibraryPaths");
         libdirPaths.forEach((path) => {
             if (fs.existsSync(path)) {
                 javaOptions.push('-libdir',path);
@@ -113,10 +115,10 @@ export class CommandBuild {
 
         if (errorCode > 0) {
             window.showWarningMessage(`Build of ${base} Failed ${time}`);
-            output.append(java.stdout.toString());
+            this.output.append(java.stdout.toString());
         } else {
             window.showInformationMessage(`Build of ${base} Complete ${time}`);
-            output.append(java.stdout.toString());
+            this.output.append(java.stdout.toString());
         }
 
         return errorCode;

@@ -125,7 +125,7 @@ export default class Project {
         */
 
         if (!this.assemblerInfo.hasCurrent) {
-            this.connection.window.showInformationMessage(`The Current file is not Part of the Build Master [${settings.buildMaster}]`);
+            this.connection.window.showInformationMessage(`The Current file is not Part of the Build Master [${settings.startup}]`);
             this.assemblerResults = assembler.assemble(settings, this.uri, text, false, true);
             this.assemblerInfo = this.assemblerResults.assemblerInfo;
         }

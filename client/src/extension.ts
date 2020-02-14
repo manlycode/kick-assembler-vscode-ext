@@ -118,13 +118,19 @@ export function deactivate(): Thenable<void> {
 	return client.stop();
 }
 
+/**
+ * Build a Program From Source
+ * @param context 
+ * @param output 
+ */
 function commandBuild(context: ExtensionContext, output: vscode.OutputChannel): number {
+
 	if (!ConfigUtils.validateBuildSettings()) {
 		vscode.window.showErrorMessage("We were unable to Build your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
 	var cb = new CommandBuild(context, output);
-	return cb.build(output);
+	return cb.build();
 }
 
 function commandBuildRun(context: ExtensionContext, output: vscode.OutputChannel) {

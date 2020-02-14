@@ -30,23 +30,23 @@
 	"contributes": {
 		"keybindings": [
 			{
-				"command": "kickassembler.buildandrun",
+				"command": "kickassembler.buildandrunstartup",
 				"key": "f5"
 			},
 			{
-				"command": "kickassembler.buildanddebug",
+				"command": "kickassembler.buildandrun",
 				"key": "f6"
 			},
 			{
-				"command": "kickassembler.run",
-				"key": "ctrl+f5"
-			},
-			{
-				"command": "kickassembler.debug",
-				"key": "ctrl+f6"
+				"command": "kickassembler.buildanddebug",
+				"key": "f7"
 			},
 			{
 				"command": "kickassembler.build",
+				"key": "ctrl+shift+p"
+			},
+			{
+				"command": "kickassembler.buildstartup",
 				"key": "ctrl+shift+b"
 			}
 		],
@@ -57,15 +57,19 @@
 			},
 			{
 				"command": "kickassembler.buildandrun",
-				"title": "Kick Assembler: Build and Run Program"
+				"title": "Kick Assembler: Build and Run"
+			},
+			{
+				"command": "kickassembler.buildandrunstartup",
+				"title": "Kick Assembler: Build and Run Startup"
 			},
 			{
 				"command": "kickassembler.buildanddebug",
-				"title": "Kick Assembler: Build and Debug Program"
+				"title": "Kick Assembler: Build and Debug"
 			},
 			{
-				"command": "kickassembler.run",
-				"title": "Kick Assembler: Run Program"
+				"command": "kickassembler.buildanddebugstartup",
+				"title": "Kick Assembler: Build and Debug Startup"
 			}
 		],
 		"configuration": {
@@ -199,7 +203,7 @@
 					},
 					"description": "Library paths where Kick Assembler will look when it tries to open external files and does not find the given file in the current directory path first."
 				},
-				"kickassembler.buildMaster": {
+				"kickassembler.startup": {
 					"type": "string",
 					"default": "",
 					"description": "This setting will override the current open file for assembling, and will instead use this file. This can be considered your master or startup file for your project. In the future this might be replaced with a generic project configuration file."
