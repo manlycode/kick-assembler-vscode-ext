@@ -13,16 +13,32 @@ import * as path from 'path';
 
 export class CommandDebug {
 
-    private _configuration: vscode.WorkspaceConfiguration;
+    private configuration: vscode.WorkspaceConfiguration;
+    private output:vscode.OutputChannel;
 
     constructor(context: ExtensionContext, output: vscode.OutputChannel) {
-        this._configuration = workspace.getConfiguration('kickassembler');
+        this.configuration = workspace.getConfiguration('kickassembler');
+        this.output = output;
     }
 
-    public run(output: vscode.OutputChannel) {
+    public runOpen() {
+        let sourceFile = ClientUtils.GetOpenDocumentUri();
+        let base = path.basename(sourceFile.fsPath);
+        let program = path.join(ClientUtils.GetOutputPath(), ClientUtils.CreateProgramFilename(base));
+        this.run(program);
+    }
+
+    public runStartup() {
+        let sourceFile = ClientUtils.GetStartupUri();
+        let base = path.basename(sourceFile.fsPath);
+        let program = path.join(ClientUtils.GetOutputPath(), ClientUtils.CreateProgramFilename(base));
+        this.run(program);
+    }
+
+    private run(program:string) {
 
         // is the emulator path set?
-        let debuggerRuntime: string = this._configuration.get("debuggerRuntime");
+        let debuggerRuntime: string = this.configuration.get("debuggerRuntime");
 
         // enclose in quotes to accomodate filenames with spaces on non-windows platforms
         if (process.platform != "win32") {
@@ -30,25 +46,22 @@ export class CommandDebug {
 		    debuggerRuntime = debuggerRuntime.replace("\\", "");
         }
 
-        let debuggerOptionsString: string = this._configuration.get("debuggerOptions");
+        let debuggerOptionsString: string = this.configuration.get("debuggerOptions");
         let debuggerOptions = debuggerOptionsString.match(/\S+/g) || [];
         
-        // get the program filename and path
-        let prg = ClientUtils.GetWorkspaceProgramFilename();
-
-        console.log(`- looking for file ${prg}`);
+        console.log(`- looking for program ${program}`);
 
         var fs = require('fs');
-        if (!fs.existsSync(prg)) {
-            window.showWarningMessage(`Could not Locate the Program to Debug.`,`${prg}`);
+        if (!fs.existsSync(program)) {
+            window.showWarningMessage(`Could not Locate the Program to Debug.`,`${program}`);
             return;
         }
 
-        let vsf = prg.replace(".prg", ".vs");
+        let vsf = program.replace(".prg", ".vs");
 
         //  spawn child process for win32
         if (process.platform == "win32") {
-            let emu = spawn(debuggerRuntime, ["-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", prg, ...debuggerOptions], {
+            let emu = spawn(debuggerRuntime, ["-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", program, ...debuggerOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: false
@@ -61,7 +74,7 @@ export class CommandDebug {
 
         //  spawn child process for osx
         if (process.platform == "darwin") {
-            let emu = spawn("open", [debuggerRuntime, "--args", "-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", prg, ...debuggerOptions], {
+            let emu = spawn("open", [debuggerRuntime, "--args", "-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", program, ...debuggerOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: true
@@ -74,7 +87,7 @@ export class CommandDebug {
         //  spawn child process for linux
         if (process.platform == "linux") {
 
-            let emu = spawn(debuggerRuntime, ["-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", prg, ...debuggerOptions], {
+            let emu = spawn(debuggerRuntime, ["-breakpoints", "breakpoints.txt", "-symbols", vsf, "-prg", program, ...debuggerOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: false

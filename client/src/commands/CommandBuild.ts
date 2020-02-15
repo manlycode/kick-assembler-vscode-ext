@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import ClientUtils from '../utils/ClientUtils';
 import * as fs from 'fs';
+import { PassThrough } from 'stream';
 
 
 export class CommandBuild { 
@@ -22,7 +23,15 @@ export class CommandBuild {
         this.output = output;
     }
 
-    public build():number {
+    public buildOpen():number {
+        return this.build(ClientUtils.GetOpenDocumentUri());
+    }
+
+    public buildStartup():number {
+        return this.build(ClientUtils.GetStartupUri());
+    }
+
+    private build(sourceFile:Uri):number {
 
         // get the java runtime
         let javaRuntime:string = this.configuration.get("javaRuntime");
@@ -30,8 +39,10 @@ export class CommandBuild {
         // get the path to the kickass jar
         let assemblerJar:string = this.configuration.get("assemblerJar");
 
+        let base = path.basename(sourceFile.fsPath);
+
         // get the output filename from the current filename
-        let outputFile = ClientUtils.GetWorkspaceProgramFilename();
+        let outputFile = path.join(ClientUtils.GetOutputPath(), ClientUtils.CreateProgramFilename(base));
 
         // delete old output
         // TODO: remove any program output like symbols
@@ -43,57 +54,39 @@ export class CommandBuild {
         let symbolDir:string = ClientUtils.GetOutputPath();
 
         // get the path of the source
-        var sourcePath: string = PathUtils.GetPathFromFilename(PathUtils.uriToPlatformPath(window.activeTextEditor.document.uri.toString()));
-
-        // locate file, does it exist?
-        let af = window.activeTextEditor;
-        let ws = workspace;
-        let docs = ws.textDocuments;
-        let te = window.visibleTextEditors;
-        let doc = window.activeTextEditor.document;
-        let openDocument = ClientUtils.GetOpenDocument();
-
-        var file:string;
-
-        if (openDocument) {
-            file = openDocument.fsPath;    
-        }
-
-        // file = PathUtils.uriToFileSystemPath(doc.uri.toString());
-
-        if (!file) {
-            window.showWarningMessage('Unable to Build.');
-            return 1;
-        }
-
-        let base = path.basename(file).toUpperCase();
-
-        window.showInformationMessage(`Building ${base}`);
+        var sourcePath: string = PathUtils.GetPathFromFilename(sourceFile.fsPath);
 
         // create new output channel
         this.output.clear();
         this.output.show(true);
 
-        // spawn new child process to compile the program
+        let javaOptions = [
+            "-jar", 
+            assemblerJar, 
+            sourceFile.fsPath, 
+            "-o", 
+            outputFile, 
+            "-symbolfile", 
+            "-symbolfiledir", 
+            symbolDir
+        ];
 
-        var start = process.hrtime();
-
-        let javaOptions = ["-jar", assemblerJar, file, "-o", outputFile, "-symbolfile", "-symbolfiledir", symbolDir];
-
-        // add option to dump debugger info
         if (this.configuration.get("debuggerDumpFile")){
             javaOptions.push('-debugdump');
         }
+
         if (this.configuration.get("emulatorViceSymbols")){
             javaOptions.push('-vicesymbols');
         }
-        // add setting to allow java file creation
+
         if (this.configuration.get("javaAllowFileCreation")){
             javaOptions.push('-afo');
         }
+
         if(this.configuration.get("opcodes.DTV")){
             javaOptions.push('-dtv');
         }
+
         if(!this.configuration.get("opcodes.illegal")){
             javaOptions.push('-excludeillegal');
         }
@@ -105,6 +98,10 @@ export class CommandBuild {
             }
         });
 
+        window.showInformationMessage(`Building ${base.toUpperCase()}`);
+
+        var start = process.hrtime();
+
         let java = spawnSync(javaRuntime, javaOptions, { cwd: path.resolve(sourcePath) });
 
         var end = process.hrtime(start);
@@ -114,16 +111,14 @@ export class CommandBuild {
         let time = `(${end[0]}s ${end[1].toString().substr(0,3)}ms)`;
 
         if (errorCode > 0) {
-            window.showWarningMessage(`Build of ${base} Failed ${time}`);
+            window.showWarningMessage(`Build of ${base.toUpperCase()} Failed ${time}`);
             this.output.append(java.stdout.toString());
         } else {
-            window.showInformationMessage(`Build of ${base} Complete ${time}`);
+            window.showInformationMessage(`Build of ${base.toUpperCase()} Complete ${time}`);
             this.output.append(java.stdout.toString());
         }
 
         return errorCode;
     }
-
-    
 }
 

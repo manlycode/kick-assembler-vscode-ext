@@ -107,10 +107,6 @@ export default class Project {
 
         if (!settings.valid) return;
 
-        // if (settings.buildMaster.trim().length > 0) {
-        //     this.connection.window.showWarningMessage(`Build Master [${settings.buildMaster}] has been Specified.`);
-        // }
-
         let assembler = new Assembler();
 
         // try basic assembly
@@ -125,7 +121,7 @@ export default class Project {
         */
 
         if (!this.assemblerInfo.hasCurrent) {
-            this.connection.window.showInformationMessage(`The Current file is not Part of the Build Master [${settings.startup}]`);
+            this.connection.window.showInformationMessage(`The Open File is Not Part of the Startup [${settings.startup}]`);
             this.assemblerResults = assembler.assemble(settings, this.uri, text, false, true);
             this.assemblerInfo = this.assemblerResults.assemblerInfo;
         }

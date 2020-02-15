@@ -38,16 +38,20 @@
 				"key": "f6"
 			},
 			{
+				"command": "kickassembler.buildanddebugstartup",
+				"key": "shift+f5"
+			},
+			{
 				"command": "kickassembler.buildanddebug",
-				"key": "f7"
+				"key": "shift+f6"
 			},
 			{
 				"command": "kickassembler.build",
-				"key": "ctrl+shift+p"
+				"key": "ctrl+shift+b"
 			},
 			{
 				"command": "kickassembler.buildstartup",
-				"key": "ctrl+shift+b"
+				"key": "ctrl+shift+s"
 			}
 		],
 		"commands": [
@@ -58,6 +62,10 @@
 			{
 				"command": "kickassembler.buildandrun",
 				"title": "Kick Assembler: Build and Run"
+			},
+			{
+				"command": "kickassembler.buildstartup",
+				"title": "Kick Assembler: Build Startup"
 			},
 			{
 				"command": "kickassembler.buildandrunstartup",

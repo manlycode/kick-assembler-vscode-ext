@@ -87,7 +87,7 @@ export default class ClientUtils {
 
         // get the output path
         var outputPath:string = this.GetOutputPath();
-        var sourceFile: string = this.GetOpenDocument().fsPath;
+        var sourceFile: string = this.GetOpenDocumentUri().fsPath;
 
         // get the final program filename
         var prg = this.CreateProgramFilename(path.basename(sourceFile));
@@ -218,12 +218,10 @@ export default class ClientUtils {
     }
 
     /**
-     * Find the Active Open Document
+     * Returns the Active Open Document
      */
-    public static GetOpenDocument():Uri | undefined {
+    public static GetOpenDocumentUri():Uri | undefined {
 
-        // get the build master
-        let buildStartup:string = this.GetSettings().get("startup");
 
         var document:TextDocument;
 
@@ -240,7 +238,6 @@ export default class ClientUtils {
         // get the document and return it to the caller
         if (activeEditor.viewColumn != undefined) {
             document = activeEditor.document;
-            // return document;
         }
 
         let textEditors = window.visibleTextEditors;
@@ -265,11 +262,11 @@ export default class ClientUtils {
 
             uri = Uri.parse(document.fileName);
 
-            if (buildStartup) {
-                let filename:string = document.fileName;
-                let dir:string = path.dirname(filename);
-                uri = Uri.parse(dir + path.sep + buildStartup);
-            }
+            // if (buildStartup) {
+            //     let filename:string = document.fileName;
+            //     let dir:string = path.dirname(filename);
+            //     uri = Uri.parse(dir + path.sep + buildStartup);
+            // }
         }
 
         return uri;
@@ -285,7 +282,8 @@ export default class ClientUtils {
         var uri: Uri;
 
         if (buildStartup) {
-            uri = Uri.parse(buildStartup);
+            let filename = path.join(this.GetWorkspaceFolder().uri.fsPath, buildStartup);
+            uri = Uri.parse(filename);
         }
 
         return uri;
