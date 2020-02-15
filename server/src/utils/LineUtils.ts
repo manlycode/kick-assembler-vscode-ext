@@ -58,7 +58,7 @@ export default class LineUtils {
 			}
 
 			if (beg < 0) {
-				if (_line.indexOf("/**") >= 0) {
+				if (_line.indexOf("/*") >= 0) {
 					beg = lineNumber;
 					break;
 				}
@@ -72,7 +72,7 @@ export default class LineUtils {
 				remarkLine = lines[i].text;
 				if(remarkLine) {
 					if(i == beg){
-						remarkLine = remarkLine.substr(remarkLine.indexOf("/**")+3);
+						remarkLine = remarkLine.substr(remarkLine.indexOf("/*")+2);
 					}
 					if(i == end){
 						remarkLine = remarkLine.substr(0,remarkLine.indexOf("*/"));
