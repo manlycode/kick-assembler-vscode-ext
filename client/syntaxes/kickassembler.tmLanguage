@@ -31,9 +31,9 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(bra|sac|sir)\b</string>
+			<string>\b(bcc|bcs|beq|bmi|bne|bpl|brk|bvc|bvs|jmp|jsr|rti|rts)\b</string>
 			<key>name</key>
-			<string>keyword.other</string>
+			<string>keyword.control</string>
 		</dict>
 		<dict>
 			<key>match</key>

@@ -233,7 +233,7 @@ export default class CompletionProvider extends Provider {
 					}
 				}
 
-			} else if (items.length === 0 && !tokensLeft) {
+			} else if (items.length === 0 && (!tokensLeft || (tokensLeft.length === 1 && this.triggerLine.trim().substr(0,tokensLeft[0].length+1) === tokensLeft[0]+":"))) {
 				items = this.loadDirectives();
 			}
 		}

@@ -3,21 +3,24 @@ Use this template when posting to Facebook.
 ~~~
 
 Kick Assembler (C64) For Visual Studio Code
-Release 0.3.2
+Release 0.3.3
 
 https://marketplace.visualstudio.com/items?itemName=paulhocker.kick-assembler-vscode-ext
 
 
-This was release to correct a very small bug in the new Version Checking that was added in the last release.
+@Lubber has taken the 0.3.3 release to Warp Speed by adding definition linking to macros, functions, labels and files that are included in your projects.
+
+We also smashed a few bugs, especially that nasty one that was causing issues for our Mac and Linux users that had spaces in the settings for some of the paths in the extension.
+
+Much more to come, check the roadmap, and let us know if there is something else you would like to be added by sending us a note on Facebook or creating an [Issue](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues) on the project page.
 
 A full list of release information can be found here
 
-https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/RELEASE.md.
-
+https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/RELEASE.md
 
 A full list of historical changes can be viewed here
 
-https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/HISTORY.md.
+https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/HISTORY.md
 
 Please consider Rating the extension on the Marketplace.
 
