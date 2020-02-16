@@ -437,9 +437,16 @@ export default class CompletionProvider extends Provider {
 			}
 		}
 		var sortText = '';
+		var detail = '';
 		if(!payload.isBuiltin && type !== LanguageCompletionTypes.Instruction && payload.scope != undefined){
 			//have current scope first, so decent sort
 			sortText = String(99999-payload.scope);
+			if(payload.scope>0) {
+				var scopeElement = this.project.getScopes()[payload.scope];
+				if(scopeElement) {
+					detail='Scope: '+scopeElement.name
+				}
+			}
 		}
 		
 		return {
@@ -457,13 +464,13 @@ export default class CompletionProvider extends Provider {
 				type,
 				payload
 			},
-			sortText
+			sortText,
+			detail
 		};
 	
 	}
 
 	private resolveItem(item:CompletionItem):CompletionItem {
-		item.detail = item.data.payload.detail;
 		return item;
 	}
 
