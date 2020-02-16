@@ -36,7 +36,9 @@ export class Assembler {
 
     private assemblerResults: AssemblerResults;
 
-    constructor() {
+    public getVersion(): string | undefined {
+
+        return "5.11";
     }
 
     public assemble(settings: Settings, filename:string, text: string, ignoreOutputPathSetting: boolean = false, ignoreBuildStartup: boolean = false): AssemblerResults | undefined {
@@ -50,7 +52,8 @@ export class Assembler {
         let uri:Uri = Uri.parse(filename);
 
         var outputDirectory: string = settings.outputDirectory;
-        var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri.fsPath));
+        //var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri.fsPath));
+        var sourcePath: string = PathUtils.getPathFromFilename(uri.fsPath);
 
         
         if (outputDirectory == "" || ignoreOutputPathSetting) {

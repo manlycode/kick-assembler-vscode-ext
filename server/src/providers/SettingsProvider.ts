@@ -7,7 +7,7 @@ import {
     DidChangeConfigurationParams
  } from "vscode-languageserver";
 import Project from "../project/Project";
-import { Assembler } from "../assembler/Assembler"
+import { Assembler, AssemblerResults } from "../assembler/Assembler"
 import PathUtils from "../utils/PathUtils";
 import * as fs from "fs";
 import * as opn from "open";
@@ -108,8 +108,9 @@ export default class SettingsProvider extends Provider {
             fs.accessSync(PathUtils.getPathFromFilename(settings.assemblerJar), fs.constants.W_OK);
             let assembler = new Assembler();
             let uri = Uri.file(settings.assemblerJar)
-            let assemblerResults = assembler.assemble(this.settings, uri.toString(), "",true);
+            let assemblerResults = assembler.assemble(this.settings, uri.toString(), "",true, true);
             var kickassVersion = assemblerResults.assemblerInfo.getAssemblerVersion();
+            //var kickassVersion = assembler.getVersion();
 
             if(kickassVersion === "0") {
                 // version lower than 5.12, parse output
