@@ -323,6 +323,7 @@ export default class CompletionProvider extends Provider {
 				items = items.concat(this.loadSymbols(SymbolType.Label));
 				items = items.concat(this.loadSymbols(SymbolType.Constant));
 				items = items.concat(this.loadSymbols(SymbolType.Macro));
+				items = items.concat(this.loadSymbols(SymbolType.Parameter));
 				items = items.concat(this.loadSymbols(SymbolType.Namespace));
 			}
 
@@ -332,6 +333,7 @@ export default class CompletionProvider extends Provider {
 				items = items.concat(this.loadSymbols(SymbolType.Variable));
 				items = items.concat(this.loadSymbols(SymbolType.Label));
 				items = items.concat(this.loadSymbols(SymbolType.Constant));
+				items = items.concat(this.loadSymbols(SymbolType.Parameter));
 				items = items.concat(this.loadSymbols(SymbolType.Namespace));
 			}
 
