@@ -50,29 +50,30 @@ export default class DocumentSymbolProvider extends Provider {
                         return scope.id == i
                     });
                     var parentScopedSymbols:DocumentSymbol[] = scopedSymbols[scopeElement.parentScope];
-                    for(var j=0,jl=parentScopedSymbols.length;j<jl;j++){
-                        // find the parent symbol of the scope
-                        if(parentScopedSymbols[j].range.start.line == scopeElement.line){
-                            parentScopedSymbols[j].children = scopedSymbols[i];
-                            if(parentScopedSymbols[j].kind == SymbolKind.Object) {
-                                parentScopedSymbols[j].kind = SymbolKind.Namespace;
+                    if(parentScopedSymbols) {
+                        for(var j=0,jl=parentScopedSymbols.length;j<jl;j++){
+                            // find the parent symbol of the scope
+                            if(parentScopedSymbols[j].range.start.line == scopeElement.line){
+                                parentScopedSymbols[j].children = scopedSymbols[i];
+                                if(parentScopedSymbols[j].kind == SymbolKind.Object) {
+                                    parentScopedSymbols[j].kind = SymbolKind.Namespace;
+                                }
+                                break;
                             }
-                            break;
-                        }
-                        //if not found, it was an anonymous namespace, so we need a parent symbol 
-                        if(j===jl-1){
-                            // Use range information from first symbol of that scope
-                            var tempSymbol = <DocumentSymbol> scopedSymbols[i][0];
-                            parentScopedSymbols.push({
-                                name: 'Anonymous',
-                                kind: SymbolKind.Namespace,
-                                range: tempSymbol.range,
-                                selectionRange: tempSymbol.range,
-                                children: scopedSymbols[i]
-                            });
+                            //if not found, it was an anonymous namespace, so we need a parent symbol 
+                            if(j===jl-1){
+                                // Use range information from first symbol of that scope
+                                var tempSymbol = <DocumentSymbol> scopedSymbols[i][0];
+                                parentScopedSymbols.push({
+                                    name: 'Anonymous',
+                                    kind: SymbolKind.Namespace,
+                                    range: tempSymbol.range,
+                                    selectionRange: tempSymbol.range,
+                                    children: scopedSymbols[i]
+                                });
+                            }
                         }
                     }
- 
                 }
             }
             // Everything should be finally merged into scope 0     
