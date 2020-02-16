@@ -98,7 +98,7 @@ export default class HoverProvider extends Provider {
 	 * @param type  the type of symbol to find
 	 */
 	private findSymbolOfType(token:string, type: SymbolType): Symbol | undefined {
-
+		token = token.replace(/[<>]/g,"");
 		for(let symbol of this.symbols) {
 			if (symbol.type === type) {
 				if (symbol.name === token) {

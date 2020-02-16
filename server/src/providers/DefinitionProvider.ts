@@ -48,7 +48,7 @@ export default class DefinitionProvider extends Provider {
 						}
 					}
 				} else {
-					var token = StringUtils.GetWordAt(triggerLine.replace(/[\.\+\-\*\/,]/g," "), triggerCharacterPos).trim();
+					var token = StringUtils.GetWordAt(triggerLine.replace(/[\.\+\-\*\/,<>]/g," "), triggerCharacterPos).trim();
 					for(var symbol of project.getSymbols()) {
 						if(symbol.name === token){
 							defLink.push(<DefinitionLink> {
