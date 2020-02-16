@@ -33,8 +33,9 @@ export default class DiagnosticProvider extends Provider {
 			var fileNumber = -1;
 
 			for (let file of results.assemblerInfo.getAssemblerFiles()) {
-				if (file.uri.fsPath.toLocaleLowerCase().indexOf(".source") > 0) {
+				if (file.isCurrent) {
 					fileNumber = file.index;
+					break;
 				} 
 			}			
 
