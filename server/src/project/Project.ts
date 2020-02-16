@@ -323,8 +323,11 @@ export default class Project {
         var name = text.substr(sourceRange.startPosition, (sourceRange.endPosition - 1) - sourceRange.startPosition);
         var symbol = <Symbol>{};
 
+        var isNamespace = projectFile.getScopes().find(scope => {
+            return scope.line == sourceRange.startLine && scope.name == name;
+        });
         symbol.name = name;
-        symbol.kind = SymbolKind.Object;
+        symbol.kind = isNamespace ? SymbolKind.Namespace : SymbolKind.Object;
         symbol.type = SymbolType.NamedLabel;
         symbol.isMain = projectFile.isMain();
         symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;

@@ -17,7 +17,8 @@ import {
 	IConnection,
 	TextDocumentPositionParams,
 	TextEdit,
-	MarkupContent
+	MarkupContent,
+	SymbolKind
 } from "vscode-languageserver";
 
 enum LanguageCompletionTypes {
@@ -37,6 +38,7 @@ import StringUtils from "../utils/StringUtils";
 import PathUtils from '../utils/PathUtils'; 
 import { InstructionType } from '../definition/KickInstructions';
 import Uri from "vscode-uri";
+import { ProjectFile } from '../project/ProjectFile';
 
 export default class CompletionProvider extends Provider {
 
@@ -50,6 +52,7 @@ export default class CompletionProvider extends Provider {
 	private triggerToken:string;
 	private triggerLine:string;
 	private triggerCharacterPos: number;
+	private currentScope: number;
 
 	private intelligentLabels:boolean;
 
@@ -107,6 +110,10 @@ export default class CompletionProvider extends Provider {
 
 		this.triggerCharacterPos = this.documentPosition.position.character - 1;
 
+		var currentProjectFile: ProjectFile = this.project.getSourceFiles().find(projectFile => {
+			return projectFile.isMain();
+		});
+		this.currentScope = currentProjectFile.getLines()[this.documentPosition.position.line].scope;
 		this.documentSource = this.project.getSourceLines();
 		this.triggerLine = this.documentSource[this.documentPosition.position.line];
 		this.trigger = this.triggerCharacterPos >=0 ? this.triggerLine[this.triggerCharacterPos] : "";
@@ -210,35 +217,42 @@ export default class CompletionProvider extends Provider {
 			if(possibleInternalClass) {
 				var symbolInstance = "", instancePos;
 				for (let symbol of this.project.getSymbols()) {
-					if (symbol.name == possibleInternalClass) {
-						instancePos = symbol.originalValue.indexOf("(");
-						if(instancePos > 0) {
-							symbolInstance = symbol.originalValue.substr(0,instancePos);
-							continue;
+					if (symbol.name == possibleInternalClass && (symbol.scope == this.currentScope || symbol.scope === 0)) {
+						if(symbol.kind == SymbolKind.Namespace){
+							var scopeElement = this.project.getScopes().find(scope => {
+								return scope.name == possibleInternalClass && scope.parentScope == symbol.scope
+							});
+							for (let scopedSymbol of this.project.getSymbols()) {
+								if(scopedSymbol.scope == scopeElement.id){
+									items.push(this.createCompletionItem(scopedSymbol.name, LanguageCompletionTypes.Symbol, scopedSymbol, scopedSymbol.completionKind || CompletionItemKind.Variable));
+								}
+							}	
+						} else if (symbol.originalValue) {
+							instancePos = symbol.originalValue.indexOf("(");
+							if(instancePos > 0) {
+								symbolInstance = symbol.originalValue.substr(0,instancePos);
+								for (let symbol of this.project.getBuiltInSymbols()) {
+									if (symbol.name == possibleInternalClass || symbol.name == symbolInstance) {
+										if(symbol.properties) {
+											symbol.properties.forEach((property)=> {
+												items.push(this.createCompletionItem(property.name, LanguageCompletionTypes.Symbol, property, CompletionItemKind.Property));
+											});
+										}
+										if(symbol.methods) {
+											symbol.methods.forEach((method)=> {
+												items.push(this.createCompletionItem(method.name, LanguageCompletionTypes.Symbol, method, CompletionItemKind.Method));
+											});	
+										}
+									}
+								}
+							}
 						}
 					}
 				}				
-				for (let symbol of this.project.getBuiltInSymbols()) {
-					if (symbol.name == possibleInternalClass || symbol.name == symbolInstance) {
-						if(symbol.properties) {
-							symbol.properties.forEach((property)=> {
-								items.push(this.createCompletionItem(property.name, LanguageCompletionTypes.Symbol, property, CompletionItemKind.Property));
-							});
-						}
-						if(symbol.methods) {
-							symbol.methods.forEach((method)=> {
-								items.push(this.createCompletionItem(method.name, LanguageCompletionTypes.Symbol, method, CompletionItemKind.Method));
-							});	
-						}
-					}
-				}
-
 			} else if (items.length === 0 && (!tokensLeft || (tokensLeft.length === 1 && this.triggerLine.trim().substr(0,tokensLeft[0].length+1) === tokensLeft[0]+":"))) {
 				items = this.loadDirectives();
 			}
-		}
-
-		if (items.length === 0) {
+		} else if (items.length === 0) {
 			var prevToken:string = "";
 			var prevSymbolType:SymbolType;
 
@@ -394,9 +408,11 @@ export default class CompletionProvider extends Provider {
 			value:	(payload.description || payload.comments) +
 					(payload.example ? "\n***\n"+payload.example : "") +
 					(payload.deprecated ? "\n***\n*(deprecated)*" : "") + 
-					(payload.type && payload.type == InstructionType.Illegal ? "\n***\n**(Illegal opcode)**" : "") + 
-					(payload.type && payload.type == InstructionType.DTV ? "\n***\n**(DTV opcode)**" : "") + 
-					(payload.type && payload.type == InstructionType.C02 ? "\n***\n**(65c02 opcode)**" : ""),
+					(type == LanguageCompletionTypes.Instruction && payload.type ? (
+						(payload.type == InstructionType.Illegal ? "\n***\n**(Illegal opcode)**" : "") + 
+						(payload.type == InstructionType.DTV ? "\n***\n**(DTV opcode)**" : "") + 
+						(payload.type == InstructionType.C02 ? "\n***\n**(65c02 opcode)**" : "")
+					):""),
 			kind: 'markdown'
 		} : "";
 
@@ -418,6 +434,12 @@ export default class CompletionProvider extends Provider {
 				command = 'editor.action.triggerSuggest';
 			}
 		}
+		var sortText = '';
+		if(!payload.isBuiltin && type !== LanguageCompletionTypes.Instruction && payload.scope != undefined){
+			//have current scope first, so decent sort
+			sortText = String(99999-payload.scope);
+		}
+		
 		return {
 			label,
 			kind,
@@ -432,7 +454,8 @@ export default class CompletionProvider extends Provider {
 			data: {
 				type,
 				payload
-			}
+			},
+			sortText
 		};
 	
 	}
@@ -496,7 +519,7 @@ export default class CompletionProvider extends Provider {
 
 		// project symbols
 		for (let symbol of symbols) {
-			if (symbol.type == symbolType) {
+			if (symbol.type == symbolType && (symbol.scope == this.currentScope || symbol.scope === 0)) {
 				items.push(this.createCompletionItem(symbol.name, LanguageCompletionTypes.Label, symbol, symbol.completionKind || CompletionItemKind.Class));
 			}
 		}

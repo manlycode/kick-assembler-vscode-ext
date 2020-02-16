@@ -2179,6 +2179,8 @@ export class KickInternalSymbols {
                 value: 1,
                 originalValue: "",
                 scope: 0,
+                isGlobal: true,
+                isBuiltin: true,
                 description: "Example: $1000"
             },{
                 type: SymbolType.Constant,
@@ -2186,6 +2188,8 @@ export class KickInternalSymbols {
                 value: 1,
                 originalValue: "",
                 scope: 0,
+                isGlobal: true,
+                isBuiltin: true,
                 description: "Example: $1000,x"
             },{
                 type: SymbolType.Constant,
@@ -2193,6 +2197,8 @@ export class KickInternalSymbols {
                 value: 1,
                 originalValue: "",
                 scope: 0,
+                isGlobal: true,
+                isBuiltin: true,
                 description: "Example: $1000,y"
             },{
                 type: SymbolType.Constant,
@@ -2200,6 +2206,8 @@ export class KickInternalSymbols {
                 value: 1,
                 originalValue: "Immediate adressing",
                 scope: 0,
+                isGlobal: true,
+                isBuiltin: true,
                 description: "#10"
             },{
                 type: SymbolType.Constant,
@@ -2207,6 +2215,8 @@ export class KickInternalSymbols {
                 value: 1,
                 originalValue: "",
                 scope: 0,
+                isGlobal: true,
+                isBuiltin: true,
                 description: "Indirect adressing mode",
                 comments: "Example: ($1000)"
             },{
@@ -2215,6 +2225,8 @@ export class KickInternalSymbols {
                 value: 1,
                 originalValue: "",
                 scope: 0,
+                isGlobal: true,
+                isBuiltin: true,
                 description: "Indirect zeropage x adressing",
                 comments: "Example: ($10,x)"
             },{
@@ -2223,8 +2235,9 @@ export class KickInternalSymbols {
                 value: 1,
                 originalValue: "",
                 scope: 0,
+                isGlobal: true,
+                isBuiltin: true,
                 description: "Indirect zeropage y adressing",
-
                 comments: "Example: ($10),y"
             },{
                 type: SymbolType.Constant,
@@ -2232,6 +2245,8 @@ export class KickInternalSymbols {
                 value: 1,
                 originalValue: "",
                 scope: 0,
+                isGlobal: true,
+                isBuiltin: true,
                 description: "No adressing",
                 comments: "Example: NOP"
             }
