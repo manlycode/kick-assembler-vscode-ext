@@ -376,7 +376,7 @@ export default class Project {
             return symbol;
         }
 
-        if (directive == ".namespace") {
+        if (directive == ".namespace" || directive == ".filenamespace") {
             var symbol = this.createFromSimpleValue(afterDirectiveString);
             symbol.kind = SymbolKind.Namespace;
             symbol.type = SymbolType.Namespace;

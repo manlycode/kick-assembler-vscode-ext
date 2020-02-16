@@ -109,10 +109,15 @@ export class ProjectFile {
             line.text = sourceLines[i];
             line.cleanedText = cleanedSourceLines[i];
 
+            let isFileNameSpace = false;
             let sourceLine = cleanedSourceLines[i].trim();
             if(sourceLine.substr(0,10).toLowerCase() === '.namespace'){
                 possibleLabel=sourceLine.substr(10).trim().match(/\w*/);
                 possibleScopeType = ScopeType.Namespace;
+            } else if(sourceLine.substr(0,14).toLowerCase() === '.filenamespace'){
+                possibleLabel=sourceLine.substr(14).trim().match(/\w*/);
+                possibleScopeType = ScopeType.Namespace;
+                isFileNameSpace = true;
             } else if(sourceLine.substr(0,9).toLowerCase() === '.function'){
                 possibleLabel=sourceLine.substr(9).trim().match(/\w*/);
                 possibleScopeType = ScopeType.Function;
@@ -138,7 +143,7 @@ export class ProjectFile {
                 scope = last.pop();
             }
             //	search for {  - add to scope
-            if (openingBrace >= 0) {
+            if (openingBrace >= 0 || isFileNameSpace) {
                 this.scopes.push({
                     id: next,
                     parentScope: scope,
