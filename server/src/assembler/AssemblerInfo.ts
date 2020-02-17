@@ -55,9 +55,6 @@ export interface AssemblerFile {
 export interface AssemblerSyntax {
     type:string;
     range:AssemblerSourceRange
-    line:number;
-    scope:number;
-    fileIndex:number;
 }
 
 export interface AssemblerError {
@@ -163,7 +160,6 @@ export class AssemblerInfo {
         let assemblerSyntax = <AssemblerSyntax>{};
         assemblerSyntax.type = parms[0];
         assemblerSyntax.range = this.parseRange(parms[1]);
-        assemblerSyntax.line = assemblerSyntax.range.startLine;
         this.AssemblerSyntax.push(assemblerSyntax);
     }
     

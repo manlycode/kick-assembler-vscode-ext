@@ -2,11 +2,13 @@
 ## Kick Assembler Visual Studio Code Extension for C64
 ### History Of Changes
 
-## v0.3.4
+## v0.4.0
 ### Changed
++ [added startup control file and changed default key bindings](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/35)
 + [added some missing syntax highlighting](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/47)
 + [support directive on same line after labels](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/48)
 ### Fixed
++ [hover bug fixes for labels](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/49)
 
 ## v0.3.3
 ### Changed

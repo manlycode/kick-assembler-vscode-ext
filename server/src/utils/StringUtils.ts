@@ -55,7 +55,7 @@ export default class StringUtils {
 
 			let parms = parm_text.split(",");
 			for (var parm of parms) {
-				vals.push(parm);
+				if(parm!=="") vals.push(parm);
 			}
 		}
 

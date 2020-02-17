@@ -42,10 +42,29 @@ import { KickLanguage } from "../definition/KickLanguage";
 import Uri from "vscode-uri";
 
 export interface Line {
-    number: number;
     scope: number;
-    scopeName: string;
     text: string;
+    cleanedText: string; //comments are removed here to avoid false positive braces or param detection within block comments in one line
+}
+
+export interface Comment {
+    range: AssemblerSourceRange;
+    used?: boolean;
+}
+
+export enum ScopeType {
+    NamedLabel,
+    Namespace,
+    Function,
+    Macro
+}
+
+export interface Scope {
+    id: number;
+    parentScope: number;
+    line: number; // line where the scopename is defined (!) to match later with symbols
+    name: string;
+    type: ScopeType;
 }
 
 export enum SymbolType {
@@ -70,12 +89,12 @@ export interface Symbol {
     originalValue: string;
     kind?: SymbolKind;
     completionKind?: CompletionItemKind;
-    line?: Line;
     range?: Range;
     fileIndex?: number;
-    scope?: number;
+    scope: number;
     comments?: string;
     parameters?: Parameter[];
+    parametersSymbols?: Symbol[];
     properties?: Property[];
     methods?: Method[];
     isExternal?: boolean;
@@ -98,6 +117,8 @@ export default class Project {
     private symbols: Symbol[];
     connection: Connection;
     showStartupWarning: boolean;
+    private scopes: Scope[] = [];
+    private autoIncludeFileIndex:number = 0;
 
     constructor(uri: string) {
         this.uri = uri;
@@ -133,6 +154,14 @@ export default class Project {
 
         this.projectFiles = [];
 
+        this.scopes = [{
+            id:0,
+            parentScope:0,
+            line:0,
+            name:'',
+            type: ScopeType.NamedLabel
+        }];
+
         for (var file of this.assemblerInfo.getAssemblerFiles()) {
             if (!file.system) {
                 
@@ -140,9 +169,13 @@ export default class Project {
                 var _text: string  = readFileSync(file.uri.fsPath).toString();
                 var _main: boolean = file.isCurrent;
 
-                var projectFile = new ProjectFile(_uri, _text, _main);
-
+                var projectFile = new ProjectFile(_uri, _text, _main, this.scopes.length, this.assemblerInfo.getAssemblerSyntax().filter(syntax => {
+                    return syntax.range.fileIndex == file.index
+                }));
+                this.scopes = this.scopes.concat(projectFile.getScopes());
                 this.projectFiles[file.index] = projectFile;
+            } else {
+                this.autoIncludeFileIndex = file.index;
             }
         }
 
@@ -212,21 +245,23 @@ export default class Project {
         return this.projectFiles;
     }
 
+    public getScopes(): Scope[] {
+        return this.scopes;
+    }
+
     private createSymbols(): Symbol[] | undefined {
 
         var symbols = [];
-        var autoIncludeFileIndex = 0;
 
-        for (var file of this.assemblerInfo.getAssemblerFiles()) {
-            if (file.system) {
-                autoIncludeFileIndex = file.index;
-            }
-        }
 
         for (var syntax of this.getAssemblerResults().assemblerInfo.getAssemblerSyntax()) {
-            if (syntax.range.fileIndex != autoIncludeFileIndex) {
+            if (syntax.range.fileIndex != this.autoIncludeFileIndex) {
                 var symbol = this.createSymbol(syntax, this.projectFiles[syntax.range.fileIndex]);
                 if (symbol) {
+                    if(symbol.parametersSymbols) {
+                        symbols.push(...symbol.parametersSymbols);
+                        delete symbol.parametersSymbols;
+                    }
                     symbols.push(symbol);
                 }
             }
@@ -239,18 +274,18 @@ export default class Project {
 
         var type = syntax.type.toLowerCase();
         var range = syntax.range;
-        var lines = projectFile.getSourceLines();
+        var lines = projectFile.getLines();
         var line = lines[syntax.range.startLine];
-        var text = line;
+        var text = line.cleanedText;
 
         var symbol: Symbol;
 
         if (type == "label") {
-            symbol = this.createFromLabel(range, text, projectFile.isMain());
+            symbol = this.createFromLabel(range, text, projectFile);
         }
 
         if (type == "directive" || type == "ppdirective") {
-            symbol = this.createFromDirective(range, text, projectFile.isMain());
+            symbol = this.createFromDirective(range, text, projectFile);
         }
 
         if (symbol) {
@@ -263,12 +298,6 @@ export default class Project {
                 symbol.isGlobal = true;
             }
 
-            if (!symbol.data)
-                symbol.data = {};
-
-            symbol.data["uri"] = projectFile.getUri();
-
-            symbol.line = projectFile.getLines()[syntax.range.startLine];
             symbol.range = Range.create(
                 Position.create(syntax.range.startLine,syntax.range.startPosition),
                 Position.create(syntax.range.endLine,syntax.range.endPosition)
@@ -284,37 +313,48 @@ export default class Project {
                         let paraDocsToken = StringUtils.splitIntoTokens(pDoc.replace(/(@param(eter)*\s+|\r)/,""));
                         let setStringKind = false;
                         if(paraDocsToken[0].match(/(string|number|value)/)) {
-                            paraDocsToken.shift();
                             if(paraDocsToken[0] == "string") {
                                 setStringKind = true;
                             }
+                            paraDocsToken.shift();
                         }
                         symbol.parameters.forEach( (p,i) => {
                             if (p.name == paraDocsToken[0]){
-                                symbol.parameters[i].description = paraDocsToken.slice(1).join(" ");
+                                var pDocs = paraDocsToken.slice(1).join(" ");
+                                symbol.parameters[i].description = pDocs;
+                                symbol.parametersSymbols[i].description = pDocs;
                                 if(setStringKind) symbol.parameters[i].kind = SymbolKind.String;
                             }
                         });
                     });
                 }
             }
+            if(symbol.parametersSymbols){
+                for(var i=0,il=symbol.parametersSymbols.length;i<il;i++){
+                    symbol.parametersSymbols[i].range = symbol.range;
+                    symbol.parametersSymbols[i].fileIndex = symbol.fileIndex;
+                }
+            }
             return symbol;
         }
     }
 
-    private createFromLabel(sourceRange: AssemblerSourceRange, text: string, main: boolean): Symbol {
+    private createFromLabel(sourceRange: AssemblerSourceRange, text: string, projectFile: ProjectFile): Symbol {
         var name = text.substr(sourceRange.startPosition, (sourceRange.endPosition - 1) - sourceRange.startPosition);
         var symbol = <Symbol>{};
 
+        var isNamespace = projectFile.getScopes().find(scope => {
+            return scope.line == sourceRange.startLine && scope.name == name;
+        });
         symbol.name = name;
-        symbol.kind = SymbolKind.Object;
+        symbol.kind = isNamespace ? SymbolKind.Namespace : SymbolKind.Object;
         symbol.type = SymbolType.NamedLabel;
-        symbol.isMain = main;
-        //symbol.scope = this._kickAssemblerResults.sourceFiles[sourceRange.fileIndex].lines[sourceRange.startLine].scope;
+        symbol.isMain = projectFile.isMain();
+        symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
         return symbol;
     }
 
-    private createFromDirective(sourceRange: AssemblerSourceRange, text: string, main: boolean): Symbol {
+    private createFromDirective(sourceRange: AssemblerSourceRange, text: string, projectFile: ProjectFile): Symbol {
 
         const directive = text.substr(sourceRange.startPosition, sourceRange.endPosition - sourceRange.startPosition).toLowerCase();
         var afterDirectiveString = text.substr(sourceRange.endPosition).trim();
@@ -323,8 +363,8 @@ export default class Project {
             var symbol = this.createFromSimpleValue(afterDirectiveString);
             symbol.kind = SymbolKind.Boolean;
             symbol.type = SymbolType.Boolean;
-            symbol.isMain = main;
-            //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
+            symbol.isMain = projectFile.isMain();
+            symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
             return symbol;
         }
 
@@ -333,8 +373,8 @@ export default class Project {
             var symbol = this.createFromSimpleValue(isEvalVar ? afterDirectiveString.substr(4): afterDirectiveString);
             symbol.kind = SymbolKind.Variable;
             symbol.type = SymbolType.Variable;
-            symbol.isMain = main;
-            //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
+            symbol.isMain = projectFile.isMain();
+            symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
             return symbol;
         }
 
@@ -342,17 +382,26 @@ export default class Project {
             var symbol = this.createFromSimpleValue(afterDirectiveString);
             symbol.kind = SymbolKind.Constant;
             symbol.type = SymbolType.Constant;
-            symbol.isMain = main;
-            //symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
+            symbol.isMain = projectFile.isMain();
+            symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
             return symbol;
         }
 
         if (directive == ".label") {
             var symbol = this.createFromSimpleValue(afterDirectiveString);
-            symbol.kind = SymbolKind.Object;
+            symbol.kind = SymbolKind.Constant;
             symbol.type = SymbolType.Label;
-            symbol.isMain = main;
-            //return this.createFromLabel(sourceRange, text, main);
+            symbol.isMain = projectFile.isMain();
+            symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
+            return symbol;
+        }
+
+        if (directive == ".namespace" || directive == ".filenamespace") {
+            var symbol = this.createFromSimpleValue(afterDirectiveString);
+            symbol.kind = SymbolKind.Namespace;
+            symbol.type = SymbolType.Namespace;
+            symbol.isMain = projectFile.isMain();
+            symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
             return symbol;
         }
 
@@ -379,9 +428,14 @@ export default class Project {
                     symbol.completionKind = CompletionItemKind.Method;
                 }
                 symbol.name = name;
-                symbol.scope = this.projectFiles[sourceRange.fileIndex].getLines()[sourceRange.startLine].scope;
-                symbol.isMain = main;
+                symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
+                symbol.isMain = projectFile.isMain();
+
+                let scopeInfo:Scope = projectFile.getScopes().find(scope => {
+                    return scope.line == sourceRange.startLine
+                });
                 var parms = [];
+                var parmsSymbols: Symbol[] = [];
 
                 for (var i = 2; i < split.length; i++) {
                     var parm = <Parameter> {
@@ -394,13 +448,15 @@ export default class Project {
                     var parm_symbol = <Symbol>{};
                     parm_symbol.name = split[i];
                     parm_symbol.type = SymbolType.Parameter;
-                    parm_symbol.kind = SymbolKind.Variable;
-                    parm_symbol.scope = symbol.scope;
-                    parm_symbol.isMain = main;
-                    
+                    parm_symbol.kind = SymbolKind.Property;
+                    parm_symbol.scope = scopeInfo ? scopeInfo.id : symbol.scope;   //scopeinfo should always be found though
+                    parm_symbol.isMain = projectFile.isMain();
+
+                    parmsSymbols.push(parm_symbol);                   
                 }
                 if(parms.length > 0) {
                     symbol.parameters = parms;
+                    symbol.parametersSymbols = parmsSymbols;
                     symbol.snippet = '($0)';
                 } else {
                     symbol.snippet = '()';
@@ -424,7 +480,7 @@ export default class Project {
             symbol.value = NumberUtils.toDecimal(value);
             symbol.originalValue = value;
         } else {
-            symbol.name = text.trim();
+            symbol.name = text.trim().split(" ")[0];
         }
 
         return symbol;
