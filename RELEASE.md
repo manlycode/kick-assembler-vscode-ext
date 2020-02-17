@@ -1,6 +1,6 @@
 # Release Notes
 
-## v0.3.4
+## v0.4.0
 
 
 Much more to come, check the roadmap, and let us know if there is something else you would like to be added by sending us a note on Facebook or creating an [Issue](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues) on the project page.

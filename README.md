@@ -42,12 +42,25 @@ See all of your variables, macros and functions from your code and included sour
 
 ![](/images/code-completion.gif)
 
+#### Code Scoping
+
+Support for Namespaces and Scopes in all providers, including `.filenamespace`. 
+
+![](/images/scoping.gif)
+
+Completion Provider according to cursor position first.
+
+![](/images/namespace-cursor-position.png)
+
 #### Code Outline
 
 See an outline of your current source code, and jump to those items in your code.
 
 ![](/images/outline.gif)
 
+Including any Scoping or Namespaces.
+
+![](/images/document-system.png)
 
 #### Imported File Support
 
