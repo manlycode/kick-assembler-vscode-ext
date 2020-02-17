@@ -7,8 +7,11 @@
 + [added startup control file and changed default key bindings](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/35)
 + [added some missing syntax highlighting](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/47)
 + [support directive on same line after labels](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/48)
++ [support namespaces and scope](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/50)
 ### Fixed
 + [hover bug fixes for labels](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/49)
++ [Issue 41](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/41) fix missing directives on hover
++ [Issue 40](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/40) out of scope macros should not be available in completion provider
 
 ## v0.3.3
 ### Changed

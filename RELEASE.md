@@ -1,8 +1,40 @@
 # Release Notes
 
-## v0.4.0
+## The Big v0.4.0
 
+And a big thank you to everyone using the extension. Your feedback, ideas and bug reports are making this tool better every day.
+
+This release has a lot of great additions to help those using Kick Assembler for larger projects. So let's get started.
+
+The first addition comes from a little bit of inspiration from @swoffa's great [Sublime Plugin](https://github.com/Swoffa/SublimeKickAssemblerC64), and was requested by [Emiliano](https://gitlab.com/emiliano.paglia). A new setting, called "startup" is available to control the real-time and build experience for the developer. When this setting populated, the file specified will always be used to provide feedback to the editor. This let's the editor give you even more information for things like the Hover, Completion and Outliner. If you happen to open a file that is not part of the startup file it will simply give you a warning, and then fall back to use the current file for feedback.
+
+To accomodate this new setting, we had to make some changes to a few of the editor settings.
+
+First, we added three new commands
+
+- `kickassembler.buildstartup` will compile the source file in `startup`
+- `kickassembler.buildandrunstartup` will compile the source file in `startup` and run the emulator
+- `kickassembler.buildanddebugstartup` will compile the source file in `startup` and run the external debugger
+
+Next, we changed a few of the default key bindings. As always, these can be changed in your preferences.
+
+- `ctrl-shift-b` will build the current open source file
+- `ctrl-shift-s` will build the file specified in `startup`
+- `F5` will now build and start your emulator with file specified in `startup`
+- `shift-F5` will now build and start the external debugger with the file specified in the `startup`
+- `F6` will now build and run the current open file
+- `shift-F6` will now build and start the external debugger for the current open file
+
+Our friend @lubber has also been very hard at work adding Kick Assembler [Scopes & Namespaces](http://www.theweb.dk/KickAssembler/webhelp/content/cpt_Namespaces.html). As everyone knows, the scoping can become pretty complex in Kick, and now the editor will help you make sure you are only using code that is accessible at the current cursor location. Things like the `.namespace` and `.filenamespace` directives, in addition to `named labels` are covered. Being that this is the first release to include Scoping, we ask for your patience, and if you encounter any bugs, or see any use cases missing that you report them on the [GitLab Issues](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues) list. 
+
+The `output` setting has been changed so that it is NOT creating output folders all over your workspace. Instead, it will now assume that you want to have your output folder off of the root folder of your workspace. You still have the option of using an absolute location like `c:\temp` or `/var/lib/tmp` if you desire.
+
+As always, there were additional bug fixes and some code cleanup.
+
+We hope you enjoy the new changes, and that you are finding the extension to be useful.
+
+For a full list of changes, please see the projects [History](HISTORY.md) file.
 
 Much more to come, check the roadmap, and let us know if there is something else you would like to be added by sending us a note on Facebook or creating an [Issue](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues) on the project page.
 
-And a big thank you to everyone using the extension. Your feedback and bug reports are making this tool better every day.
+Cheers!
