@@ -5,7 +5,8 @@ import {
 import { 
     DocumentSymbolParams,
     Connection,
-    SymbolInformation
+    DocumentSymbol,
+    SymbolKind
  } from "vscode-languageserver";
  
 /**
@@ -23,27 +24,60 @@ export default class DocumentSymbolProvider extends Provider {
 
             if (!projectInfo.getSettings().valid) return;
 
-            var symbols: SymbolInformation[];
-            symbols = [];
-
+            var scopedSymbols = [];
             var project = projectInfo.getProject(request.textDocument.uri);
             for(var symbol of project.getSymbols()) {
 
                 //  only include symbols from the main project file
-                if (symbol.isMain && symbol.line.scope == 0) {
-
-                    var s1 = SymbolInformation.create(
+                if (symbol.isMain) {
+                    //collect per scope first, merge to parent scope later
+                    if(!scopedSymbols[symbol.scope]) {
+                        scopedSymbols[symbol.scope] = [];
+                    }
+                    scopedSymbols[symbol.scope].push(DocumentSymbol.create(
                         symbol.name,
+                        symbol.description || symbol.comments || '',
                         symbol.kind,
                         symbol.range,
-                        symbol.isMain ? project.getUri() : project.getSourceFiles()[symbol.fileIndex].getUri(),
-                        ""
-                    );
-
-                    symbols.push(s1);
+                        symbol.range
+                    ));
                 }
             }
-            return symbols;
+            // reverse iterate through scopes to make sure nested scopes are correctly assigned to their parents
+            for(var i = scopedSymbols.length-1; i>0;i--) {
+                if(scopedSymbols[i]){
+                    var scopeElement = project.getScopes().find(scope => {
+                        return scope.id == i
+                    });
+                    var parentScopedSymbols:DocumentSymbol[] = scopedSymbols[scopeElement.parentScope];
+                    if(parentScopedSymbols) {
+                        for(var j=0,jl=parentScopedSymbols.length;j<jl;j++){
+                            // find the parent symbol of the scope
+                            if(parentScopedSymbols[j].range.start.line == scopeElement.line){
+                                parentScopedSymbols[j].children = scopedSymbols[i];
+                                if(parentScopedSymbols[j].kind == SymbolKind.Object) {
+                                    parentScopedSymbols[j].kind = SymbolKind.Namespace;
+                                }
+                                break;
+                            }
+                            //if not found, it was an anonymous namespace, so we need a parent symbol 
+                            if(j===jl-1){
+                                // Use range information from first symbol of that scope
+                                var tempSymbol = <DocumentSymbol> scopedSymbols[i][0];
+                                parentScopedSymbols.push({
+                                    name: 'Anonymous',
+                                    kind: SymbolKind.Namespace,
+                                    range: tempSymbol.range,
+                                    selectionRange: tempSymbol.range,
+                                    children: scopedSymbols[i]
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            // Everything should be finally merged into scope 0     
+            return scopedSymbols[0];
         });
     }
 }
