@@ -223,7 +223,7 @@ export default class CompletionProvider extends Provider {
 								return scope.name == possibleInternalClass && scope.parentScope == symbol.scope
 							});
 							for (let scopedSymbol of this.project.getSymbols()) {
-								if(scopedSymbol.scope == scopeElement.id){
+								if(scopedSymbol.scope == scopeElement.id && scopedSymbol.type !== SymbolType.Macro){
 									items.push(this.createCompletionItem(scopedSymbol.name, LanguageCompletionTypes.Symbol, scopedSymbol, scopedSymbol.completionKind || CompletionItemKind.Variable));
 								}
 							}	
