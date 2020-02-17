@@ -41,7 +41,7 @@ export class CommandRun {
         let emulatorRuntime: string  = this.configuration.get("emulatorRuntime");
 
         // enclose in quotes to accomodate filenames with spaces on non-windows platforms
-        if (process.platform != "win32") {
+        if (process.platform == "darwin") {
             emulatorRuntime = '"' + emulatorRuntime + '"';
 		    emulatorRuntime = emulatorRuntime.replace("\\", "");
         }

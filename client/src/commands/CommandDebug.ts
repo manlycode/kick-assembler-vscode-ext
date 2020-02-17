@@ -41,7 +41,7 @@ export class CommandDebug {
         let debuggerRuntime: string = this.configuration.get("debuggerRuntime");
 
         // enclose in quotes to accomodate filenames with spaces on non-windows platforms
-        if (process.platform != "win32") {
+        if (process.platform == "darwin") {
             debuggerRuntime = '"' + debuggerRuntime + '"';
 		    debuggerRuntime = debuggerRuntime.replace("\\", "");
         }
