@@ -199,8 +199,7 @@ export default class HoverProvider extends Provider {
 
 		// we always need the token word at the cursor
 		var line = this.project.getSourceLines()[textDocumentPosition.position.line];
-		var token = StringUtils.GetWordAt(line.replace(/[\.\+\-\*\/,]/g," "), textDocumentPosition.position.character).trim();
-
+		var token: string;
 		/*
 			and now -- some logic
 
@@ -246,6 +245,8 @@ export default class HoverProvider extends Provider {
 					if (textDocumentPosition.position.character >= assemblerSyntax.range.startPosition &&
 						textDocumentPosition.position.character <= assemblerSyntax.range.endPosition) {
 
+						token = line.substr(assemblerSyntax.range.startPosition-1,assemblerSyntax.range.endPosition-assemblerSyntax.range.startPosition+1);
+//						console.log(12,token, assemblerSyntax, line);
 						// macroExecution
 
 						if (assemblerSyntax.type === 'macroExecution') {
@@ -264,7 +265,7 @@ export default class HoverProvider extends Provider {
 							var symbol = this.findSymbolOfType(token, SymbolType.Variable);
 							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Constant);
 							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Label);
-							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.NamedLabel);
+							if (!symbol) symbol = this.findSymbolOfType(token.replace(":",""), SymbolType.NamedLabel);
 							
 							if (symbol) {
 								return this.createSimpleHover(symbol);
@@ -286,7 +287,7 @@ export default class HoverProvider extends Provider {
 						// ppDirective
 
 						if (assemblerSyntax.type === 'ppDirective') {
-							return this.getPreProcessorMatch("#".concat(token)); // add # for proper search
+							return this.getPreProcessorMatch(token); // add # for proper search
 						}
 
 						// pseudoCommandExecution
@@ -295,6 +296,8 @@ export default class HoverProvider extends Provider {
 							return this.getPseudoCommandMatch(token); 
 						}
 					}
+						
+					token = StringUtils.GetWordAt(line.replace(/[\.\+\-\*\/,]/g," "), textDocumentPosition.position.character).trim();
 
 					// mnemonic line?
 					if (assemblerSyntax.type === 'mnemonic') {
@@ -329,7 +332,6 @@ export default class HoverProvider extends Provider {
 							.label LABEL_NAME = $d020
 
 						*/
-
 						var _contents = StringUtils.BuildTokenFormattedValue(token);
 
 						if (_contents) 
