@@ -99,6 +99,7 @@ export default class ProjectManager {
 
         connection.onDidOpenTextDocument((open: DidOpenTextDocumentParams) => {
             var project = new Project(open.textDocument.uri);
+            project.connection = this.connection;
             this.projects.push(project);
             if (this.settingsProvider.getSettings().valid) {
                 project.assemble(this.settingsProvider.getSettings(), open.textDocument.text);

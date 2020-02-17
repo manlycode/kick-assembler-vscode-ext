@@ -34,7 +34,7 @@ import { Directive } from "../definition/KickDirectives";
 import { readFileSync } from "fs";
 import { KickInternalSymbols, Property, Method } from "../definition/KickInternalSymbols";
 import { createHash } from "crypto";
-import { CompletionItemKind, SymbolKind, Range, Position } from "vscode-languageserver";
+import { CompletionItemKind, SymbolKind, Range, Position, Connection } from "vscode-languageserver";
 import NumberUtils from "../utils/NumberUtils";
 import LineUtils from "../utils/LineUtils";
 import { Parameter } from "../definition/KickPreprocessors";
@@ -115,6 +115,8 @@ export default class Project {
     private assemblerInfo: AssemblerInfo;
     private projectFiles: ProjectFile[];
     private symbols: Symbol[];
+    connection: Connection;
+    showStartupWarning: boolean;
     private scopes: Scope[] = [];
     private autoIncludeFileIndex:number = 0;
 
@@ -128,8 +130,26 @@ export default class Project {
         if (!settings.valid) return;
 
         let assembler = new Assembler();
+
+        // try basic assembly
         this.assemblerResults = assembler.assemble(settings, this.uri, text);
         this.assemblerInfo = this.assemblerResults.assemblerInfo;
+
+        /*
+            when the current file is not in the
+            list of files to be compile, we
+            try to assemble again but this
+            time ignoring the master
+        */
+
+        if (!this.assemblerInfo.hasCurrent) {
+            if (!this.showStartupWarning)
+                this.connection.window.showInformationMessage(`The Open File is Not Part of the Startup [${settings.startup}]`);
+            this.assemblerResults = assembler.assemble(settings, this.uri, text, false, true);
+            this.assemblerInfo = this.assemblerResults.assemblerInfo;
+            this.showStartupWarning = true;
+        }
+        
         this.source = text;
 
         this.projectFiles = [];
@@ -147,7 +167,7 @@ export default class Project {
                 
                 var _uri: Uri = file.uri;
                 var _text: string  = readFileSync(file.uri.fsPath).toString();
-                var _main: boolean = file.main;
+                var _main: boolean = file.isCurrent;
 
                 var projectFile = new ProjectFile(_uri, _text, _main, this.scopes.length, this.assemblerInfo.getAssemblerSyntax().filter(syntax => {
                     return syntax.range.fileIndex == file.index

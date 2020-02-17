@@ -3,10 +3,11 @@
 	Licensed under the MIT License. See License.txt in the project root for license information.
 */
 
-import { Uri, WorkspaceConfiguration, window, workspace, TextDocument, TextEditor } from 'vscode';
+import { Uri, WorkspaceFolder, WorkspaceConfiguration, window, workspace, TextDocument, TextEditor } from 'vscode';
 import * as fs from 'fs';
 import PathUtils from "./PathUtils"
 import * as path from "path";
+import { VersionedTextDocumentIdentifier } from 'vscode-languageclient';
 //import { TextDocument } from 'vscode-languageclient';
 
 /**
@@ -15,11 +16,11 @@ import * as path from "path";
 export default class ClientUtils {
 
     /**
-     * Return a Valid Uri for a Compiled Program
+     * Return a Valid Uri for an Assembled Program
      * 
      * This helper method will create the valid
      * Uri for the program file that will be
-     * compiled by KickAssembler.
+     * assembled by KickAssembler.
      * 
      * 
      * Example 1:
@@ -49,7 +50,6 @@ export default class ClientUtils {
      * 
      * this method will return
      * 
-     * 
      *      /home/user/workspace/output/coolgame.prg
      * 
      * 
@@ -65,26 +65,50 @@ export default class ClientUtils {
      * 
      * this method will return
      * 
-     *      /home/user/build/coolgame.asm
+     *      /home/user/build/coolgame.prg
+     * 
+     * 
+     * Example 4:
+     * 
+     * with an output of
+     * 
+     *      "build"
+     * 
+     * and a source filename of 
+     * 
+     *      /home/user/workspace/module/coolmodule.asm
+     * 
+     * this method will return
+     * 
+     *      /home/user/workspace/build/coolgame.prg
+     * 
      */
     public static GetWorkspaceProgramFilename():string {
 
         // get the output path
         var outputPath:string = this.GetOutputPath();
-        var sourceFile: string = this.GetOpenDocument().fileName;
+        var sourceFile: string = this.GetOpenDocumentUri().fsPath;
 
-        // hack to make the extension a PRG file
-        // TODO: make this betterer
-        let prg = path.basename(sourceFile);
-        prg = prg.replace(".asm", ".prg");
-        prg = prg.replace(".kick", ".prg");
-        prg = prg.replace(".a", ".prg");
-        prg = prg.replace(".ka", ".prg");
+        // get the final program filename
+        var prg = this.CreateProgramFilename(path.basename(sourceFile));
 
         // build the filename
         var outputFile:string = outputPath + path.sep + prg;
 
         return outputFile;
+    }
+
+    public static CreateProgramFilename(filename:string): string | undefined {
+
+        // hack to make the extension a PRG file
+        // TODO: make this betterer
+        filename = filename.replace(".asm", ".prg");
+        filename = filename.replace(".kick", ".prg");
+        filename = filename.replace(".a", ".prg");
+        filename = filename.replace(".ka", ".prg");
+
+        return filename;
+
     }
 
     /**
@@ -96,28 +120,82 @@ export default class ClientUtils {
      * 
      *      kickassembler.output
      * 
+     * To do this we basically get the root folder
+     * of the Workspace and either add the output 
+     * folder to it, or if it is an absolute path
+     * make that the output folder.
+     * 
+     * Example 1:
+     *  
+     *  with an output setting of
+     * 
+     *      "output"
+     * 
+     *  and a workspace value of
+     * 
+     *      /home/user/workspace
+     * 
+     *  the returning value will be
+     * 
+     *      /home/user/workspace/output
+     * 
+     * Example 2:
+     *  
+     *  with an output setting of
+     * 
+     *      "/output"
+     * 
+     *  and a workspace value of
+     * 
+     *      /home/user/workspace
+     * 
+     *  the returning value will be
+     * 
+     *      /output
+     * 
+     * Example 3:
+     *  
+     *  with an output setting of
+     * 
+     *      "./output"
+     * 
+     *  and a workspace value of
+     * 
+     *      /home/user/workspace
+     * 
+     *  the returning value will be
+     * 
+     *      /home/user/workspace/output
+     * 
      */
 	public static GetOutputPath():string {
 
-
+        var rootFolder:string = this.GetWorkspaceFolder().uri.fsPath;
         var outputDirectory:string = this.GetSettings().get("outputDirectory");
-        var sourceDirectory:string  = PathUtils.GetPathFromFilename(this.GetOpenDocument().fileName);
-
         var outputParse = path.parse(outputDirectory);
-        var outputDir:string = path.dirname(outputDirectory);
-        var outputPath:string = path.join(sourceDirectory, outputDirectory);
+        var outputPath:string;
 
-        // starts at base folder
+        /*
+            the default is to use the root workspace folder
+        */
+        outputPath = rootFolder;
+
+        /*
+            when there is something populated in the 
+            output directory
+        */
+        if (outputDirectory.length > 0) {
+            outputPath = path.join(rootFolder, outputDirectory);
+        }
+
+        /*
+            when the output path starts with a hard "/"
+        */
         if (outputParse.root.length > 0) {
             outputPath = outputDirectory;
         }
 
-        // when left blank use the source directory
-        if (outputDirectory.trim() == "") {
-            outputPath = sourceDirectory;            
-        }
-
-        // outputPath = path.resolve(outputPath);
+        outputPath = path.normalize(outputPath);
 
         var fs = require('fs');
         if (!fs.existsSync(outputPath)) {
@@ -140,9 +218,10 @@ export default class ClientUtils {
     }
 
     /**
-     * Find the Active Open Document
+     * Returns the Active Open Document
      */
-    public static GetOpenDocument():TextDocument | undefined{
+    public static GetOpenDocumentUri():Uri | undefined {
+
 
         var document:TextDocument;
 
@@ -159,25 +238,55 @@ export default class ClientUtils {
         // get the document and return it to the caller
         if (activeEditor.viewColumn != undefined) {
             document = activeEditor.document;
-            return document;
         }
 
         let textEditors = window.visibleTextEditors;
 
         if (textEditors.length < 0) {
-            return undefined;
+            document = undefined;
         }
 
-        for (var i = 0; i < textEditors.length; i++ ) {
-            var editor:TextEditor = textEditors[i];
-            if (editor.viewColumn == 1) {
-                document = editor.document;
-                return document;
+        if (!document) {
+            for (var i = 0; i < textEditors.length; i++ ) {
+                var editor:TextEditor = textEditors[i];
+                if (editor.viewColumn == 1) {
+                    document = editor.document;
+                    // return document;
+                }
             }
         }
 
-        return undefined;
+        var uri;
 
+        if (document) {
+
+            uri = Uri.parse(document.fileName);
+
+            // if (buildStartup) {
+            //     let filename:string = document.fileName;
+            //     let dir:string = path.dirname(filename);
+            //     uri = Uri.parse(dir + path.sep + buildStartup);
+            // }
+        }
+
+        return uri;
+
+    }
+
+    public static GetStartupUri():Uri | undefined {
+
+        // get the build master
+
+        let buildStartup:string = this.GetSettings().get("startup");
+
+        var uri: Uri;
+
+        if (buildStartup) {
+            let filename = path.join(this.GetWorkspaceFolder().uri.fsPath, buildStartup);
+            uri = Uri.parse(filename);
+        }
+
+        return uri;
     }
 
     /**
@@ -190,5 +299,17 @@ export default class ClientUtils {
      */
     public static GetSettings():WorkspaceConfiguration {
 		return workspace.getConfiguration("kickassembler");
+    }
+
+    /**
+     * Return the Workspace Folder
+     * 
+     * Note: For now we are just returning the root folder. This will
+     * need to be updated at some point to support multiple workspace
+     * folders.
+     * 
+     */
+    public static GetWorkspaceFolder():WorkspaceFolder {
+        return workspace.workspaceFolders[0];
     }
 }

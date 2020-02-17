@@ -13,46 +13,59 @@ import ClientUtils from '../utils/ClientUtils';
 
 export class CommandRun {
 
-    private _configuration: WorkspaceConfiguration;
+    private configuration: WorkspaceConfiguration;
+    private output: vscode.OutputChannel;
 
     constructor(context: ExtensionContext, output: vscode.OutputChannel) {
-        this._configuration = workspace.getConfiguration('kickassembler');
+        this.configuration = workspace.getConfiguration('kickassembler');
+        this.output = output;
     }
 
-    public run(output: vscode.OutputChannel) {
+    public runOpen() {
+        let sourceFile = ClientUtils.GetOpenDocumentUri();
+        let base = path.basename(sourceFile.fsPath);
+        let program = path.join(ClientUtils.GetOutputPath(), ClientUtils.CreateProgramFilename(base));
+        this.run(program);
+    }
+
+    public runStartup() {
+        let sourceFile = ClientUtils.GetStartupUri();
+        let base = path.basename(sourceFile.fsPath);
+        let program = path.join(ClientUtils.GetOutputPath(), ClientUtils.CreateProgramFilename(base));
+        this.run(program);
+    }
+
+    public run(program:string) {
 
         //  is the emulator path set?
-        let emulatorRuntime: string  = this._configuration.get("emulatorRuntime");
+        let emulatorRuntime: string  = this.configuration.get("emulatorRuntime");
 
         // enclose in quotes to accomodate filenames with spaces on non-windows platforms
-        if (process.platform != "win32") {
+        if (process.platform == "darwin") {
             emulatorRuntime = '"' + emulatorRuntime + '"';
 		    emulatorRuntime = emulatorRuntime.replace("\\", "");
         }
 
-        // get the program filename and path
-        let prg = ClientUtils.GetWorkspaceProgramFilename();
-
-        console.log(`- looking for file ${prg}`);
+        console.log(`- looking for program ${program}`);
 
         var fs = require('fs');
-        if (!fs.existsSync(prg)) {
-            window.showWarningMessage(`Could not Locate the Program to Run.`,`${prg}`);
+        if (!fs.existsSync(program)) {
+            window.showWarningMessage(`Could not Locate the Program to Run`,`${program}`);
             return;
         }
 
-        let vsf = prg.replace(".prg", ".vs");
+        let vsf = program.replace(".prg", ".vs");
 
-        let emulatorOptionsString: string = this._configuration.get("emulatorOptions");
+        let emulatorOptionsString: string = this.configuration.get("emulatorOptions");
         let emulatorOptions = emulatorOptionsString.match(/\S+/g) || [];
 
-        if (this._configuration.get("emulatorViceSymbols")){
+        if (this.configuration.get("emulatorViceSymbols")){
             emulatorOptions.push('-moncommands',vsf);
         }
 
         //  spawn child process for win32
         if (process.platform == "win32") {
-            let emu = spawn(emulatorRuntime, ["-autostartprgmode", "1", "-autostart", prg, ...emulatorOptions], {
+            let emu = spawn(emulatorRuntime, ["-autostartprgmode", "1", "-autostart", program, ...emulatorOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: false
@@ -65,7 +78,7 @@ export class CommandRun {
 
         //  spawn child process for osx
         if (process.platform == "darwin") {
-            let emu = spawn("open", [emulatorRuntime, "--args", "-autostartprgmode", "1", "-autostart", prg, ...emulatorOptions], {
+            let emu = spawn("open", [emulatorRuntime, "--args", "-autostartprgmode", "1", "-autostart", program, ...emulatorOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: true
@@ -78,7 +91,7 @@ export class CommandRun {
         //  spawn child process for linux
         if (process.platform == "linux") {
 
-            let emu = spawn(emulatorRuntime, ["-autostartprgmode", "1", "-autostart", prg, ...emulatorOptions], {
+            let emu = spawn(emulatorRuntime, ["-autostartprgmode", "1", "-autostart", program, ...emulatorOptions], {
                 detached: true,
                 stdio: 'inherit',
                 shell: false

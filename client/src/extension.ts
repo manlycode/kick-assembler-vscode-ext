@@ -79,33 +79,36 @@ export function activate(context: ExtensionContext) {
 		});
 	});
 
-	//	create command for assembling
 	let cmdBuild = commands.registerCommand("kickassembler.build", function () {
 		commandBuild(context, _outputChannel);
 	});
 
-	//	create command to build & run
+	let cmdBuildStartup = commands.registerCommand("kickassembler.buildstartup", function () {
+		commandBuildStartup(context, _outputChannel);
+	});
+
 	let cmdBuildRun = commands.registerCommand("kickassembler.buildandrun", function () {
 		commandBuildRun(context, _outputChannel);
+	});
+
+	let cmdBuildRunStartup = commands.registerCommand("kickassembler.buildandrunstartup", function () {
+		commandBuildRunStartup(context, _outputChannel);
 	});
 
 	let cmdBuildDebug = commands.registerCommand("kickassembler.buildanddebug", function () {
 		commandBuildDebug(context, _outputChannel);
 	});
 
-	let cmdRun = commands.registerCommand("kickassembler.run", function () {
-		commandRun(context, _outputChannel);
-	});
-
-	let cmdDebug = commands.registerCommand("kickassembler.debug", function () {
-		commandDebug(context, _outputChannel);
+	let cmdBuildDebugStartup = commands.registerCommand("kickassembler.buildanddebugstartup", function () {
+		commandBuildDebugStartup(context, _outputChannel);
 	});
 
 	context.subscriptions.push(cmdBuild);
+	context.subscriptions.push(cmdBuildStartup);
 	context.subscriptions.push(cmdBuildRun);
+	context.subscriptions.push(cmdBuildRunStartup);
 	context.subscriptions.push(cmdBuildDebug);
-	context.subscriptions.push(cmdRun);
-	context.subscriptions.push(cmdDebug);
+	context.subscriptions.push(cmdBuildDebugStartup);
 
 	console.log("- kick-assembler-vscode-ext client has started")
 }
@@ -118,13 +121,29 @@ export function deactivate(): Thenable<void> {
 	return client.stop();
 }
 
+/**
+ * Build a Program From Source
+ * @param context 
+ * @param output 
+ */
 function commandBuild(context: ExtensionContext, output: vscode.OutputChannel): number {
+
 	if (!ConfigUtils.validateBuildSettings()) {
 		vscode.window.showErrorMessage("We were unable to Build your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
 	var cb = new CommandBuild(context, output);
-	return cb.build(output);
+	return cb.buildOpen();
+}
+
+function commandBuildStartup(context: ExtensionContext, output: vscode.OutputChannel): number {
+
+	if (!ConfigUtils.validateBuildSettings()) {
+		vscode.window.showErrorMessage("We were unable to Build your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
+		return;
+	}
+	var cb = new CommandBuild(context, output);
+	return cb.buildStartup();
 }
 
 function commandBuildRun(context: ExtensionContext, output: vscode.OutputChannel) {
@@ -135,6 +154,18 @@ function commandBuildRun(context: ExtensionContext, output: vscode.OutputChannel
 	window.activeTextEditor.document.save().then(function (reponse) {
 		if (commandBuild(context, output) == 0) {
 			commandRun(context, output);
+		}
+	});
+}
+
+function commandBuildRunStartup(context: ExtensionContext, output: vscode.OutputChannel) {
+	if (!ConfigUtils.validateRunSettings()) {
+		vscode.window.showErrorMessage("We were unable to Run your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
+		return;
+	}
+	window.activeTextEditor.document.save().then(function (reponse) {
+		if (commandBuildStartup(context, output) == 0) {
+			commandRunStartup(context, output);
 		}
 	});
 }
@@ -151,6 +182,18 @@ function commandBuildDebug(context: ExtensionContext, output: vscode.OutputChann
 	});
 }
 
+function commandBuildDebugStartup(context: ExtensionContext, output: vscode.OutputChannel) {
+	if (!ConfigUtils.validateDebugSettings()) {
+		vscode.window.showErrorMessage("We were unable to Debug your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
+		return;
+	}
+	window.activeTextEditor.document.save().then(function (reponse) {
+		if (commandBuildStartup(context, output) == 0) {
+			commandDebugStartup(context, output);
+		}
+	});
+}
+
 function commandRun(context: ExtensionContext, output: vscode.OutputChannel) {
 	console.log("[ClientExtension] commandRun");
 	if (!ConfigUtils.validateRunSettings()) {
@@ -158,7 +201,17 @@ function commandRun(context: ExtensionContext, output: vscode.OutputChannel) {
 		return;
 	}
 	var cr = new CommandRun(context, output);
-	cr.run(output);
+	cr.runOpen();
+}
+
+function commandRunStartup(context: ExtensionContext, output: vscode.OutputChannel) {
+	console.log("[ClientExtension] commandRun");
+	if (!ConfigUtils.validateRunSettings()) {
+		vscode.window.showErrorMessage("Cannot Run - Check Settings");
+		return;
+	}
+	var cr = new CommandRun(context, output);
+	cr.runStartup();
 }
 
 function commandDebug(context: ExtensionContext, output: vscode.OutputChannel) {
@@ -167,8 +220,18 @@ function commandDebug(context: ExtensionContext, output: vscode.OutputChannel) {
 		vscode.window.showErrorMessage("Cannot Debug - Check Settings");
 		return;
 	}
-	var cr = new CommandDebug(context, output);
-	cr.run(output);
+	var cd = new CommandDebug(context, output);
+	cd.runOpen();
+}
+
+function commandDebugStartup(context: ExtensionContext, output: vscode.OutputChannel) {
+	console.log("[ClientExtension] commandDebug");
+	if (!ConfigUtils.validateDebugSettings()) {
+		vscode.window.showErrorMessage("Cannot Debug - Check Settings");
+		return;
+	}
+	var cd = new CommandDebug(context, output);
+	cd.runStartup();
 }
 
 function configChanged() {

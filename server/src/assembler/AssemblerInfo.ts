@@ -47,8 +47,8 @@ export interface AssemblerDirective {
 
 export interface AssemblerFile {
     index:number;
-    system:boolean;     //  is this an internal system file?
-    main:boolean;    //  is this the main project file?
+    system:boolean;     // is this an internal system file?
+    isCurrent:boolean;  // is this the current or master project file?
     uri:Uri;
 }
 
@@ -69,8 +69,11 @@ export class AssemblerInfo {
     private AssemblerSyntax:AssemblerSyntax[] = [];
     private AssemblerErrors:AssemblerError[] = [];
     private AssemblerVersion:string = "0";
+    public hasCurrent: boolean = false;
+    private filename:string = "";
 
-    constructor(data:string) {
+    constructor(data:string, filename:string) {
+        this.filename = filename;
         this.processData(data); 
     }
 
@@ -94,6 +97,8 @@ export class AssemblerInfo {
 
         var lines = StringUtils.splitIntoLines(data); 
         var section:AssemblerSections;
+
+        this.hasCurrent = false;
 
         for (var i = 0; i < lines.length; i++) {
 
@@ -169,8 +174,18 @@ export class AssemblerInfo {
             assemblerFile.system = true;
 
         //  is this the main project file?
-        if (assemblerFile.uri.fsPath.indexOf('.source.txt') > 0)
-            assemblerFile.main = true;
+        // if (assemblerFile.uri.fsPath.indexOf('.source.txt') > 0)
+        //     assemblerFile.isCurrent = true;
+
+        var assembledFile = assemblerFile.uri.fsPath.toLowerCase();
+        var filename = this.filename.toLowerCase();
+
+        if ( assembledFile === filename)
+            assemblerFile.isCurrent = true;
+
+        if (assemblerFile.isCurrent) {
+            this.hasCurrent = true;
+        }
 
         this.AssemblerFiles.push(assemblerFile);
     }
