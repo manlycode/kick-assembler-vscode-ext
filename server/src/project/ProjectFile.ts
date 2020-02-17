@@ -174,7 +174,7 @@ export class ProjectFile {
             for(var i=comment.range.startLine;i<=comment.range.endLine;i++) {
                 if(comment.range.startLine ==  comment.range.endLine) {
                     // dont trim but replace with spaces to support a possible a block comment in one line only and still has code at the end and keep symbol range positioning
-                    sourceLines[i] = sourceLines[i].substr(0,comment.range.startPosition)+(' '.repeat(comment.range.endPosition-comment.range.startPosition+1))+sourceLines[i].substr(comment.range.endPosition);
+                    sourceLines[i] = sourceLines[i].substr(0,comment.range.startPosition)+(' '.repeat(comment.range.endPosition-comment.range.startPosition))+sourceLines[i].substr(comment.range.endPosition);
                 } else {
                   if (i == comment.range.startLine) {
                     sourceLines[i] = sourceLines[i].substr(0,comment.range.startPosition);

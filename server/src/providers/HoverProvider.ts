@@ -245,8 +245,8 @@ export default class HoverProvider extends Provider {
 					if (textDocumentPosition.position.character >= assemblerSyntax.range.startPosition &&
 						textDocumentPosition.position.character <= assemblerSyntax.range.endPosition) {
 
-						token = line.substr(assemblerSyntax.range.startPosition-1,assemblerSyntax.range.endPosition-assemblerSyntax.range.startPosition+1);
-//						console.log(12,token, assemblerSyntax, line);
+						token = line.substr(assemblerSyntax.range.startPosition,assemblerSyntax.range.endPosition-assemblerSyntax.range.startPosition);
+
 						// macroExecution
 
 						if (assemblerSyntax.type === 'macroExecution') {
