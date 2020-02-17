@@ -27,6 +27,9 @@ Next, we changed a few of the default key bindings. As always, these can be chan
 
 Our friend @lubber has also been very hard at work adding Kick Assembler [Scopes & Namespaces](http://www.theweb.dk/KickAssembler/webhelp/content/cpt_Namespaces.html). As everyone knows, the scoping can become pretty complex in Kick, and now the editor will help you make sure you are only using code that is accessible at the current cursor location. Things like the `.namespace` and `.filenamespace` directives, in addition to `named labels` are covered. Being that this is the first release to include Scoping, we ask for your patience, and if you encounter any bugs, or see any use cases missing that you report them on the [GitLab Issues](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues) list. 
 
+![](/images/scoping.gif)
+
+
 The `output` setting has been changed so that it is NOT creating output folders all over your workspace. Instead, it will now assume that you want to have your output folder off of the root folder of your workspace. You still have the option of using an absolute location like `c:\temp` or `/var/lib/tmp` if you desire.
 
 As always, there were additional bug fixes and some code cleanup.
