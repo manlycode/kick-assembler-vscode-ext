@@ -264,10 +264,10 @@ export default class Project {
                         let paraDocsToken = StringUtils.splitIntoTokens(pDoc.replace(/(@param(eter)*\s+|\r)/,""));
                         let setStringKind = false;
                         if(paraDocsToken[0].match(/(string|number|value)/)) {
-                            paraDocsToken.shift();
                             if(paraDocsToken[0] == "string") {
                                 setStringKind = true;
                             }
+                            paraDocsToken.shift();
                         }
                         symbol.parameters.forEach( (p,i) => {
                             if (p.name == paraDocsToken[0]){
