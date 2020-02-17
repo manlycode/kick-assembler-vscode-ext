@@ -97,6 +97,7 @@ export default class Project {
     private projectFiles: ProjectFile[];
     private symbols: Symbol[];
     connection: Connection;
+    showStartupWarning: boolean;
 
     constructor(uri: string) {
         this.uri = uri;
@@ -121,9 +122,11 @@ export default class Project {
         */
 
         if (!this.assemblerInfo.hasCurrent) {
-            this.connection.window.showInformationMessage(`The Open File is Not Part of the Startup [${settings.startup}]`);
+            if (!this.showStartupWarning)
+                this.connection.window.showInformationMessage(`The Open File is Not Part of the Startup [${settings.startup}]`);
             this.assemblerResults = assembler.assemble(settings, this.uri, text, false, true);
             this.assemblerInfo = this.assemblerResults.assemblerInfo;
+            this.showStartupWarning = true;
         }
         
         this.source = text;
