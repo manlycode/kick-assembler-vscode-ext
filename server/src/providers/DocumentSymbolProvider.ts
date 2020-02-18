@@ -8,6 +8,7 @@ import {
     DocumentSymbol,
     SymbolKind
  } from "vscode-languageserver";
+import StringUtils from "../utils/StringUtils";
  
 /**
  * Provides a List of Symbols in the Document
@@ -36,7 +37,7 @@ export default class DocumentSymbolProvider extends Provider {
                     }
                     scopedSymbols[symbol.scope].push(DocumentSymbol.create(
                         symbol.name,
-                        symbol.description || symbol.comments || '',
+                        StringUtils.splitIntoLines(symbol.description || symbol.comments || '')[0],
                         symbol.kind,
                         symbol.range,
                         symbol.range
