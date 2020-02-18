@@ -45,7 +45,7 @@ export default class LineUtils {
 				if (_line.indexOf("*/") >= 0) {
 					end = lineNumber;
 				} else if (_line.substr(0,2) == "//") {
-					if (_line.replace(/[\/\-=*#_]/g,"") == "") break;
+					if (_line.replace(/[\/\-=*#_\s]/g,"") == "") break;
 					//detect a possible outcomment of the same symbol delaration
 					let lineComment = _line.substr(2).trim();
 					if(lineComment[0] !== '.') {
