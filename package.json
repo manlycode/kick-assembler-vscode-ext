@@ -28,6 +28,7 @@
 	],
 	"main": "./client/out/extension",
 	"contributes": {
+		"breakpoints": [{ "language": "kickassembler" }],
 		"keybindings": [
 			{
 				"command": "kickassembler.buildandrunstartup",
