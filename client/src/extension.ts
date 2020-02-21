@@ -251,14 +251,16 @@ function fileOpened(text:vscode.TextDocument) {
 		line = text.lineAt(i);
 		let checkLine = line.text.trim();
 		let existingBreak = checkLine.match(/^(\/\/\s*)*\.break/);
-		if(existingBreak) {
+		let existingPrint = checkLine.match(/^(\/\/\s*)*\.print/);		
+		if(existingBreak || existingPrint) {
 			//TODO already in the bp list?
-			breakExpressionInfo = checkLine.substr(existingBreak[0].length).trim().match(/".*"/);
-			console.log('break in line '+i+' with info:',breakExpressionInfo)
+			breakExpressionInfo = existingBreak ? checkLine.substr(existingBreak[0].length).trim().match(/".*"/) : undefined;
 			newBreakpoints.push(new vscode.SourceBreakpoint(
 				new vscode.Location(text.uri, new vscode.Position(i, 0)),
 				checkLine.substr(0,2) != "//",
-				breakExpressionInfo ? breakExpressionInfo[0] : ''
+				breakExpressionInfo ? breakExpressionInfo[0] : '',
+				'',
+				existingPrint ? checkLine.substr(existingPrint[0].length).trim() : ''
 			));
 		}
 	}
@@ -267,6 +269,7 @@ function fileOpened(text:vscode.TextDocument) {
 	}
 }
 
+// TODO if .break/.print lines are changed manually in the editor, the related vscode breakpoint should be changed/deleted accordingly
 function breakpointsChanged(breakpointChanges:vscode.BreakpointsChangeEvent){
 	let editor = vscode.window.activeTextEditor;
 	if (editor) {
@@ -278,11 +281,11 @@ function breakpointsChanged(breakpointChanges:vscode.BreakpointsChangeEvent){
 				let bpLine = document.lineAt(bp.location.range.start.line);
 				if(bpLine) {
 					let lineText = bpLine.text.trim();
-					if(!lineText.match(/^(\/\/\s*)*\.break/)){
+					if(!lineText.match(/^(\/\/\s*)*\.(break|print)/)){
 						editor.edit(editBuilder => {
 							editBuilder.insert(
 								bp.location.range.start,
-								(bp.enabled===false ? "// ":"")+".break"+(bp.condition ? '"'+bp.condition+'"':"")+"\n"
+								(bp.enabled===false ? "// ":"")+(bp.logMessage ? ".print "+bp.logMessage : ".break"+(bp.condition ? ' "'+bp.condition+'"':""))+"\n"
 							);
 						});
 					// just in case remembered breakpoints by vscode and file content does not match anymore
@@ -295,13 +298,9 @@ function breakpointsChanged(breakpointChanges:vscode.BreakpointsChangeEvent){
 						});
 					} else if(bp.enabled!==false && lineText.substr(0,2) === "//") {
 						editor.edit(editBuilder => {
-							editBuilder.delete(<Range>{
-								start: bp.location.range.start,
-								end: {
-									line: bp.location.range.start.line,
-									character: lineText.indexOf(".break")
-								}
-							});
+							editBuilder.delete(
+								new Range(bp.location.range.start.line,0,bp.location.range.start.line,lineText.indexOf(bp.logMessage ? ".print" : ".break"))
+							);
 						});
 					}
 				}
@@ -309,30 +308,25 @@ function breakpointsChanged(breakpointChanges:vscode.BreakpointsChangeEvent){
 		});
 		breakpointChanges.removed.forEach((bp:vscode.SourceBreakpoint) => {
 			if(bp.location.uri.path == document.uri.path) {
-				console.log(1111);
 				let bpLine = document.lineAt(bp.location.range.start.line);
-				if(bpLine && bpLine.text.trim().match(/^(\/\/\s*)*\.break/)){
-					console.log(2222,bp.location.range.start);
+				if(bpLine && bpLine.text.trim().match(/^(\/\/\s*)*\.(break|print)/)){
 					editor.edit(editBuilder => {
-						editBuilder.delete(<Range>{
-							start: bp.location.range.start,
-							end: {
-								line: bp.location.range.start.line+1,
-								character: 0
-							}
-						});
+						editBuilder.delete(
+							new Range(bp.location.range.start.line,0,bp.location.range.start.line+1,0)
+						);
 					});
-				} else {
-					console.log(999,bpLine.text);
 				}
 			}
 		});
 		breakpointChanges.changed.forEach((bp:vscode.SourceBreakpoint) => {
 			if(bp.location.uri.path == document.uri.path) {
 				let bpLine = document.lineAt(bp.location.range.start.line);
-				if(bpLine && bpLine.text.trim().match(/^(\/\/\s*)*\.break/)){
+				if(bpLine && bpLine.text.trim().match(/^(\/\/\s*)*\.(break|print)/)){
 					editor.edit(editBuilder => {
-						editBuilder.replace(bp.location.range,".break" + ' "changedit"');
+						editBuilder.replace(
+							new Range(bp.location.range.start.line,0,bp.location.range.start.line,bpLine.text.length),
+							(bp.enabled===false ? "//" : "") + (bp.logMessage ? ".print "+bp.logMessage : ".break" + (bp.condition ? ' "'+bp.condition+'"' : ''))
+						);
 					});
 				}
 			}
