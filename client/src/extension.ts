@@ -7,6 +7,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { TextLine, Range } from 'vscode';
 
 import { 
 	workspace, 
@@ -59,6 +60,8 @@ export function activate(context: ExtensionContext) {
 	};
 
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(configChanged));
+	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(fileOpened));	
+	context.subscriptions.push(vscode.debug.onDidChangeBreakpoints(breakpointsChanged));
 
 	// Create the language client and start the client.
 	let client = new LanguageClient('kickassembler', 'Kick Assembler', serverOptions, clientOptions);
@@ -236,4 +239,97 @@ function commandDebugStartup(context: ExtensionContext, output: vscode.OutputCha
 
 function configChanged() {
 	ConfigUtils.validateBuildSettings();
+}
+
+function fileOpened(text:vscode.TextDocument) {
+	var line:TextLine;
+	var breakExpressionInfo:RegExpMatchArray;
+
+//find all existing breakpoints and create them in vscode	
+	let newBreakpoints: vscode.Breakpoint[] = [];
+	for(var i=0;i<text.lineCount;i++){
+		line = text.lineAt(i);
+		let checkLine = line.text.trim();
+		let existingBreak = checkLine.match(/^(\/\/\s*)*\.break/);
+		let existingPrint = checkLine.match(/^(\/\/\s*)*\.print/);		
+		if(existingBreak || existingPrint) {
+			//TODO already in the bp list?
+			breakExpressionInfo = existingBreak ? checkLine.substr(existingBreak[0].length).trim().match(/".*"/) : undefined;
+			newBreakpoints.push(new vscode.SourceBreakpoint(
+				new vscode.Location(text.uri, new vscode.Position(i, 0)),
+				checkLine.substr(0,2) != "//",
+				breakExpressionInfo ? breakExpressionInfo[0] : '',
+				'',
+				existingPrint ? checkLine.substr(existingPrint[0].length).trim() : ''
+			));
+		}
+	}
+	if(newBreakpoints.length>0) {
+		vscode.debug.addBreakpoints(newBreakpoints);
+	}
+}
+
+// TODO if .break/.print lines are changed manually in the editor, the related vscode breakpoint should be changed/deleted accordingly
+function breakpointsChanged(breakpointChanges:vscode.BreakpointsChangeEvent){
+	let editor = vscode.window.activeTextEditor;
+	if (editor) {
+
+		let document = editor.document;
+
+		breakpointChanges.added.forEach((bp:vscode.SourceBreakpoint) => {
+			if(bp.location.uri.path == document.uri.path) {
+				let bpLine = document.lineAt(bp.location.range.start.line);
+				if(bpLine) {
+					let lineText = bpLine.text.trim();
+					if(!lineText.match(/^(\/\/\s*)*\.(break|print)/)){
+						editor.edit(editBuilder => {
+							editBuilder.insert(
+								bp.location.range.start,
+								(bp.enabled===false ? "// ":"")+(bp.logMessage ? ".print "+bp.logMessage : ".break"+(bp.condition ? ' "'+bp.condition+'"':""))+"\n"
+							);
+						});
+					// just in case remembered breakpoints by vscode and file content does not match anymore
+					} else if(bp.enabled===false && lineText.substr(0,2) !== "//") {
+						editor.edit(editBuilder => {
+							editBuilder.insert(
+								bp.location.range.start,
+								"// "
+							);
+						});
+					} else if(bp.enabled!==false && lineText.substr(0,2) === "//") {
+						editor.edit(editBuilder => {
+							editBuilder.delete(
+								new Range(bp.location.range.start.line,0,bp.location.range.start.line,lineText.indexOf(bp.logMessage ? ".print" : ".break"))
+							);
+						});
+					}
+				}
+			}
+		});
+		breakpointChanges.removed.forEach((bp:vscode.SourceBreakpoint) => {
+			if(bp.location.uri.path == document.uri.path) {
+				let bpLine = document.lineAt(bp.location.range.start.line);
+				if(bpLine && bpLine.text.trim().match(/^(\/\/\s*)*\.(break|print)/)){
+					editor.edit(editBuilder => {
+						editBuilder.delete(
+							new Range(bp.location.range.start.line,0,bp.location.range.start.line+1,0)
+						);
+					});
+				}
+			}
+		});
+		breakpointChanges.changed.forEach((bp:vscode.SourceBreakpoint) => {
+			if(bp.location.uri.path == document.uri.path) {
+				let bpLine = document.lineAt(bp.location.range.start.line);
+				if(bpLine && bpLine.text.trim().match(/^(\/\/\s*)*\.(break|print)/)){
+					editor.edit(editBuilder => {
+						editBuilder.replace(
+							new Range(bp.location.range.start.line,0,bp.location.range.start.line,bpLine.text.length),
+							(bp.enabled===false ? "//" : "") + (bp.logMessage ? ".print "+bp.logMessage : ".break" + (bp.condition ? ' "'+bp.condition+'"' : ''))
+						);
+					});
+				}
+			}
+		});
+	}
 }
