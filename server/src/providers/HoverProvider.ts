@@ -18,7 +18,8 @@ import {
 	IConnection,
 	TextDocumentPositionParams,
 	Hover,
-	ResponseError
+	ResponseError,
+	MarkupContent
 } from "vscode-languageserver";
 
 import Project, { Symbol, SymbolType } from "../project/Project";
@@ -34,6 +35,9 @@ export default class HoverProvider extends Provider {
 
 	// used for symbol lookups
 	private symbols: Symbol[];
+
+	private documentPosition:TextDocumentPositionParams;
+	private currentScope: Number;
 
 	constructor(connection: IConnection, projectInfo: ProjectInfoProvider) {
 
@@ -54,7 +58,11 @@ export default class HoverProvider extends Provider {
 
 		this.project = this.getProjectInfo().getProject(textDocumentPosition.textDocument.uri);
 		this.symbols = this.project.getAllSymbols();
-		let contents = this.createHover(textDocumentPosition);
+		this.documentPosition = textDocumentPosition;
+		let contents:MarkupContent = {
+			value:this.createHover(textDocumentPosition).join("\n***\n"),
+			kind:'markdown'
+		};
 
 		return { contents };
 	}
@@ -97,11 +105,19 @@ export default class HoverProvider extends Provider {
 	 * @param token the token to search the symbol
 	 * @param type  the type of symbol to find
 	 */
-	private findSymbolOfType(token:string, type: SymbolType): Symbol | undefined {
+	private findSymbolOfType(token:string, type: SymbolType, sameLine?:boolean): Symbol | undefined {
+		if(type == SymbolType.NamedLabel){
+		// TODO check + and -	
+		//console.log(123,token, this.documentPosition.position.line);
+		}
 		token = token.replace(/[<>]/g,"");
 		for(let symbol of this.symbols) {
 			if (symbol.type === type) {
-				if (symbol.name === token) {
+				if(symbol.range) console.log(symbol.range.start.line);
+				if (symbol.name === token && (symbol.scope == this.currentScope || symbol.scope === 0)) {
+					if(sameLine && symbol.range && symbol.range.start.line != this.documentPosition.position.line){
+						continue;
+					}
 					return symbol;
 				}
 			}
@@ -144,6 +160,10 @@ export default class HoverProvider extends Provider {
 				break;
 			case SymbolType.NamedLabel:
 				_type = '(label)';
+				if(symbol.codeSneakPeek) {
+					if(_description !="") _description += "\n***";
+					_description += "\nSneak Peek:\n```\n"+symbol.codeSneakPeek+"\n```\n";
+				}
 				break;
 			case SymbolType.Boolean:
 				_type = '(boolean)';
@@ -226,6 +246,7 @@ export default class HoverProvider extends Provider {
 				break;
 			}
 		}
+		this.currentScope = this.project.getSourceFiles()[fileNumber].getLines()[this.documentPosition.position.line].scope;
 
 		// get current assembler syntax
 		var syntaxList: AssemblerSyntax[] = this.project.getAssemblerInfo().getAssemblerSyntax();
@@ -261,11 +282,11 @@ export default class HoverProvider extends Provider {
 						// symbolReference
 
 						if (assemblerSyntax.type === 'symbolReference' || assemblerSyntax.type === 'label') {
-
-							var symbol = this.findSymbolOfType(token, SymbolType.Variable);
-							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Constant);
-							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Label);
-							if (!symbol) symbol = this.findSymbolOfType(token.replace(":",""), SymbolType.NamedLabel);
+							var exactLine = assemblerSyntax.type === 'label';
+							var symbol = this.findSymbolOfType(token, SymbolType.Variable, exactLine);
+							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Constant, exactLine);
+							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Label, exactLine);
+							if (!symbol) symbol = this.findSymbolOfType(token.replace(":",""), SymbolType.NamedLabel, exactLine);
 							
 							if (symbol) {
 								return this.createSimpleHover(symbol);

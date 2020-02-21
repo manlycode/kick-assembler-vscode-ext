@@ -56,6 +56,9 @@ export default class CompletionProvider extends Provider {
 
 	private intelligentLabels:boolean;
 
+	private multiLabelsPlus: {[key: string]: number} = {};
+	private multiLabelsMinus: {[key: string]: number} = {};
+
 	constructor(connection: IConnection, projectInfo: ProjectInfoProvider) {
 
 		super(connection, projectInfo);
@@ -65,6 +68,8 @@ export default class CompletionProvider extends Provider {
 			if (projectInfo.getSettings().valid) {
 				this.project = projectInfo.getProject(textDocumentPosition.textDocument.uri);
 				this.documentPosition = textDocumentPosition;
+				this.multiLabelsMinus = {};
+				this.multiLabelsPlus = {};
 				return this.createCompletionItems();
 			}
 		});
@@ -252,7 +257,7 @@ export default class CompletionProvider extends Provider {
 			} else if (items.length === 0 && (!tokensLeft || (tokensLeft.length === 1 && this.triggerLine.trim().substr(0,tokensLeft[0].length+1) === tokensLeft[0]+":"))) {
 				items = this.loadDirectives();
 			}
-		} else if (items.length === 0) {
+		} else if (items.length === 0 && !(!tokensLeft && this.triggerToken[0] == "!")) {
 			var prevToken:string = "";
 			var prevSymbolType:SymbolType;
 
@@ -406,15 +411,16 @@ export default class CompletionProvider extends Provider {
 			textEdit.range.end.character = this.triggerCharacterPos;			
 		}
 
-		let documentation: string | MarkupContent = payload.description || payload.comments ? {
-			value:	(payload.description || payload.comments) +
+		let documentation: string | MarkupContent = payload.description || payload.comments || payload.codeSneakPeek ? {
+			value:	((payload.description || payload.comments || '') +
 					(payload.example ? "\n***\n"+payload.example : "") +
 					(payload.deprecated ? "\n***\n*(deprecated)*" : "") + 
+					(payload.codeSneakPeek ? "\n***\nSneak Peek\n```\n"+payload.codeSneakPeek+"\n```\n" : "") +
 					(type == LanguageCompletionTypes.Instruction && payload.type ? (
 						(payload.type == InstructionType.Illegal ? "\n***\n**(Illegal opcode)**" : "") + 
 						(payload.type == InstructionType.DTV ? "\n***\n**(DTV opcode)**" : "") + 
 						(payload.type == InstructionType.C02 ? "\n***\n**(65c02 opcode)**" : "")
-					):""),
+					):"")).replace(/^\n\*\*\*\n/,""),
 			kind: 'markdown'
 		} : "";
 
@@ -438,6 +444,7 @@ export default class CompletionProvider extends Provider {
 		}
 		var sortText = '';
 		var detail = '';
+
 		if(!payload.isBuiltin && type !== LanguageCompletionTypes.Instruction && payload.scope != undefined){
 			//have current scope first, so decent sort
 			sortText = String(99999-payload.scope);
@@ -446,6 +453,25 @@ export default class CompletionProvider extends Provider {
 				if(scopeElement) {
 					detail='Scope: '+scopeElement.name
 				}
+			}
+			if(label[0] == "!") {
+				//TODO minus has to be reverted otherwise wrong referencing
+				if(payload.range.start.line <= this.documentPosition.position.line){
+					if(!this.multiLabelsMinus[label]) {
+						this.multiLabelsMinus[label] = 1;
+					}
+					let minusAddon = "-".repeat(this.multiLabelsMinus[label]++);
+					label += minusAddon;
+					textEdit.newText += minusAddon;
+				} else {
+					if(!this.multiLabelsPlus[label]) {
+						this.multiLabelsPlus[label] = 1;
+					}
+					let plusAddon = "+".repeat(this.multiLabelsPlus[label]++);
+					label += plusAddon;
+					textEdit.newText += plusAddon;
+				}
+				filterText = label;
 			}
 		}
 		

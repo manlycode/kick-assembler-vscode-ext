@@ -92,6 +92,7 @@ export interface Symbol {
     range?: Range;
     fileIndex?: number;
     scope: number;
+    codeSneakPeek?: string;
     comments?: string;
     parameters?: Parameter[];
     parametersSymbols?: Symbol[];
@@ -119,6 +120,7 @@ export default class Project {
     showStartupWarning: boolean;
     private scopes: Scope[] = [];
     private autoIncludeFileIndex:number = 0;
+    private settings: Settings;
 
     constructor(uri: string) {
         this.uri = uri;
@@ -134,6 +136,7 @@ export default class Project {
         // try basic assembly
         this.assemblerResults = assembler.assemble(settings, this.uri, text);
         this.assemblerInfo = this.assemblerResults.assemblerInfo;
+        this.settings = settings;
 
         /*
             when the current file is not in the
@@ -343,6 +346,8 @@ export default class Project {
         var name = text.substr(sourceRange.startPosition, (sourceRange.endPosition - 1) - sourceRange.startPosition);
         var symbol = <Symbol>{};
 
+        var lines = projectFile.getLines();
+
         var isNamespace = projectFile.getScopes().find(scope => {
             return scope.line == sourceRange.startLine && scope.name == name;
         });
@@ -350,7 +355,16 @@ export default class Project {
         symbol.kind = isNamespace ? SymbolKind.Namespace : SymbolKind.Object;
         symbol.type = SymbolType.NamedLabel;
         symbol.isMain = projectFile.isMain();
-        symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
+        symbol.scope = lines[sourceRange.startLine].scope;
+        let codeSneakPeek: String[] = [];
+        for(var i=sourceRange.startLine;i<sourceRange.startLine + this.settings.codeSneakPeekLines;i++){
+            if(lines[i]){
+                codeSneakPeek.push(lines[i].text);
+            }
+        }
+        if(codeSneakPeek.length>0) {
+            symbol.codeSneakPeek = codeSneakPeek.join("   \n");
+        }
         return symbol;
     }
 

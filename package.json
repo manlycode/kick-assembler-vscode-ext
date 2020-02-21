@@ -221,6 +221,11 @@
 					"type": "boolean",
 					"default": false,
 					"description": "Setting this option will make sure that none of the temporary work files that are created during compile time are removed. Useful for debugging when you are contributing and testing this extension."
+				},
+				"kickassembler.codeSneakPeekLines": {
+					"type": "number",
+					"default": 5,
+					"description": "How many lines of code should be shown at named label referencing on hover and intellisense."
 				}
 			}
 		},
