@@ -2,6 +2,20 @@
 ## Kick Assembler Visual Studio Code Extension for C64
 ### History Of Changes
 
+## v0.4.1
+### Changed
++ added delay setting for onChange trigger setting
++ added message to let developer know that the extension is ready (activated) and what version is running
++ removed the initial build message to make it a little less chatty
++ [support for external breakpoints](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/57)
+### Fixed
++ [vscode slow and producing many errors](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/43)
++ [fixed build errors when vscode first starting and no file opened](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/47)
++ [CompletionProvider scope error occuring when new lines added to open file](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/46)
++ [confirm active file or startup before building](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/44)
++ [ignore whitespace in pure dividers as well](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/56)
++ [multiline comments broke symbol display](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/55)
+
 ## v0.4.0
 ### Changed
 + [added startup control file and changed default key bindings](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/35)

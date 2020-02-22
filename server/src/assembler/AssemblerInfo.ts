@@ -173,12 +173,12 @@ export class AssemblerInfo {
         if (assemblerFile.uri.fsPath.indexOf('autoinclude') > 0)
             assemblerFile.system = true;
 
-        //  is this the main project file?
-        // if (assemblerFile.uri.fsPath.indexOf('.source.txt') > 0)
-        //     assemblerFile.isCurrent = true;
-
         var assembledFile = assemblerFile.uri.fsPath.toLowerCase();
         var filename = this.filename.toLowerCase();
+    
+            //  is this the main project file?
+        if (assemblerFile.uri.fsPath.indexOf('.source.txt') > 0)
+            assemblerFile.isCurrent = true;
 
         if ( assembledFile === filename)
             assemblerFile.isCurrent = true;

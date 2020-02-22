@@ -35,6 +35,7 @@ import DocumentSymbolProvider from "../providers/DocumentSymbolProvider";
 import CompletionProvider from "../providers/CompletionProvider";
 import SignatureHelpProvider from "../providers/SignatureHelpProvider";
 import DefinitionProvider from "../providers/DefinitionProvider";
+import { settings } from "cluster";
 
 export default class ProjectManager {
 
@@ -126,7 +127,8 @@ export default class ProjectManager {
                     project.assemble(kickAssSettings, source);
                     this.diagnosticProvider.process(change.textDocument.uri);
                 },
-                960);
+                
+                kickAssSettings.autoAssembleTriggerDelay);
             }
         });
 

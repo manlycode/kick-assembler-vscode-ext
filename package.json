@@ -5,7 +5,7 @@
 	"author": "Paul Hocker",
 	"license": "MIT",
 	"version": "0.4.1",
-	"status": "-dev",
+	"status": "",
 	"repository": {
 		"type": "git",
 		"url": "https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext"
@@ -152,7 +152,13 @@
 						"onSave only"
 					],
 					"default": "onChange and onSave",
-					"markdownDescription": "Which event should trigger automatic assembling for code inspection purposes.\n> Hint: Using **onSave only** in combination with `#files.autoSave#` **afterDelay** could improve performance"
+					"markdownDescription": "Which event should trigger automatic assembling for code inspection purposes.\n\nHint: Using **onSave only** in combination with `#files.autoSave#` **afterDelay** could improve performance"
+				},
+				"kickassembler.autoAssembleTriggerDelay": {
+					"type": "integer",
+					"default": 120,
+					"minimum": 0,
+					"markdownDescription": "This setting controls the delay in ms after you have stopped typing until it tries to assemble. This only applies when `#kickassembler.autoAssembleTrigger#` is set to **onChange and onSave**.\n\nNote: Setting this to zero might impact performance. Try the default setting first and try lowering it from there."
 				},
 				"kickassembler.trace.server": {
 					"scope": "window",

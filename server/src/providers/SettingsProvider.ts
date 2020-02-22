@@ -39,6 +39,7 @@ export interface Settings {
     debuggerOptions: string;
     outputDirectory: string;
     autoAssembleTrigger: string;
+    autoAssembleTriggerDelay: number;
     debuggerDumpFile: boolean;
     javaAllowFileCreation: boolean;
     completionParameterPlaceholders: boolean;
