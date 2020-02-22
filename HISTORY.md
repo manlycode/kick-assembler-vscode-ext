@@ -4,7 +4,7 @@
 
 ## v0.4.1
 ### Changed
-+ added message to let developer know that the extension is ready (activated)
++ added message to let developer know that the extension is ready (activated) and what version is running
 + removed the initial build message to make it a little less chatty
 + [support for external breakpoints](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/57)
 ### Fixed
