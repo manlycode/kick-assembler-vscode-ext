@@ -217,7 +217,20 @@ export default class Project {
         return this.source;
     }
 
+    /**
+     * Sets the current project file source. 
+     * 
+     * Mostly useful when used with the 
+     * onDidChangeTextDocument event to 
+     * store the latest changes for us.
+     * 
+     * @param text 
+     */
     public setSource(text: string) {
+		var currentProjectFile: ProjectFile = this.getSourceFiles().find(projectFile => {
+			return projectFile.isMain();
+		});
+        currentProjectFile.setSource(text);
         this.source = text;
     }
 
@@ -279,6 +292,10 @@ export default class Project {
         var range = syntax.range;
         var lines = projectFile.getLines();
         var line = lines[syntax.range.startLine];
+
+        if (!line)
+            return;
+            
         var text = line.cleanedText;
 
         var symbol: Symbol;

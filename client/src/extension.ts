@@ -13,7 +13,8 @@ import {
 	workspace, 
 	commands,
 	window,
-	ExtensionContext 
+	ExtensionContext,
+	extensions 
 } from 'vscode';
 
 import ConfigUtils from "./utils/ConfigUtils"
@@ -34,6 +35,7 @@ let client: LanguageClient;
 export function activate(context: ExtensionContext) {
 
 	var _outputChannel: vscode.OutputChannel;
+	let extension = extensions.getExtension('paulhocker.kick-assembler-vscode-ext');
 	_outputChannel = window.createOutputChannel('Kick Assembler Build');
 
 	let serverModule = context.asAbsolutePath(
@@ -114,6 +116,8 @@ export function activate(context: ExtensionContext) {
 	context.subscriptions.push(cmdBuildDebugStartup);
 
 	console.log("- kick-assembler-vscode-ext client has started")
+
+	window.showInformationMessage(`Kick AssemblerExtension  ${extension.packageJSON.version}${extension.packageJSON.status} is Ready.`);
 }
 
 export function deactivate(): Thenable<void> {

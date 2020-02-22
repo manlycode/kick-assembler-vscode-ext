@@ -24,10 +24,34 @@ export class CommandBuild {
     }
 
     public buildOpen():number {
+
+        var uri = ClientUtils.GetOpenDocumentUri();
+        
+        if (!uri) {
+            var nostartup = window.showWarningMessage(`No open document to build.`);
+            return;
+        }
+
         return this.build(ClientUtils.GetOpenDocumentUri());
     }
 
     public buildStartup():number {
+
+        var uri = ClientUtils.GetStartupUri();
+        
+        if (!uri) {
+
+            var nostartup = window.showWarningMessage(`No startup file was defined in your Settings.`, { title: 'Open Settings'});
+
+            nostartup.then((value) => {
+                if (value){
+                    vscode.commands.executeCommand('workbench.action.openSettings', `kickassembler.startup`);
+                }
+            });
+
+            return;
+        }
+
         return this.build(ClientUtils.GetStartupUri());
     }
 
@@ -98,7 +122,7 @@ export class CommandBuild {
             }
         });
 
-        window.showInformationMessage(`Building ${base.toUpperCase()}`);
+        //window.showInformationMessage(`Building ${base.toUpperCase()}`);
 
         var start = process.hrtime();
 
