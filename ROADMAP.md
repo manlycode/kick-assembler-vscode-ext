@@ -3,19 +3,22 @@
 This extension is a work in progress, there is much left to be done.
 
 ### In Progress
+* [plugin support](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/38)
+* [new logo](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/42)
+
 
 ### Backburner
 * [rename provider](https://code.visualstudio.com/api/references/vscode-api#languages.registerRenameProvider)
-* generate breakpoints and watches for vice and c64debugger
-* [multi label support](http://www.theweb.dk/KickAssembler/webhelp/content/ch03s04.html)
 * hot load into VICE emulator
 
 ### Ideas
 * [memory layout](https://kickassmemoryview.insoft.se/)
-* remote monitor to active VICE emulator
+* remote monitor on active VICE emulator
 * welcome page (beginners guide)
 
 ### Completed
+* ~~generate breakpoints and watches for vice and c64debugger~~
+* ~~[multi label support](http://www.theweb.dk/KickAssembler/webhelp/content/ch03s04.html)~~
 * ~~[master build source file](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/35)~~
 * ~~[scope and namespace support](http://www.theweb.dk/KickAssembler/webhelp/content/cpt_Namespaces.html)~~
 * ~~[document link provider](https://code.visualstudio.com/api/references/vscode-api#languages.registerDocumentLinkProvider)~~

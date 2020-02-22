@@ -8,7 +8,7 @@ This is mostly a bug fix release with a sprinkling of new feature goodness throw
 
 First up, there were still a good amount of bugs showing up with the new Startup setting. We have made a few tweaks to how this works and this version should be better, although no promises.
 
-Next, some folks were experiencing a lot of errors when using the **onChange** trigger setting for real time feedback to the editor. A new setting has been added to help control the amount of time before the editor tries to assemble your file. The new setting is called `Auto Assembler Trigger Delay` will now wait for the time specified in milliseconds after you have finished typing before assembling the file. The old method would try to assemble the file every single time you changed something which impacted performance and caused other issues as well. This setting should help make your experience a LOT better, especially on the Mac.
+Next, some folks were experiencing a lot of errors when using the **onChange** trigger setting for real time feedback to the editor. A new setting has been added to help control the amount of time before the editor tries to assemble your file. The new setting is called `Auto Assembler Trigger Delay`. When this is used, it will wait for the time specified in milliseconds after you have finished typing before trying assembling the file. The old method would try to assemble the file every single time you changed something which impacted performance and caused other issues as well. This setting should help make your experience a LOT better, especially on the Mac.
 
 ![](./images/trigger-delay.png)
 
@@ -37,7 +37,11 @@ Marco (aka Lubber) was hard at work adding the ability to add breakpoints to you
 No need for entering the double quotes, they will be inserted automatically
 
 `.print "whatever"` will be created when a *LogPoint" is created
-Here you have to enter the double quotes in the logmessage manually. This is because the print directive supports references to symbols of the source (like .print "whatever"+lineNumber
+Here you have to enter the double quotes in the logmessage manually. This is because the print directive supports references to symbols of the source (like .print "whatever"+lineNumber).
+
+He also added some awesome support for multi-labels. This change also added a peek ability to named labels to help you decide if that is the actual label they want to reference. Very cool stuff.
+
+![](./images/multilabels.gif)
 
 Keep those ideas coming!
 

@@ -4,6 +4,7 @@
 
 ## v0.4.1
 ### Changed
++ [multilabel support](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/58)
 + added delay setting for onChange trigger setting
 + added message to let developer know that the extension is ready (activated) and what version is running
 + removed the initial build message to make it a little less chatty
@@ -15,6 +16,8 @@
 + [confirm active file or startup before building](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/44)
 + [ignore whitespace in pure dividers as well](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/56)
 + [multiline comments broke symbol display](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/55)
+### Known Issues
++ [imported files in a STARTUP project will not properly assemble changes until it is saved](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/48)
 
 ## v0.4.0
 ### Changed
