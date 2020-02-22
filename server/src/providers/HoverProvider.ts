@@ -59,8 +59,9 @@ export default class HoverProvider extends Provider {
 		this.project = this.getProjectInfo().getProject(textDocumentPosition.textDocument.uri);
 		this.symbols = this.project.getAllSymbols();
 		this.documentPosition = textDocumentPosition;
+		let hoverValue = this.createHover(textDocumentPosition);
 		let contents:MarkupContent = {
-			value:this.createHover(textDocumentPosition).join("\n***\n"),
+			value:hoverValue ? hoverValue.join("\n***\n") : '',
 			kind:'markdown'
 		};
 
