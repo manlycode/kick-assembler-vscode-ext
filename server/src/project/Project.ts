@@ -228,6 +228,7 @@ export default class Project {
 			return projectFile.isMain();
 		});
         currentProjectFile.setSource(text);
+        this.source = text;
     }
 
     public getSourceLines(): string[] {
@@ -288,6 +289,10 @@ export default class Project {
         var range = syntax.range;
         var lines = projectFile.getLines();
         var line = lines[syntax.range.startLine];
+
+        if (!line)
+            return;
+            
         var text = line.cleanedText;
 
         var symbol: Symbol;

@@ -50,6 +50,7 @@ export default class ProjectManager {
     private completionProvider: CompletionProvider;
     private signatureHelpProvider: SignatureHelpProvider;
     private definitionProvider: DefinitionProvider;
+    private timer: NodeJS.Timer;
 
     constructor(connection: Connection) {
 
@@ -108,29 +109,47 @@ export default class ProjectManager {
         });
 
         connection.onDidChangeTextDocument((change: DidChangeTextDocumentParams) => {
+
             var project = this.findProject(change.textDocument.uri);
             var kickAssSettings = this.settingsProvider.getSettings();
             var source = change.contentChanges[0].text;
+            
+            project.setSource(source); // always update the source
+
             if (kickAssSettings.valid && kickAssSettings.autoAssembleTrigger.indexOf('onChange') !== -1) {
-                project.assemble(kickAssSettings, source);
-                this.diagnosticProvider.process(change.textDocument.uri);
-            } else {
-                //at least make sure source is updated internally for the completionprovider to work with latest changes
-                project.setSource(source);
+
+                if (this.timer) {
+                    clearTimeout(this.timer);
+                }
+
+                this.timer = setTimeout(() => {
+                    project.assemble(kickAssSettings, source);
+                    this.diagnosticProvider.process(change.textDocument.uri);
+                },
+                960);
             }
         });
 
         connection.onDidSaveTextDocument((change: DidSaveTextDocumentParams) => {
+
             var project = this.findProject(change.textDocument.uri);
             var file = readFileSync(PathUtils.uriToPlatformPath(change.textDocument.uri), 'utf8');
+
             if (this.settingsProvider.getSettings().valid) {
                 project.assemble(this.settingsProvider.getSettings(), file);
                 this.diagnosticProvider.process(change.textDocument.uri);
+            }
+
+            if (this.timer) {
+                clearTimeout(this.timer);
             }
         });
 
         connection.onDidCloseTextDocument((close: DidCloseTextDocumentParams) => {
             this.removeProject(close.textDocument.uri);
+            if (this.timer) {
+                clearTimeout(this.timer);
+            }
         });
     }
 

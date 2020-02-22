@@ -401,6 +401,7 @@ export default class CompletionProvider extends Provider {
 			filterText = filterText.substr(1);
 			textEdit.newText = label.substr(1);
 		}
+		
 		if(!this.trigger.match(/[.#,<> ]/)) {
 			textEdit.range.start.character = this.triggerCharacterPos;
 			textEdit.range.end.character = this.triggerCharacterPos;			
