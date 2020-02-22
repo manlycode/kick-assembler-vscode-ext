@@ -31,7 +31,7 @@ enum LanguageCompletionTypes {
 	Directives,
 }
 
-import Project, { SymbolType, Line } from "../project/Project";
+import Project, { Symbol, SymbolType } from "../project/Project";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import StringUtils from "../utils/StringUtils";
@@ -56,6 +56,8 @@ export default class CompletionProvider extends Provider {
 
 	private intelligentLabels:boolean;
 
+	private multiLabels: {[key: string]: Symbol[]} = {};
+
 	constructor(connection: IConnection, projectInfo: ProjectInfoProvider) {
 
 		super(connection, projectInfo);
@@ -65,6 +67,7 @@ export default class CompletionProvider extends Provider {
 			if (projectInfo.getSettings().valid) {
 				this.project = projectInfo.getProject(textDocumentPosition.textDocument.uri);
 				this.documentPosition = textDocumentPosition;
+				this.multiLabels = {};
 				return this.createCompletionItems();
 			}
 		});
@@ -252,7 +255,7 @@ export default class CompletionProvider extends Provider {
 			} else if (items.length === 0 && (!tokensLeft || (tokensLeft.length === 1 && this.triggerLine.trim().substr(0,tokensLeft[0].length+1) === tokensLeft[0]+":"))) {
 				items = this.loadDirectives();
 			}
-		} else if (items.length === 0) {
+		} else if (items.length === 0 && !(!tokensLeft && this.triggerToken[0] == "!")) {
 			var prevToken:string = "";
 			var prevSymbolType:SymbolType;
 
@@ -407,15 +410,16 @@ export default class CompletionProvider extends Provider {
 			textEdit.range.end.character = this.triggerCharacterPos;			
 		}
 
-		let documentation: string | MarkupContent = payload.description || payload.comments ? {
-			value:	(payload.description || payload.comments) +
+		let documentation: string | MarkupContent = payload.description || payload.comments || payload.codeSneakPeek ? {
+			value:	((payload.description || payload.comments || '') +
 					(payload.example ? "\n***\n"+payload.example : "") +
 					(payload.deprecated ? "\n***\n*(deprecated)*" : "") + 
+					(payload.codeSneakPeek ? "\n***\nSneak Peek\n```\n"+payload.codeSneakPeek+"\n```\n" : "") +
 					(type == LanguageCompletionTypes.Instruction && payload.type ? (
 						(payload.type == InstructionType.Illegal ? "\n***\n**(Illegal opcode)**" : "") + 
 						(payload.type == InstructionType.DTV ? "\n***\n**(DTV opcode)**" : "") + 
 						(payload.type == InstructionType.C02 ? "\n***\n**(65c02 opcode)**" : "")
-					):""),
+					):"")).replace(/^\n\*\*\*\n/,""),
 			kind: 'markdown'
 		} : "";
 
@@ -439,6 +443,7 @@ export default class CompletionProvider extends Provider {
 		}
 		var sortText = '';
 		var detail = '';
+
 		if(!payload.isBuiltin && type !== LanguageCompletionTypes.Instruction && payload.scope != undefined){
 			//have current scope first, so decent sort
 			sortText = String(99999-payload.scope);
@@ -447,6 +452,41 @@ export default class CompletionProvider extends Provider {
 				if(scopeElement) {
 					detail='Scope: '+scopeElement.name
 				}
+			}
+			if(label[0] == "!") {
+				let multiLabelsKey = label + String(payload.scope);
+				if(!this.multiLabels[multiLabelsKey]) {
+					this.multiLabels[multiLabelsKey] = this.project.getSymbols().filter(symbol => {
+						return symbol.name == label && symbol.scope === payload.scope;
+					});
+				}
+				let multiLabelAddon = "";
+				let howManyMinusSymbols = this.multiLabels[multiLabelsKey].filter(symbol => {
+					return symbol.range.start.line <= this.documentPosition.position.line;
+				}).length;
+
+				for(var p=0,pL=this.multiLabels[multiLabelsKey].length;p<pL;p++){
+									
+					if (this.multiLabels[multiLabelsKey][p].range.start.line > this.documentPosition.position.line) {
+						if(multiLabelAddon.indexOf("-") >= 0) {
+							multiLabelAddon="";
+						}
+						multiLabelAddon += "+";
+					} else {
+						multiLabelAddon += "-";
+					}
+
+					if(this.multiLabels[multiLabelsKey][p].range.start.line === payload.range.start.line) {
+						break;
+					}
+				}
+				console.log(multiLabelAddon,howManyMinusSymbols,multiLabelAddon.length);
+				if(multiLabelAddon[0] == "-") {
+					multiLabelAddon = "-".repeat((howManyMinusSymbols-multiLabelAddon.length)+1);	
+				}
+				textEdit.newText += multiLabelAddon;
+				label+= multiLabelAddon; 
+				filterText = label;
 			}
 		}
 		

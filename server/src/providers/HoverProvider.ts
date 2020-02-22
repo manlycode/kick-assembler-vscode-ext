@@ -19,6 +19,7 @@ import {
 	TextDocumentPositionParams,
 	Hover,
 	ResponseError,
+	MarkupContent
 } from "vscode-languageserver";
 
 import Project, { Symbol, SymbolType } from "../project/Project";
@@ -34,6 +35,9 @@ export default class HoverProvider extends Provider {
 
 	// used for symbol lookups
 	private symbols: Symbol[];
+
+	private documentPosition:TextDocumentPositionParams;
+	private currentScope: Number;
 
 	constructor(connection: IConnection, projectInfo: ProjectInfoProvider) {
 
@@ -54,7 +58,12 @@ export default class HoverProvider extends Provider {
 
 		this.project = this.getProjectInfo().getProject(textDocumentPosition.textDocument.uri);
 		this.symbols = this.project.getAllSymbols();
-		let contents = this.createHover(textDocumentPosition);
+		this.documentPosition = textDocumentPosition;
+		let hoverValue = this.createHover(textDocumentPosition);
+		let contents:MarkupContent = {
+			value:hoverValue ? hoverValue.join("\n***\n") : '',
+			kind:'markdown'
+		};
 
 		return { contents };
 	}
@@ -97,13 +106,47 @@ export default class HoverProvider extends Provider {
 	 * @param token the token to search the symbol
 	 * @param type  the type of symbol to find
 	 */
-	private findSymbolOfType(token:string, type: SymbolType): Symbol | undefined {
+	private findSymbolOfType(token:string, type: SymbolType, sameLine?:boolean): Symbol | undefined {
+		let minusChars = 0;
+		let plusChars = 0;
+		if(type == SymbolType.NamedLabel && !sameLine){
+			if(token.indexOf("-")>=0) {
+				minusChars = (token.substr(token.indexOf("-"))).length;
+			} else if(token.indexOf("+")>=0) {
+				plusChars = (token.substr(token.indexOf("+"))).length;
+			}
+			token = token.replace(/[\+\-]/g,"");
+		}
+
 		token = token.replace(/[<>]/g,"");
+		let foundLine = 0;
+		let symbolStack:Symbol[] = [];
 		for(let symbol of this.symbols) {
 			if (symbol.type === type) {
-				if (symbol.name === token) {
-					return symbol;
+				if (symbol.name === token && (symbol.scope == this.currentScope || symbol.scope === 0)) {
+					if(sameLine && symbol.range && symbol.range.start.line != this.documentPosition.position.line){
+						continue;
+					}
+					if(symbol.range && (minusChars > 0 || plusChars > 0) ) {
+						foundLine = symbol.range.start.line;
+						if(
+							(foundLine <= this.documentPosition.position.line && minusChars > 0) ||
+							(foundLine > this.documentPosition.position.line && plusChars > 0)
+						){
+							symbolStack.push(symbol);
+						}
+					} else {
+						return symbol;
+					}
 				}
+			}
+		}
+		if(symbolStack.length>0) {
+			if(minusChars > 0 && symbolStack.length>=minusChars){
+				return symbolStack[(symbolStack.length-minusChars)];
+			}
+			if(symbolStack.length>=plusChars){
+				return symbolStack[plusChars-1];
 			}
 		}
 		return undefined;
@@ -144,6 +187,10 @@ export default class HoverProvider extends Provider {
 				break;
 			case SymbolType.NamedLabel:
 				_type = '(label)';
+				if(symbol.codeSneakPeek) {
+					if(_description !="") _description += "\n***";
+					_description += "\nSneak Peek:\n```\n"+symbol.codeSneakPeek+"\n```\n";
+				}
 				break;
 			case SymbolType.Boolean:
 				_type = '(boolean)';
@@ -226,6 +273,7 @@ export default class HoverProvider extends Provider {
 				break;
 			}
 		}
+		this.currentScope = this.project.getSourceFiles()[fileNumber].getLines()[this.documentPosition.position.line].scope;
 
 		// get current assembler syntax
 		var syntaxList: AssemblerSyntax[] = this.project.getAssemblerInfo().getAssemblerSyntax();
@@ -261,11 +309,11 @@ export default class HoverProvider extends Provider {
 						// symbolReference
 
 						if (assemblerSyntax.type === 'symbolReference' || assemblerSyntax.type === 'label') {
-
-							var symbol = this.findSymbolOfType(token, SymbolType.Variable);
-							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Constant);
-							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Label);
-							if (!symbol) symbol = this.findSymbolOfType(token.replace(":",""), SymbolType.NamedLabel);
+							var exactLine = assemblerSyntax.type === 'label';
+							var symbol = this.findSymbolOfType(token, SymbolType.Variable, exactLine);
+							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Constant, exactLine);
+							if (!symbol) symbol = this.findSymbolOfType(token, SymbolType.Label, exactLine);
+							if (!symbol) symbol = this.findSymbolOfType(token.replace(":",""), SymbolType.NamedLabel, exactLine);
 							
 							if (symbol) {
 								return this.createSimpleHover(symbol);

@@ -53,6 +53,7 @@ export interface Settings {
     assemblerLibraryPaths: string[];
     startup: string;
     keepWorkFiles: boolean;
+    codeSneakPeekLines: number;
 }
 
 export default class SettingsProvider extends Provider {
