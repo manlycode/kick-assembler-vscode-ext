@@ -78,6 +78,12 @@ Real time syntax checking of your code by using information from the Kick Assemb
 
 ![](/images/error-checking.gif)
 
+#### Breakpoints And Logging
+
+The ability to add breakpoints and log messages using the built-in capabilities of the editor.
+
+![](./images/breakpoints.gif)
+
 #### Code Folding
 
 ![](/images/folding.gif)
@@ -115,7 +121,6 @@ Additional opcodes for 65c02, DTV and Illegal opcodes supported. Be a Rebel!
 Work with external code libraries in your project, and then ensure they are added to your compile using the `-libdir` parameter on Kick.
 
 ![](/images/library-paths.png)
-
 
 
 ## TODO

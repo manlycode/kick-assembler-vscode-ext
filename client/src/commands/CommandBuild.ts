@@ -28,7 +28,7 @@ export class CommandBuild {
         var uri = ClientUtils.GetOpenDocumentUri();
         
         if (!uri) {
-            var nostartup = window.showWarningMessage(`No open document to build.`);
+            var nostartup = window.showWarningMessage(`Cannot build because there is no open document.`);
             return;
         }
 
@@ -41,7 +41,7 @@ export class CommandBuild {
         
         if (!uri) {
 
-            var nostartup = window.showWarningMessage(`No startup file was defined in your Settings.`, { title: 'Open Settings'});
+            var nostartup = window.showWarningMessage(`Cannot build because there is no startup file defined in your Settings.`, { title: 'Open Settings'});
 
             nostartup.then((value) => {
                 if (value){
