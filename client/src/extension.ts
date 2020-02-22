@@ -114,6 +114,8 @@ export function activate(context: ExtensionContext) {
 	context.subscriptions.push(cmdBuildDebugStartup);
 
 	console.log("- kick-assembler-vscode-ext client has started")
+
+	window.showInformationMessage(`Kick Assembler Extension is Ready.`);
 }
 
 export function deactivate(): Thenable<void> {

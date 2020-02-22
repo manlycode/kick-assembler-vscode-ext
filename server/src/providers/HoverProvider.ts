@@ -18,7 +18,7 @@ import {
 	IConnection,
 	TextDocumentPositionParams,
 	Hover,
-	ResponseError
+	ResponseError,
 } from "vscode-languageserver";
 
 import Project, { Symbol, SymbolType } from "../project/Project";

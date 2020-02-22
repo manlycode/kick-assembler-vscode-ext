@@ -41,12 +41,15 @@ export class ProjectFile {
 
     private scopes: Scope[] = [];
 
+    private lastScope: number = 0;
+
     public constructor(uri: Uri, text: string, main: boolean, nextScope: number, assemblerSyntax:AssemblerSyntax[]) {
         this.uri = uri
         this.text = text;
         this.comments = this.fetchComments(assemblerSyntax);
         this.lines = this.createLines(nextScope);
         this.main = main;
+        this.lastScope = nextScope;
     }
 
     //  returns the source code as one large string
@@ -73,6 +76,11 @@ export class ProjectFile {
 
     public getScopes(): Scope[] {
         return this.scopes;
+    }
+
+    public setSource(text: string) {
+        this.text = text;
+        this.lines = this.createLines(this.lastScope);
     }
 
     private fetchComments(assemblerSyntax:AssemblerSyntax[]):Comment[] {

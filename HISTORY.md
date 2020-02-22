@@ -4,8 +4,12 @@
 
 ## v0.4.1
 ### Changed
++ added message to let developer know that the extension is ready (activated)
++ removed the initial build message to make it a little less chatty
 + [support for external breakpoints](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/57)
 ### Fixed
++ [fixed build errors when vscode first starting and no file opened](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/47)
++ [CompletionProvider scope error occuring when new lines added to open file](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/46)
 + [confirm active file or startup before building](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/44)
 + [ignore whitespace in pure dividers as well](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/56)
 + [multiline comments broke symbol display](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/55)

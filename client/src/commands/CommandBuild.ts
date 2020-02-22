@@ -122,7 +122,7 @@ export class CommandBuild {
             }
         });
 
-        window.showInformationMessage(`Building ${base.toUpperCase()}`);
+        //window.showInformationMessage(`Building ${base.toUpperCase()}`);
 
         var start = process.hrtime();
 

@@ -113,8 +113,8 @@ export default class CompletionProvider extends Provider {
 		var currentProjectFile: ProjectFile = this.project.getSourceFiles().find(projectFile => {
 			return projectFile.isMain();
 		});
+		this.documentSource = currentProjectFile.getSourceLines();
 		this.currentScope = currentProjectFile ? currentProjectFile.getLines()[this.documentPosition.position.line].scope : 0;
-		this.documentSource = this.project.getSourceLines();
 		this.triggerLine = this.documentSource[this.documentPosition.position.line];
 		this.trigger = this.triggerCharacterPos >=0 ? this.triggerLine[this.triggerCharacterPos] : "";
 

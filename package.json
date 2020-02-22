@@ -25,7 +25,16 @@
 		"vscode": "^1.37.0"
 	},
 	"activationEvents": [
-		"onLanguage:kickassembler"
+		"onLanguage:kickassembler",
+		"workspaceContains:*.asm",
+		"workspaceContains:*.macro",
+		"workspaceContains:*.lib",
+		"workspaceContains:*.src",
+		"workspaceContains:*.kick",
+		"workspaceContains:*.ka",
+		"workspaceContains:*.a",
+		"workspaceContains:*.inc",
+		"workspaceContains:*.lib"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
