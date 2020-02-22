@@ -31,7 +31,7 @@ enum LanguageCompletionTypes {
 	Directives,
 }
 
-import Project, { SymbolType, Line } from "../project/Project";
+import Project, { Symbol, SymbolType } from "../project/Project";
 import LineUtils from "../utils/LineUtils";
 import { KickLanguage } from "../definition/KickLanguage";
 import StringUtils from "../utils/StringUtils";
@@ -56,8 +56,7 @@ export default class CompletionProvider extends Provider {
 
 	private intelligentLabels:boolean;
 
-	private multiLabelsPlus: {[key: string]: number} = {};
-	private multiLabelsMinus: {[key: string]: number} = {};
+	private multiLabels: {[key: string]: Symbol[]} = {};
 
 	constructor(connection: IConnection, projectInfo: ProjectInfoProvider) {
 
@@ -68,8 +67,7 @@ export default class CompletionProvider extends Provider {
 			if (projectInfo.getSettings().valid) {
 				this.project = projectInfo.getProject(textDocumentPosition.textDocument.uri);
 				this.documentPosition = textDocumentPosition;
-				this.multiLabelsMinus = {};
-				this.multiLabelsPlus = {};
+				this.multiLabels = {};
 				return this.createCompletionItems();
 			}
 		});
@@ -456,22 +454,38 @@ export default class CompletionProvider extends Provider {
 				}
 			}
 			if(label[0] == "!") {
-				//TODO minus has to be reverted otherwise wrong referencing
-				if(payload.range.start.line <= this.documentPosition.position.line){
-					if(!this.multiLabelsMinus[label]) {
-						this.multiLabelsMinus[label] = 1;
-					}
-					let minusAddon = "-".repeat(this.multiLabelsMinus[label]++);
-					label += minusAddon;
-					textEdit.newText += minusAddon;
-				} else {
-					if(!this.multiLabelsPlus[label]) {
-						this.multiLabelsPlus[label] = 1;
-					}
-					let plusAddon = "+".repeat(this.multiLabelsPlus[label]++);
-					label += plusAddon;
-					textEdit.newText += plusAddon;
+				let multiLabelsKey = label + String(payload.scope);
+				if(!this.multiLabels[multiLabelsKey]) {
+					this.multiLabels[multiLabelsKey] = this.project.getSymbols().filter(symbol => {
+						return symbol.name == label && symbol.scope === payload.scope;
+					});
 				}
+				let multiLabelAddon = "";
+				let howManyMinusSymbols = this.multiLabels[multiLabelsKey].filter(symbol => {
+					return symbol.range.start.line <= this.documentPosition.position.line;
+				}).length;
+
+				for(var p=0,pL=this.multiLabels[multiLabelsKey].length;p<pL;p++){
+									
+					if (this.multiLabels[multiLabelsKey][p].range.start.line > this.documentPosition.position.line) {
+						if(multiLabelAddon.indexOf("-") >= 0) {
+							multiLabelAddon="";
+						}
+						multiLabelAddon += "+";
+					} else {
+						multiLabelAddon += "-";
+					}
+
+					if(this.multiLabels[multiLabelsKey][p].range.start.line === payload.range.start.line) {
+						break;
+					}
+				}
+				console.log(multiLabelAddon,howManyMinusSymbols,multiLabelAddon.length);
+				if(multiLabelAddon[0] == "-") {
+					multiLabelAddon = "-".repeat((howManyMinusSymbols-multiLabelAddon.length)+1);	
+				}
+				textEdit.newText += multiLabelAddon;
+				label+= multiLabelAddon; 
 				filterText = label;
 			}
 		}

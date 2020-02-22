@@ -107,20 +107,46 @@ export default class HoverProvider extends Provider {
 	 * @param type  the type of symbol to find
 	 */
 	private findSymbolOfType(token:string, type: SymbolType, sameLine?:boolean): Symbol | undefined {
-		if(type == SymbolType.NamedLabel){
-		// TODO check + and -	
-		//console.log(123,token, this.documentPosition.position.line);
+		let minusChars = 0;
+		let plusChars = 0;
+		if(type == SymbolType.NamedLabel && !sameLine){
+			if(token.indexOf("-")>=0) {
+				minusChars = (token.substr(token.indexOf("-"))).length;
+			} else if(token.indexOf("+")>=0) {
+				plusChars = (token.substr(token.indexOf("+"))).length;
+			}
+			token = token.replace(/[\+\-]/g,"");
 		}
+
 		token = token.replace(/[<>]/g,"");
+		let foundLine = 0;
+		let symbolStack:Symbol[] = [];
 		for(let symbol of this.symbols) {
 			if (symbol.type === type) {
-				if(symbol.range) console.log(symbol.range.start.line);
 				if (symbol.name === token && (symbol.scope == this.currentScope || symbol.scope === 0)) {
 					if(sameLine && symbol.range && symbol.range.start.line != this.documentPosition.position.line){
 						continue;
 					}
-					return symbol;
+					if(symbol.range && (minusChars > 0 || plusChars > 0) ) {
+						foundLine = symbol.range.start.line;
+						if(
+							(foundLine <= this.documentPosition.position.line && minusChars > 0) ||
+							(foundLine > this.documentPosition.position.line && plusChars > 0)
+						){
+							symbolStack.push(symbol);
+						}
+					} else {
+						return symbol;
+					}
 				}
+			}
+		}
+		if(symbolStack.length>0) {
+			if(minusChars > 0 && symbolStack.length>=minusChars){
+				return symbolStack[(symbolStack.length-minusChars)];
+			}
+			if(symbolStack.length>=plusChars){
+				return symbolStack[plusChars-1];
 			}
 		}
 		return undefined;
