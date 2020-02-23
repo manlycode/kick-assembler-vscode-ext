@@ -480,7 +480,6 @@ export default class CompletionProvider extends Provider {
 						break;
 					}
 				}
-				console.log(multiLabelAddon,howManyMinusSymbols,multiLabelAddon.length);
 				if(multiLabelAddon[0] == "-") {
 					multiLabelAddon = "-".repeat((howManyMinusSymbols-multiLabelAddon.length)+1);	
 				}
