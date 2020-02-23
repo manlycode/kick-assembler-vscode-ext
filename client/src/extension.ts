@@ -7,7 +7,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { TextLine, Range } from 'vscode';
+import { TextLine, Range, SourceBreakpoint } from 'vscode';
 
 import { 
 	workspace, 
@@ -62,7 +62,8 @@ export function activate(context: ExtensionContext) {
 	};
 
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(configChanged));
-	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(fileOpened));	
+	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(fileOpened)); 
+	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(fileChanged));	
 	context.subscriptions.push(vscode.debug.onDidChangeBreakpoints(breakpointsChanged));
 
 	// Create the language client and start the client.
@@ -245,19 +246,24 @@ function configChanged() {
 	ConfigUtils.validateBuildSettings();
 }
 
-function fileOpened(text:vscode.TextDocument) {
+function fileChanged(e:vscode.TextDocumentChangeEvent){
+	let isSameChangeLine = e.contentChanges[0].range.start.line === e.contentChanges[0].range.end.line;
+	let rangeToCheck = isSameChangeLine && !e.contentChanges[0].text.includes("\n") ? e.contentChanges[0].range.start.line : undefined;
+	fileOpened(e.document,rangeToCheck);
+}
+
+function fileOpened(text:vscode.TextDocument, checkLine?:number) {
 	var line:TextLine;
 	var breakExpressionInfo:RegExpMatchArray;
 
 //find all existing breakpoints and create them in vscode	
 	let newBreakpoints: vscode.Breakpoint[] = [];
-	for(var i=0;i<text.lineCount;i++){
+	for(var i=(checkLine || 0),iL=(checkLine ? checkLine+1 : text.lineCount);i<iL;i++){
 		line = text.lineAt(i);
 		let checkLine = line.text.trim();
 		let existingBreak = checkLine.match(/^(\/\/\s*)*\.break/);
 		let existingPrint = checkLine.match(/^(\/\/\s*)*\.print/);		
 		if(existingBreak || existingPrint) {
-			//TODO already in the bp list?
 			breakExpressionInfo = existingBreak ? checkLine.substr(existingBreak[0].length).trim().match(/".*"/) : undefined;
 			newBreakpoints.push(new vscode.SourceBreakpoint(
 				new vscode.Location(text.uri, new vscode.Position(i, 0)),
@@ -266,6 +272,14 @@ function fileOpened(text:vscode.TextDocument) {
 				'',
 				existingPrint ? checkLine.substr(existingPrint[0].length).trim() : ''
 			));
+		} else {
+			// remove a possible existing breakpoint
+			let bpexists = vscode.debug.breakpoints.filter((bp:SourceBreakpoint) => {
+				return bp.location.uri.path == text.uri.path && bp.location.range.start.line === i;
+			});
+			if(bpexists.length > 0){
+				vscode.debug.removeBreakpoints(bpexists);
+			}
 		}
 	}
 	if(newBreakpoints.length>0) {
@@ -273,7 +287,6 @@ function fileOpened(text:vscode.TextDocument) {
 	}
 }
 
-// TODO if .break/.print lines are changed manually in the editor, the related vscode breakpoint should be changed/deleted accordingly
 function breakpointsChanged(breakpointChanges:vscode.BreakpointsChangeEvent){
 	let editor = vscode.window.activeTextEditor;
 	if (editor) {
