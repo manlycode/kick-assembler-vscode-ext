@@ -4,8 +4,8 @@
 	"description": "Kick Assembler (C64) IDE Extension for Visual Studio Code",
 	"author": "Paul Hocker",
 	"license": "MIT",
-	"version": "0.4.1",
-	"status": "",
+	"version": "0.4.2",
+	"status": "-dev",
 	"repository": {
 		"type": "git",
 		"url": "https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext"

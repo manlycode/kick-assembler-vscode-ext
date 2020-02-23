@@ -170,6 +170,10 @@ export default class Project {
                 
                 var _uri: Uri = file.uri;
                 var _text: string  = readFileSync(file.uri.fsPath).toString();
+
+                if (file.isCurrent)
+                    _text = this.source;
+                    
                 var _main: boolean = file.isCurrent;
 
                 var projectFile = new ProjectFile(_uri, _text, _main, this.scopes.length, this.assemblerInfo.getAssemblerSyntax().filter(syntax => {
