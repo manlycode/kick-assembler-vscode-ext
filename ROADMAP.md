@@ -15,6 +15,7 @@ This extension is a work in progress, there is much left to be done.
 * [memory layout](https://kickassmemoryview.insoft.se/)
 * remote monitor on active VICE emulator
 * welcome page (beginners guide)
+* [data structure support](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/50)
 
 ### Completed
 * ~~generate breakpoints and watches for vice and c64debugger~~
