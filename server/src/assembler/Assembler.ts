@@ -1,17 +1,8 @@
-import { Settings } from "../providers/SettingsProvider";
-import { AssemblerInfo } from "./AssemblerInfo";
-import { TextDocumentItem } from "vscode-languageserver";
-import PathUtils from "../utils/PathUtils";
-import { writeFileSync, readFileSync, unlinkSync } from "fs";
-import { spawnSync } from "child_process";
-import * as path from 'path';
-import Uri from "vscode-uri";
-
 
 /*
     Class: Assembler
 
-        Runs the Kick Assembler to Assemble a Source File
+        Runs Kick to Assemble a Source File
 
 
     Remarks:
@@ -24,13 +15,21 @@ import Uri from "vscode-uri";
 
 */
 
+import * as path from 'path';
+import PathUtils from "../utils/PathUtils";
+import Uri from "vscode-uri";
+
+import { Settings } from "../providers/SettingsProvider";
+import { AssemblerInfo } from "./AssemblerInfo";
+import { writeFileSync, readFileSync, unlinkSync } from "fs";
+import { spawnSync } from "child_process";
+
 export interface AssemblerResults {
     assemblerInfo: AssemblerInfo;
     stdout: string;
     stderr: string;
     status: number;
 }
-
 
 export class Assembler {
 
@@ -52,7 +51,6 @@ export class Assembler {
         let uri:Uri = Uri.parse(filename);
 
         var outputDirectory: string = settings.outputDirectory;
-        //var sourcePath: string = PathUtils.getPathFromFilename(PathUtils.uriToPlatformPath(uri.fsPath));
         var sourcePath: string = PathUtils.getPathFromFilename(uri.fsPath);
 
         
@@ -94,26 +92,18 @@ export class Assembler {
         let srcFilename = tmpSource;
 
         /*
-            when masterBuild has been specified we want to
-            use that file to assemble, but also make sure that
-            the open file (sent to us) is replaced in the compile
-            correctly
+            when startup has been specified we want to
+            use that file to assemble
 
             the compile ends up looking like:
 
-                java -jar {masterBuild} -replace {uri} {.source.txt}
+                java -jar {startup}
         */
 
-        let masterOptions:string [] = [];
-        
         if (buildStartup) {
-            let masterFilename = sourcePath + path.sep + buildStartup;
-            srcFilename = masterFilename;
-            // sourceText = readFileSync(masterFilename, 'utf8');
-            masterOptions.push('-replaceFile', uri.fsPath, tmpSource);
+            srcFilename = sourcePath + path.sep + buildStartup;
         } else {
-            srcFilename = uri.fsPath;
-            masterOptions.push('-replaceFile', uri.fsPath, tmpSource);
+            srcFilename = tmpSource;
         }
 
         javaOptions.push(
@@ -122,8 +112,6 @@ export class Assembler {
             '-warningsoff',
         );
 
-        javaOptions = javaOptions.concat(masterOptions);
-
         /*
             the asminfo file is very important because
             it returns information about any errors
@@ -131,8 +119,7 @@ export class Assembler {
             that are in the assembled source codes
         */
 
-        var tmpAsmInfo = path.join(outputDirectory, ".asminfo.txt");
-        tmpAsmInfo = path.resolve(tmpAsmInfo);
+        var tmpAsmInfo = path.resolve(path.join(outputDirectory, ".asminfo.txt"));
 
         javaOptions.push(
             '-asminfo',
