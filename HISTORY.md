@@ -4,6 +4,7 @@
 
 ## v0.4.2
 ### Changes
++ [allow addition of manual adding or changing break/print](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/60)
 ### Fixed
 + [issue 51](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/51) - opening empty file with no startup causing errors
 + [issue 52](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/52) - fix errors with new/empty files
