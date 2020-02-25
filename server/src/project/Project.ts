@@ -145,7 +145,8 @@ export default class Project {
             time ignoring the master
         */
 
-        if (!this.assemblerInfo.hasCurrent) {
+        
+        if (settings.startup && !this.assemblerInfo.hasCurrent) {
             if (!this.showStartupWarning)
                 this.connection.window.showInformationMessage(`The Open File is Not Part of the Startup [${settings.startup}]`);
             this.assemblerResults = assembler.assemble(settings, this.uri, text, false, true);

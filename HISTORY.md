@@ -2,6 +2,12 @@
 ## Kick Assembler Visual Studio Code Extension for C64
 ### History Of Changes
 
+## v0.4.2
+### Changes
+### Fixed
++ [issue 51](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/51) - opening empty file with no startup causing errors
++ [issue 52](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/52) - fix errors with new/empty files
+
 ## v0.4.1
 ### Changed
 + [multilabel support](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/58)
