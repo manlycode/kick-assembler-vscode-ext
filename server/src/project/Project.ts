@@ -231,10 +231,16 @@ export default class Project {
      * @param text 
      */
     public setSource(text: string) {
-		var currentProjectFile: ProjectFile = this.getSourceFiles().find(projectFile => {
-			return projectFile.isMain();
-		});
-        currentProjectFile.setSource(text);
+        
+        if (this.getSourceFiles().length > 0) {
+
+            var currentProjectFile: ProjectFile = this.getSourceFiles().find(projectFile => {
+                return projectFile.isMain();
+            });
+            
+            if (currentProjectFile)
+                currentProjectFile.setSource(text);
+        }   
         this.source = text;
     }
 
