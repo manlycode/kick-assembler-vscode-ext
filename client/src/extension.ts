@@ -262,7 +262,7 @@ function fileOpened(text:vscode.TextDocument, checkLine?:number) {
 		line = text.lineAt(i);
 		let checkLine = line.text.trim();
 		let existingBreak = checkLine.match(/^(\/\/\s*)*\.break/);
-		let existingPrint = checkLine.match(/^(\/\/\s*)*\.print/);		
+		let existingPrint = checkLine.match(/^(\/\/\s*)*\.print\s+\"*[\w"]+/);		
 		if(existingBreak || existingPrint) {
 			breakExpressionInfo = existingBreak ? checkLine.substr(existingBreak[0].length).trim().match(/".*"/) : undefined;
 			newBreakpoints.push(new vscode.SourceBreakpoint(
@@ -270,7 +270,7 @@ function fileOpened(text:vscode.TextDocument, checkLine?:number) {
 				checkLine.substr(0,2) != "//",
 				breakExpressionInfo ? breakExpressionInfo[0] : '',
 				'',
-				existingPrint ? checkLine.substr(existingPrint[0].length).trim() : ''
+				existingPrint ? checkLine.substr(existingPrint.indexOf(".print")+6).trim() : ''
 			));
 		} else {
 			// remove a possible existing breakpoint
