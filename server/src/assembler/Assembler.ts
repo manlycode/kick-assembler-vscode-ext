@@ -101,7 +101,7 @@ export class Assembler {
         */
 
         if (buildStartup) {
-            srcFilename = sourcePath + path.sep + buildStartup;
+            srcFilename =  path.resolve() + path.sep + buildStartup;
         } else {
             srcFilename = tmpSource;
         }

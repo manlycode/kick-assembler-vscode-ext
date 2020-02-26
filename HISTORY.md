@@ -2,6 +2,11 @@
 ## Kick Assembler Visual Studio Code Extension for C64
 ### History Of Changes
 
+## v0.4.3
+### Changes
+
+### Fixed
+
 ## v0.4.2
 ### Changes
 + [allow addition of manual adding or changing break/print](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/60)
