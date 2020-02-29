@@ -3,11 +3,9 @@
 
 And a big thank you to everyone using the extension. Your feedback, ideas and bug reports are making this tool better every day.
 
-This is a small bug release version.
+This is a small bug fix release.
 
-There were a number of error messages showing up when the startup project was located in a subfolder in the workspace. This caused things like Hover and Completion to fail.
-
-Marco fixed a small bug with the `.print` statement not adding it as a log entry.
+This release removes the keepWorkFile setting. This was causing too many problems and was not worth trying to keep at this time. Perhaps we will bring it back again some other day. That is, if @Lubber lets me. :)
 
 For a full list of changes, please see the projects [History](HISTORY.md) file.
 

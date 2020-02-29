@@ -6,6 +6,7 @@
 ### Changes
 + [support for parenthesis on `.print` directive](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/62)
 ### Fixed
++ [Issue 53](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/53) - errors when saving (removed keepWorkFiles setting)
 
 ## v0.4.3
 ### Changes
