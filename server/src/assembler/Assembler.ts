@@ -154,12 +154,6 @@ export class Assembler {
         assemblerResults.stderr = java.stderr.toString();
         assemblerResults.status = java.status;
 
-        //  remove work files if requested
-        if (!settings.keepWorkFiles) {
-            unlinkSync(tmpAsmInfo);
-            unlinkSync(tmpSource)
-        }
-
         return assemblerResults;
     }
 

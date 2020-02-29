@@ -52,7 +52,6 @@ export interface Settings {
     opcodes:SettingsOpcodes;
     assemblerLibraryPaths: string[];
     startup: string;
-    keepWorkFiles: boolean;
     codeSneakPeekLines: number;
 }
 

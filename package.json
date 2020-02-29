@@ -234,11 +234,6 @@
 					"default": "",
 					"description": "This setting will override the current open file for assembling, and will instead use this file. This can be considered your master or startup file for your project. In the future this might be replaced with a generic project configuration file."
 				},
-				"kickassembler.keepWorkFiles": {
-					"type": "boolean",
-					"default": false,
-					"description": "Setting this option will make sure that none of the temporary work files that are created during compile time are removed. Useful for debugging when you are contributing and testing this extension."
-				},
 				"kickassembler.codeSneakPeekLines": {
 					"type": "number",
 					"default": 5,
