@@ -262,7 +262,7 @@ function fileOpened(text:vscode.TextDocument, checkLine?:number) {
 		line = text.lineAt(i);
 		let checkLine = line.text.trim();
 		let existingBreak = checkLine.match(/^(\/\/\s*)*\.break/);
-		let existingPrint = checkLine.match(/^(\/\/\s*)*\.print\s+\"*[\w"]+/);		
+		let existingPrint = checkLine.match(/^(\/\/\s*)*\.print(\s+[\(\"]*|\s*[\(\"]+)[\w")]+/);		
 		if(existingBreak || existingPrint) {
 			breakExpressionInfo = existingBreak ? checkLine.substr(existingBreak[0].length).trim().match(/".*"/) : undefined;
 			newBreakpoints.push(new vscode.SourceBreakpoint(
