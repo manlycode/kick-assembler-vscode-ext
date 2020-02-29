@@ -2,6 +2,11 @@
 ## Kick Assembler Visual Studio Code Extension for C64
 ### History Of Changes
 
+## v0.4.4
+### Changes
++ [support for parenthesis on `.print` directive](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/62)
+### Fixed
+
 ## v0.4.3
 ### Changes
 + [Automatically create/delete/adjust breakpoints when inserted manually](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/60)
