@@ -13,4 +13,5 @@ client/node_modules/**
 !client/node_modules/vscode-languageserver-types/**
 node_modules/**
 images/**
+!images/icon.png
 
