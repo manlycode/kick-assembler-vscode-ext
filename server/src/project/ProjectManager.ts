@@ -2,7 +2,7 @@
 /*
     Class: ProjectManager
 
-    Manages the Project for this Extension
+    Manages the Projects for this Extension
 
     Remarks:
 
@@ -11,6 +11,7 @@
         available on the Client.
 
 */
+
 import {
     InitializeResult,
     TextDocuments,
@@ -39,11 +40,6 @@ import { settings } from "cluster";
 
 export default class ProjectManager {
 
-    private projects: Project[];
-
-    private connection: Connection;
-
-    private documents: TextDocuments;
     private settingsProvider: SettingsProvider;
     private hoverProvider: HoverProvider;
     private diagnosticProvider: DiagnosticProvider;
@@ -51,12 +47,15 @@ export default class ProjectManager {
     private completionProvider: CompletionProvider;
     private signatureHelpProvider: SignatureHelpProvider;
     private definitionProvider: DefinitionProvider;
+
+    private projects: Project[];
+    private connection: Connection;
+    private documents: TextDocuments;
     private timer: NodeJS.Timer;
 
     constructor(connection: Connection) {
 
         this.projects = [];
-
         this.connection = connection;
 
         //  setup listener for documents
