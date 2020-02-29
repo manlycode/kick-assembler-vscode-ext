@@ -3,7 +3,7 @@ Use this template when posting to Facebook.
 ~~~
 
 Kick Assembler (C64) For Visual Studio Code
-Release 0.4.1
+Release x.x.x
 
 https://marketplace.visualstudio.com/items?itemName=paulhocker.kick-assembler-vscode-ext
 
@@ -12,8 +12,6 @@ And a big thank you to everyone using the extension. Your feedback, ideas and bu
 👉 You can read more about the Release here
 
 https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/blob/master/RELEASE.md
-
-This is mostly a bug fix release with a sprinkling of new feature goodness thrown in for good measure.
 
 Keep those ideas coming!
 
