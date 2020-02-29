@@ -4,8 +4,10 @@
 
 ## v0.4.3
 ### Changes
-
++ [Automatically create/delete/adjust breakpoints when inserted manually](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/60)
 ### Fixed
++ [Issue 61](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/61) bug fix on manually inserted `.print`
++ fix errors when startup setting was not located in the workspace folder
 
 ## v0.4.2
 ### Changes

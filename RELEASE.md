@@ -1,17 +1,13 @@
 # Release Notes
-
-## v0.4.2
+## v0.4.3
 
 And a big thank you to everyone using the extension. Your feedback, ideas and bug reports are making this tool better every day.
 
-This is a small bug fix release to supress a number of errors occuring when a new file was created.
+This is a small bug release version.
 
-There are a few more checks in place now to see if a startup file is there to supress some of the errors that were occuring. Hopefully you won't see any of them anymore.
+There were a number of error messages showing up when the startup project was located in a subfolder in the workspace. This caused things like Hover and Completion to fail.
 
-Marco (aka Lubber) made a small tweak to the break/print changes, and made it even better by letting you add them manually now.
-
-![](./images/manualbreakpoints.gif)
-
+Marco fixed a small bug with the `.print` statement not adding it as a log entry.
 
 For a full list of changes, please see the projects [History](HISTORY.md) file.
 
