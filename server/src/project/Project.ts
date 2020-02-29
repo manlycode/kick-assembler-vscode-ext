@@ -170,10 +170,12 @@ export default class Project {
             if (!file.system) {
                 
                 var _uri: Uri = file.uri;
-                var _text: string  = readFileSync(file.uri.fsPath).toString();
+                var _text: string 
 
                 if (file.isCurrent)
                     _text = this.source;
+                else 
+                    _text = readFileSync(file.uri.fsPath).toString();
                     
                 var _main: boolean = file.isCurrent;
 
