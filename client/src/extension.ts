@@ -252,13 +252,13 @@ function fileChanged(e:vscode.TextDocumentChangeEvent){
 	fileOpened(e.document,rangeToCheck);
 }
 
-function fileOpened(text:vscode.TextDocument, checkLine?:number) {
+function fileOpened(text:vscode.TextDocument, checkLineNumber?:number) {
 	var line:TextLine;
 	var breakExpressionInfo:RegExpMatchArray;
 
 //find all existing breakpoints and create them in vscode	
 	let newBreakpoints: vscode.Breakpoint[] = [];
-	for(var i=(checkLine || 0),iL=(checkLine ? checkLine+1 : text.lineCount);i<iL;i++){
+	for(var i=(checkLineNumber || 0),iL=(checkLineNumber ? checkLineNumber+1 : text.lineCount);i<iL;i++){
 		line = text.lineAt(i);
 		let checkLine = line.text.trim();
 		let existingBreak = checkLine.match(/^(\/\/\s*)*\.break/);

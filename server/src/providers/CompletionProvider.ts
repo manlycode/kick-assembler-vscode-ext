@@ -26,7 +26,6 @@ enum LanguageCompletionTypes {
 	Symbol,
 	Label,
 	Register,
-	PseudoOp,
 	PreProcessor,
 	Directives,
 }
@@ -328,18 +327,15 @@ export default class CompletionProvider extends Provider {
 			}	
 
 			if (prevToken == "instruction") {
-				//items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
 				items = items.concat(this.loadSymbols(SymbolType.Function));
 				items = items.concat(this.loadSymbols(SymbolType.Variable));
 				items = items.concat(this.loadSymbols(SymbolType.Label));
 				items = items.concat(this.loadSymbols(SymbolType.Constant));
-				items = items.concat(this.loadSymbols(SymbolType.Macro));
 				items = items.concat(this.loadSymbols(SymbolType.Parameter));
 				items = items.concat(this.loadSymbols(SymbolType.Namespace));
 			}
 
 			if (prevToken == "symbol" || prevToken == "directive") {
-				//items = items.concat(this.loadSymbols(SymbolType.NamedLabel));
 				items = items.concat(this.loadSymbols(SymbolType.Function));
 				items = items.concat(this.loadSymbols(SymbolType.Variable));
 				items = items.concat(this.loadSymbols(SymbolType.Label));
@@ -432,18 +428,18 @@ export default class CompletionProvider extends Provider {
 		} : "";
 
 		let adjustedSnippet = (payload.snippet || "");
-		if(payload.snippet && payload.snippet === "($0)" && payload.parameters && this.getProjectInfo().getSettings().completionParameterPlaceholders){
+		if(payload.snippet  && payload.parameters && payload.snippet.replace(/[\(\) ]/g,"") === "$0" && this.getProjectInfo().getSettings().completionParameterPlaceholders){
 			var paramSnippet: string[] = [];
 			for (var i=0,iL=payload.parameters.length;i<iL;i++){
 				paramSnippet.push("${"+(i+1)+":"+payload.parameters[i].name+"}");
 			}
-			adjustedSnippet='('+paramSnippet.join(',')+')';
+			adjustedSnippet = payload.type === SymbolType.PseudoCommand ? " "+paramSnippet.join(":") : '('+paramSnippet.join(',')+')';
 		}
 		textEdit.newText += adjustedSnippet;
 
 		let command: string = "";
 		if(payload.snippet) {
-			if (payload.snippet[0] === "(" && payload.snippet[1] !== '"' && payload.parameters && payload.parameters.length > 0) {
+			if (payload.parameters && payload.parameters.length > 0 && (payload.type == SymbolType.PseudoCommand || (payload.snippet[0] === "(" && payload.snippet[1] !== '"'))) {
 				command = 'editor.action.triggerParameterHints';
 			} else if (payload.snippet.substr(0,2) !== "()" && payload.snippet !== "\n") {
 				command = 'editor.action.triggerSuggest';
