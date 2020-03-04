@@ -59,7 +59,7 @@ export interface Settings {
 export default class SettingsProvider extends Provider {
 
     private settings:Settings;
-    private kickAssemblerLatestVersion:string = "5.12";
+    private kickAssemblerLatestVersion:string = "5.13";
     private kickAssemblerWebsite: string = "http://theweb.dk/KickAssembler/";
 
     constructor(connection:IConnection, projectInfo:ProjectInfoProvider) {
@@ -112,7 +112,6 @@ export default class SettingsProvider extends Provider {
             let uri = Uri.file(settings.assemblerJar)
             let assemblerResults = assembler.assemble(this.settings, uri.toString(), "",true, true);
             var kickassVersion = assemblerResults.assemblerInfo.getAssemblerVersion();
-            //var kickassVersion = assembler.getVersion();
 
             if(kickassVersion === "0") {
                 // version lower than 5.12, parse output

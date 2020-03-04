@@ -35,11 +35,6 @@ export class Assembler {
 
     private assemblerResults: AssemblerResults;
 
-    public getVersion(): string | undefined {
-
-        return "5.11";
-    }
-
     public assemble(settings: Settings, filename:string, text: string, ignoreOutputPathSetting: boolean = false, ignoreBuildStartup: boolean = false): AssemblerResults | undefined {
 
         let buildStartup: string = "";
