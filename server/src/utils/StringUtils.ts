@@ -16,7 +16,7 @@ export default class StringUtils {
 		return text.split(/\r?\n/g);
     }
 
-	public static splitFunction(text:string):string[] {
+	public static splitFunction(text:string, isPseudo:Boolean=false):string[] {
 
 		let vals:string[] = [];
 		var pos;
@@ -35,7 +35,7 @@ export default class StringUtils {
 		}
 
 		//	get parameters
-		pos = text.indexOf("(");
+		pos = isPseudo ? text.search(/\w+\s*:/) : text.indexOf("(");
 		if (pos > 0) {
 			parm_text = text.substring(pos);
 			text = text.substring(0, pos);
@@ -46,6 +46,7 @@ export default class StringUtils {
 
 		if(v1.length > 0) vals.push(v1[0]);
 		if(v1.length > 1) vals.push(v1[1]);
+		if(isPseudo && !parm_text && v1.length > 2) parm_text = v1[2];
 		
 		//	split parms by comma
 
@@ -53,7 +54,7 @@ export default class StringUtils {
 		//	remove parenthesis
 			parm_text = parm_text.replace(/[() ]/g, "");
 
-			let parms = parm_text.split(",");
+			let parms = parm_text.split(isPseudo ? ":" : ",");
 			for (var parm of parms) {
 				if(parm!=="") vals.push(parm);
 			}
@@ -198,7 +199,7 @@ export default class StringUtils {
 	 * 
 	 * @param symbol the Symbol containing the Parameters
 	 */
-	public static BuildSymbolParameterString(symbol: Symbol): string {
+	public static BuildSymbolParameterString(symbol: Symbol, delimiter: string = ","): string {
 
 		var parm_text = [];
 
@@ -208,7 +209,7 @@ export default class StringUtils {
 			}
 		}
 
-		return parm_text.join(", ");
+		return parm_text.join(delimiter);
 
 	}
 

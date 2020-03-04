@@ -132,6 +132,9 @@ export class ProjectFile {
             } else if(sourceLine.substr(0,6).toLowerCase() === '.macro'){
                 possibleLabel=sourceLine.substr(6).trim().match(/\w*/);
                 possibleScopeType = ScopeType.Macro;
+            } else if(sourceLine.substr(0,14).toLowerCase() === '.pseudocommand'){
+                possibleLabel=sourceLine.substr(14).trim().match(/\w*/);
+                possibleScopeType = ScopeType.PseudoCommand;
             } else {
                 possibleLabel=sourceLine.match(/\w*:/);
                 possibleScopeType = ScopeType.NamedLabel;
@@ -180,6 +183,7 @@ export class ProjectFile {
     private removeComments(sourceLines: string[]):string[] {
         this.comments.forEach(comment => {
             for(var i=comment.range.startLine;i<=comment.range.endLine;i++) {
+                if(!sourceLines[i]) break;
                 if(comment.range.startLine ==  comment.range.endLine) {
                     // dont trim but replace with spaces to support a possible a block comment in one line only and still has code at the end and keep symbol range positioning
                     sourceLines[i] = sourceLines[i].substr(0,comment.range.startPosition)+(' '.repeat(comment.range.endPosition-comment.range.startPosition))+sourceLines[i].substr(comment.range.endPosition);
