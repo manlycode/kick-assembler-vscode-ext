@@ -36,7 +36,6 @@ import DocumentSymbolProvider from "../providers/DocumentSymbolProvider";
 import CompletionProvider from "../providers/CompletionProvider";
 import SignatureHelpProvider from "../providers/SignatureHelpProvider";
 import DefinitionProvider from "../providers/DefinitionProvider";
-import { settings } from "cluster";
 
 export default class ProjectManager {
 

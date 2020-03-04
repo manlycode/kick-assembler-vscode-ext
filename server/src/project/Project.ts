@@ -56,7 +56,8 @@ export enum ScopeType {
     NamedLabel,
     Namespace,
     Function,
-    Macro
+    Macro,
+    PseudoCommand
 }
 
 export interface Scope {
@@ -339,7 +340,7 @@ export default class Project {
             symbol.comments = this.getComments(range, projectFile.getLines());
 
             //check for param descriptions (@param (type) parameter description)
-            if(symbol.parameters && symbol.comments && (symbol.type === SymbolType.Macro || symbol.type === SymbolType.Function)) {
+            if(symbol.parameters && symbol.comments && (symbol.type === SymbolType.Macro || symbol.type === SymbolType.Function || symbol.type === SymbolType.PseudoCommand)) {
                 let paramDocs = symbol.comments.match(/@param(eter)*.*(\r\n|\r|\n|)/g);
                 if (paramDocs) {
                     paramDocs.forEach((pDoc) => {
@@ -449,9 +450,10 @@ export default class Project {
             return symbol;
         }
 
-        if (directive == ".macro" || directive == ".function") {
+        if (directive == ".macro" || directive == ".function" || directive == ".pseudocommand") {
+            const isPseudo = directive == ".pseudocommand";
 
-            var split = StringUtils.splitFunction(text);
+            var split = StringUtils.splitFunction(text, isPseudo);
 
             if (split.length > 1) {
                 var name = split[1];
@@ -466,6 +468,10 @@ export default class Project {
                     symbol.kind = SymbolKind.Function;
                     symbol.completionKind = CompletionItemKind.Function;
 
+                } else if(directive == ".pseudocommand") {
+                    symbol.type = SymbolType.PseudoCommand;
+                    symbol.kind = SymbolKind.Method;
+                    symbol.completionKind = CompletionItemKind.Snippet;
                 } else {
                     symbol.type = SymbolType.Macro;
                     symbol.kind = SymbolKind.Method;
@@ -501,9 +507,9 @@ export default class Project {
                 if(parms.length > 0) {
                     symbol.parameters = parms;
                     symbol.parametersSymbols = parmsSymbols;
-                    symbol.snippet = '($0)';
+                    symbol.snippet = isPseudo ? ' $0': '($0)';
                 } else {
-                    symbol.snippet = '()';
+                    symbol.snippet = isPseudo ? '\n' : '()';
                 }
 
                 return symbol;

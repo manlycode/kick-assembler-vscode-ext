@@ -234,6 +234,21 @@ export default class HoverProvider extends Provider {
 
 	}
 
+	private createPseudoCommandHover(symbol: Symbol): string[] | undefined {
+
+		const _file = this.getFileFromSymbol(symbol);
+		const _parms = StringUtils.BuildSymbolParameterString(symbol,":");
+		const _name = symbol.name;
+		const _directive = ".pseudocommand";
+		const _description = this.getSymbolDescription(symbol);
+
+		return [
+			`	${_directive} ${_name} ${_parms} ${_file}`,
+			`${_description.trim()}`,
+		];
+
+	}
+	
 	/**
 	 * Create a Hover Response at the Current Text Position.
 	 * 
@@ -341,7 +356,11 @@ export default class HoverProvider extends Provider {
 						// pseudoCommandExecution
 
 						if (assemblerSyntax.type === 'pseudoCommandExecution') {
-							return this.getPseudoCommandMatch(token); 
+							const symbol = this.findSymbolOfType(token, SymbolType.PseudoCommand);
+
+							if (symbol) {
+								return this.createPseudoCommandHover(symbol);
+							}
 						}
 					}
 						
@@ -480,18 +499,6 @@ export default class HoverProvider extends Provider {
 				(tokenMatch.type && tokenMatch.type == InstructionType.DTV ? "**(DTV opcode)**" : ""), 
 				(tokenMatch.type && tokenMatch.type == InstructionType.C02 ? "**(65c02 opcode)**" : ""),
 
-			];
-		}
-	}
-
-	private getPseudoCommandMatch(token: string): string[] | undefined {
-		const tokenMatch = KickLanguage.PseudoOps.find((pseudoOp) => {
-			return pseudoOp.name.toLowerCase() === token.toLowerCase() ||
-				pseudoOp.otherNames.some((otherName) => otherName.toLowerCase() === token.toLowerCase());
-		});
-		if (tokenMatch) {
-			return [
-				`*(pseudo-op)* \`${tokenMatch.name}\`: ${tokenMatch.description}`,
 			];
 		}
 	}
