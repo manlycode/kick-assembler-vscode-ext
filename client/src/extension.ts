@@ -270,7 +270,7 @@ function fileOpened(text:vscode.TextDocument, checkLineNumber?:number) {
 				checkLine.substr(0,2) != "//",
 				breakExpressionInfo ? breakExpressionInfo[0] : '',
 				'',
-				existingPrint ? checkLine.substr(existingPrint.indexOf(".print")+6).trim() : ''
+				existingPrint ? checkLine.substr(checkLine.indexOf(".print")+6).trim() : ''
 			));
 		} else {
 			// remove a possible existing breakpoint
