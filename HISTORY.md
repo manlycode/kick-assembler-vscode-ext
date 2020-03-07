@@ -4,6 +4,8 @@
 
 ## v0.4.5
 ### Changes
++ [updated kick version check to 5.13](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/65)
++ [limited support for pseudocommands (autocomplete only)](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/64)
 ### Fixed
 + [fixed keepWorkFiles setting](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/63)
 
