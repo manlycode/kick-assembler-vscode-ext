@@ -91,6 +91,7 @@ export interface Symbol {
     kind?: SymbolKind;
     completionKind?: CompletionItemKind;
     range?: Range;
+    position?: number;
     fileIndex?: number;
     scope: number;
     codeSneakPeek?: string;
@@ -333,8 +334,8 @@ export default class Project {
             }
 
             symbol.range = Range.create(
-                Position.create(syntax.range.startLine,syntax.range.startPosition),
-                Position.create(syntax.range.endLine,syntax.range.endPosition)
+                Position.create(syntax.range.startLine, symbol.position || syntax.range.startPosition),
+                Position.create(syntax.range.endLine, symbol.position ? symbol.position + symbol.name.length : syntax.range.endPosition)
             );
             symbol.fileIndex = syntax.range.fileIndex;
             symbol.comments = this.getComments(range, projectFile.getLines());
@@ -511,7 +512,8 @@ export default class Project {
                 } else {
                     symbol.snippet = isPseudo ? '\n' : '()';
                 }
-
+                
+                symbol.position = text.indexOf(symbol.name);
                 return symbol;
             }
         }
@@ -532,6 +534,7 @@ export default class Project {
         } else {
             symbol.name = text.trim().split(" ")[0];
         }
+        symbol.position = text.indexOf(symbol.name);
 
         return symbol;
     }

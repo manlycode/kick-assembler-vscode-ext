@@ -56,7 +56,6 @@ export default class DefinitionProvider extends Provider {
 								targetRange: symbol.range,
 								targetSelectionRange: symbol.range
 							});
-							break;
 						}
 					}
 				}
