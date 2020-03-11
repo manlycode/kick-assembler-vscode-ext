@@ -3,7 +3,7 @@ Use this template when posting to Facebook.
 ~~~
 
 Kick Assembler (C64) For Visual Studio Code
-Release x.x.x
+Release 0.4.5
 
 https://marketplace.visualstudio.com/items?itemName=paulhocker.kick-assembler-vscode-ext
 

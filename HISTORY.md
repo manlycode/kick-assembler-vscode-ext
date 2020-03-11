@@ -6,8 +6,10 @@
 ### Changes
 + [updated kick version check to 5.13](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/65)
 + [limited support for pseudocommands (autocomplete only)](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/64)
++ [support for multiple definitions](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/67)
 ### Fixed
 + [fixed keepWorkFiles setting](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/63)
++ [fixed `.print` support ghosting](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/59)
 
 ## v0.4.4
 ### Changes
