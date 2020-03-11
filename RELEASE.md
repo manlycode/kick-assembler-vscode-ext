@@ -1,5 +1,5 @@
 # Release Notes
-## v0.4.5
+## v0.4.6
 
 And a big thank you to everyone using the extension. Your feedback, ideas and bug reports are making this tool better every day.
 

@@ -4,7 +4,6 @@ This extension is a work in progress, there is much left to be done.
 
 ### In Progress
 * [plugin support](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/38)
-* [new logo](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/42)
 
 
 ### Backburner
@@ -18,6 +17,7 @@ This extension is a work in progress, there is much left to be done.
 * [data structure support](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/50)
 
 ### Completed
+* ~~[new logo](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/42)~~
 * ~~generate breakpoints and watches for vice and c64debugger~~
 * ~~[multi label support](http://www.theweb.dk/KickAssembler/webhelp/content/ch03s04.html)~~
 * ~~[master build source file](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/35)~~

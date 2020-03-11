@@ -5,7 +5,7 @@
 	"author": "Paul Hocker",
 	"license": "MIT",
 	"icon": "images/icon.png",
-	"version": "0.4.5",
+	"version": "0.4.6",
 	"status": "-dev",
 	"repository": {
 		"type": "git",
