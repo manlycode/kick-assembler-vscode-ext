@@ -149,26 +149,33 @@ export class ProjectFile {
             
             let openingBrace = sourceLine.indexOf("{");
             let closingBrace = sourceLine.indexOf("}");
-//make sure to support a closing abd opening in brace in the same line
+//make sure to support a closing and opening in brace in the same line
             if (closingBrace >= 0 && closingBrace < openingBrace) {
                 scope = last.pop();
             }
             //	search for {  - add to scope
             if (openingBrace >= 0 || isFileNameSpace) {
-                this.scopes.push({
-                    id: next,
-                    parentScope: scope,
-                    name: lastPossibleScopeName.name !== '' ? lastPossibleScopeName.name : 'Anonymous',
-                    line: lastPossibleScopeName.name !== '' ? lastPossibleScopeName.line : i,
-                    type: lastPossibleScopeName.type
+                last.push(scope);                
+                let existingScope = this.scopes.find(exScope => {
+                    return exScope.name == lastPossibleScopeName.name && exScope.type == ScopeType.Namespace;
                 });
+                if(lastPossibleScopeName.type === ScopeType.Namespace && existingScope) {
+                    scope = existingScope.id;
+                } else {
+                    this.scopes.push({
+                        id: next,
+                        parentScope: scope,
+                        name: lastPossibleScopeName.name !== '' ? lastPossibleScopeName.name : 'Anonymous',
+                        line: lastPossibleScopeName.name !== '' ? lastPossibleScopeName.line : i,
+                        type: lastPossibleScopeName.type
+                    });
+                    scope = next++;
+                }
                 lastPossibleScopeName = {
                     name:'',
                     line: 0,
                     type: ScopeType.NamedLabel
                 };
-                last.push(scope);
-                scope = next++;
             }
             
             //	search for } - remove from scope
