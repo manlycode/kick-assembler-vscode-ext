@@ -191,7 +191,7 @@ export default class Project {
             }
         }
 
-        this.symbols = this.createSymbols();
+        this.createSymbols();
     }
 
     public getId(): string {
@@ -280,9 +280,9 @@ export default class Project {
         return this.scopes;
     }
 
-    private createSymbols(): Symbol[] | undefined {
+    private createSymbols(): void {
 
-        var symbols = [];
+        this.symbols = [];
 
 
         for (var syntax of this.getAssemblerResults().assemblerInfo.getAssemblerSyntax()) {
@@ -290,15 +290,14 @@ export default class Project {
                 var symbol = this.createSymbol(syntax, this.projectFiles[syntax.range.fileIndex]);
                 if (symbol) {
                     if(symbol.parametersSymbols) {
-                        symbols.push(...symbol.parametersSymbols);
+                        this.symbols.push(...symbol.parametersSymbols);
                         delete symbol.parametersSymbols;
                     }
-                    symbols.push(symbol);
+                    this.symbols.push(symbol);
                 }
             }
         }
 
-        return symbols;
     }
 
     private createSymbol(syntax: AssemblerSyntax, projectFile: ProjectFile): Symbol | undefined {
@@ -444,11 +443,15 @@ export default class Project {
 
         if (directive == ".namespace" || directive == ".filenamespace") {
             var symbol = this.createFromSimpleValue(afterDirectiveString);
-            symbol.kind = SymbolKind.Namespace;
-            symbol.type = SymbolType.Namespace;
-            symbol.isMain = projectFile.isMain();
-            symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
-            return symbol;
+            if(!this.symbols.find(exSymbol => {
+                return exSymbol.name == symbol.name && exSymbol.type == SymbolType.Namespace;
+            })) {
+                symbol.kind = SymbolKind.Namespace;
+                symbol.type = SymbolType.Namespace;
+                symbol.isMain = projectFile.isMain();
+                symbol.scope = projectFile.getLines()[sourceRange.startLine].scope;
+                return symbol;
+            }
         }
 
         if (directive == ".macro" || directive == ".function" || directive == ".pseudocommand") {
