@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2018-2019 Paul Hocker. All rights reserved.
+	Copyright (C) 2018-2020 Paul Hocker. All rights reserved.
 	Licensed under the MIT License. See License.txt in the project root for license information.
 */
 
@@ -154,90 +154,131 @@ function commandBuildStartup(context: ExtensionContext, output: vscode.OutputCha
 	return cb.buildStartup();
 }
 
+/**
+ * Build and then Run the currently Open file in the Editor.
+ * @param context 
+ * @param output 
+ */
 function commandBuildRun(context: ExtensionContext, output: vscode.OutputChannel) {
+
 	if (!ConfigUtils.validateRunSettings()) {
 		vscode.window.showErrorMessage("We were unable to Run your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
-	window.activeTextEditor.document.save().then(function (reponse) {
-		if (commandBuild(context, output) == 0) {
-			commandRun(context, output);
-		}
-	});
+
+	saveOpenDocument();
+
+	if (commandBuild(context, output) == 0) {
+		commandRun(context, output);
+	}
 }
 
+/**
+ * Build and Run the Startup program
+ * @param context 
+ * @param output 
+ */
 function commandBuildRunStartup(context: ExtensionContext, output: vscode.OutputChannel) {
 	if (!ConfigUtils.validateRunSettings()) {
 		vscode.window.showErrorMessage("We were unable to Run your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
-	window.activeTextEditor.document.save().then(function (reponse) {
-		if (commandBuildStartup(context, output) == 0) {
-			commandRunStartup(context, output);
-		}
-	});
+
+	saveOpenDocument()
+
+	if (commandBuildStartup(context, output) == 0) {
+		commandRunStartup(context, output);
+	}
 }
 
+/**
+ * Build and Debug the Currently Open Document
+ * @param context 
+ * @param output 
+ */
 function commandBuildDebug(context: ExtensionContext, output: vscode.OutputChannel) {
+
 	if (!ConfigUtils.validateDebugSettings()) {
 		vscode.window.showErrorMessage("We were unable to Debug your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
-	window.activeTextEditor.document.save().then(function (reponse) {
-		if (commandBuild(context, output) == 0) {
-			commandDebug(context, output);
-		}
-	});
+
+	saveOpenDocument();
+
+	if (commandBuild(context, output) == 0) {
+		commandDebug(context, output);
+	}
 }
 
+/**
+ * Build and Debug the Startup Program
+ * @param context 
+ * @param output 
+ */
 function commandBuildDebugStartup(context: ExtensionContext, output: vscode.OutputChannel) {
+
 	if (!ConfigUtils.validateDebugSettings()) {
 		vscode.window.showErrorMessage("We were unable to Debug your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
-	window.activeTextEditor.document.save().then(function (reponse) {
-		if (commandBuildStartup(context, output) == 0) {
-			commandDebugStartup(context, output);
-		}
-	});
+
+	saveOpenDocument();
+
+	if (commandBuildStartup(context, output) == 0) {
+		commandDebugStartup(context, output);
+	}
 }
 
+/**
+ * Run the Currently Open Program
+ * @param context 
+ * @param output 
+ */
 function commandRun(context: ExtensionContext, output: vscode.OutputChannel) {
-	console.log("[ClientExtension] commandRun");
+
 	if (!ConfigUtils.validateRunSettings()) {
-		vscode.window.showErrorMessage("Cannot Run - Check Settings");
+		vscode.window.showErrorMessage("We were unable to Run your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
+
 	var cr = new CommandRun(context, output);
 	cr.runOpen();
 }
 
+/**
+ * Run The Startup Program
+ * @param context 
+ * @param output 
+ */
 function commandRunStartup(context: ExtensionContext, output: vscode.OutputChannel) {
-	console.log("[ClientExtension] commandRun");
+
 	if (!ConfigUtils.validateRunSettings()) {
-		vscode.window.showErrorMessage("Cannot Run - Check Settings");
+		vscode.window.showErrorMessage("We were unable to Run your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
+
 	var cr = new CommandRun(context, output);
 	cr.runStartup();
 }
 
 function commandDebug(context: ExtensionContext, output: vscode.OutputChannel) {
-	console.log("[ClientExtension] commandDebug");
+
 	if (!ConfigUtils.validateDebugSettings()) {
-		vscode.window.showErrorMessage("Cannot Debug - Check Settings");
+		vscode.window.showErrorMessage("We were unable to Debug your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
+
 	var cd = new CommandDebug(context, output);
 	cd.runOpen();
 }
 
 function commandDebugStartup(context: ExtensionContext, output: vscode.OutputChannel) {
-	console.log("[ClientExtension] commandDebug");
+
 	if (!ConfigUtils.validateDebugSettings()) {
-		vscode.window.showErrorMessage("Cannot Debug - Check Settings");
+		vscode.window.showErrorMessage("We were unable to Debug your program because there was a problem validating your Settings. Please check your Settings and Try Again.");
 		return;
 	}
+
 	var cd = new CommandDebug(context, output);
 	cd.runStartup();
 }
@@ -247,17 +288,42 @@ function configChanged() {
 }
 
 function fileChanged(e:vscode.TextDocumentChangeEvent){
+
 	let isSameChangeLine = e.contentChanges[0].range.start.line === e.contentChanges[0].range.end.line;
 	let rangeToCheck = isSameChangeLine && !e.contentChanges[0].text.includes("\n") ? e.contentChanges[0].range.start.line : undefined;
 	fileOpened(e.document,rangeToCheck);
+}
+
+/**
+ * Save the currently open document if available. * 
+ */
+function saveOpenDocument() {
+
+	// only when open active document is available
+
+	if (!window)
+		return;
+
+	if (!window.activeTextEditor)
+		return;
+
+	if (window.activeTextEditor.document) {
+		// save the active document and return
+		window.activeTextEditor.document.save().then(function (reponse) {
+			return;
+		});
+	}
+	return;
 }
 
 function fileOpened(text:vscode.TextDocument, checkLineNumber?:number) {
 	var line:TextLine;
 	var breakExpressionInfo:RegExpMatchArray;
 
-//find all existing breakpoints and create them in vscode	
+	//find all existing breakpoints and create them in vscode	
+
 	let newBreakpoints: vscode.Breakpoint[] = [];
+
 	for(var i=(checkLineNumber || 0),iL=(checkLineNumber ? checkLineNumber+1 : text.lineCount);i<iL;i++){
 		line = text.lineAt(i);
 		let checkLine = line.text.trim();

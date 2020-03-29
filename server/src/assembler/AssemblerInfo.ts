@@ -1,3 +1,4 @@
+import * as path from 'path';
 import Uri from "vscode-uri";
 import { dirname } from "path";
 import StringUtils from "../utils/StringUtils";
@@ -167,7 +168,10 @@ export class AssemblerInfo {
         var parms = line.split(";");
         let assemblerFile = <AssemblerFile> {};
         assemblerFile.index = parseInt(parms[0]);
-        assemblerFile.uri = Uri.file(parms[1])
+        let n = path.normalize(parms[1])
+        let r = path.resolve(parms[1])
+        let p = path.parse(parms[1])
+        assemblerFile.uri = Uri.file(r)
 
         //  don't include the kick autoinclude AssemblerFile
         if (assemblerFile.uri.fsPath.indexOf('autoinclude') > 0)

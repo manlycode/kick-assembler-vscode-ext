@@ -236,8 +236,9 @@ export default class ClientUtils {
         let activeEditor = window.activeTextEditor;
 
         // get the document and return it to the caller
-        if (activeEditor.viewColumn != undefined) {
-            document = activeEditor.document;
+        if (activeEditor != undefined) {
+            if (activeEditor.viewColumn)
+                document = activeEditor.document;
         }
 
         let textEditors = window.visibleTextEditors;
