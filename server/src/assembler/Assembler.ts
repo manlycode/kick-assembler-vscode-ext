@@ -79,8 +79,8 @@ export class Assembler {
                 java -jar {.source.txt}
         */
 
-        var tmpSource = path.join(outputDirectory, ".source.txt");
-        tmpSource = path.resolve(tmpSource);
+        var tmpSource = path.join(sourcePath, ".source.txt");
+        //tmpSource = path.resolve(tmpSource);
 
         writeFileSync(tmpSource, text);
 
@@ -114,7 +114,8 @@ export class Assembler {
             that are in the assembled source codes
         */
 
-        var tmpAsmInfo = path.resolve(path.join(outputDirectory, ".asminfo.txt"));
+        var tmpAsmInfo = path.join(sourcePath, ".asminfo.txt");
+        tmpAsmInfo = path.resolve(tmpAsmInfo);
 
         javaOptions.push(
             '-asminfo',
