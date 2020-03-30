@@ -166,11 +166,12 @@ function commandBuildRun(context: ExtensionContext, output: vscode.OutputChannel
 		return;
 	}
 
-	saveOpenDocument();
+	saveOpenDocument(function(){
 
-	if (commandBuild(context, output) == 0) {
-		commandRun(context, output);
-	}
+		if (commandBuild(context, output) == 0) {
+			commandRun(context, output);
+		}
+	});
 }
 
 /**
@@ -184,11 +185,12 @@ function commandBuildRunStartup(context: ExtensionContext, output: vscode.Output
 		return;
 	}
 
-	saveOpenDocument()
+	saveOpenDocument(function(){
 
-	if (commandBuildStartup(context, output) == 0) {
-		commandRunStartup(context, output);
-	}
+		if (commandBuildStartup(context, output) == 0) {
+			commandRunStartup(context, output);
+		}
+	});
 }
 
 /**
@@ -203,11 +205,12 @@ function commandBuildDebug(context: ExtensionContext, output: vscode.OutputChann
 		return;
 	}
 
-	saveOpenDocument();
+	saveOpenDocument(function(){
 
-	if (commandBuild(context, output) == 0) {
-		commandDebug(context, output);
-	}
+		if (commandBuild(context, output) == 0) {
+			commandDebug(context, output);
+		}
+	});
 }
 
 /**
@@ -222,11 +225,12 @@ function commandBuildDebugStartup(context: ExtensionContext, output: vscode.Outp
 		return;
 	}
 
-	saveOpenDocument();
+	saveOpenDocument(function(){
 
-	if (commandBuildStartup(context, output) == 0) {
-		commandDebugStartup(context, output);
-	}
+		if (commandBuildStartup(context, output) == 0) {
+			commandDebugStartup(context, output);
+		}
+	});
 }
 
 /**
@@ -297,23 +301,16 @@ function fileChanged(e:vscode.TextDocumentChangeEvent){
 /**
  * Save the currently open document if available. * 
  */
-function saveOpenDocument() {
+function saveOpenDocument(callback?:Function) {
 
 	// only when open active document is available
 
-	if (!window)
-		return;
-
-	if (!window.activeTextEditor)
-		return;
-
-	if (window.activeTextEditor.document) {
+	if (window && window.activeTextEditor && window.activeTextEditor.document) {
 		// save the active document and return
 		window.activeTextEditor.document.save().then(function (reponse) {
-			return;
+			if(callback) callback();
 		});
-	}
-	return;
+	} else if(callback) callback();
 }
 
 function fileOpened(text:vscode.TextDocument, checkLineNumber?:number) {
