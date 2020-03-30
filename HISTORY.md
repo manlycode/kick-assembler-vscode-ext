@@ -4,7 +4,9 @@
 
 ## v0.4.6
 ### Changes
++ [Collect symbol namespaces from .namespace if they have the same name to avoid multiple same symbols and suggestions](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests?scope=all&utf8=%E2%9C%93&state=all)
 ### Fixed
++ [Issue 58](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/58) - errors on imported files for new KickAss 5.13
 
 ## v0.4.5
 ### Changes
