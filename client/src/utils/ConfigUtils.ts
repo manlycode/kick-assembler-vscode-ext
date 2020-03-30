@@ -1,7 +1,8 @@
 /*
-	Copyright (C) 2018-2019 Paul Hocker. All rights reserved.
+	Copyright (C) 2018-2020 Paul Hocker. All rights reserved.
 	Licensed under the MIT License. See License.txt in the project root for license information.
 */
+
 
 import * as vscode from 'vscode';
 import * as fs from 'fs';

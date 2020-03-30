@@ -1,4 +1,9 @@
 /*
+	Copyright (C) 2018-2020 Paul Hocker. All rights reserved.
+	Licensed under the MIT License. See License.txt in the project root for license information.
+*/
+
+/*
 	Class: Hover Provider
 
 	Handles any incoming Requests for a Hover Response in the Editor.

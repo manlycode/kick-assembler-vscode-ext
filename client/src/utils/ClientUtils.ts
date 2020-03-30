@@ -3,6 +3,7 @@
 	Licensed under the MIT License. See License.txt in the project root for license information.
 */
 
+
 import { Uri, WorkspaceFolder, WorkspaceConfiguration, window, workspace, TextDocument, TextEditor } from 'vscode';
 import * as fs from 'fs';
 import PathUtils from "./PathUtils"
