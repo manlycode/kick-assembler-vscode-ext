@@ -64,7 +64,7 @@ export interface Settings {
 export default class SettingsProvider extends Provider {
 
     private settings:Settings;
-    private kickAssemblerLatestVersion:string = "5.13";
+    private kickAssemblerLatestVersion:string = "5.15";
     private kickAssemblerWebsite: string = "http://theweb.dk/KickAssembler/";
 
     constructor(connection:IConnection, projectInfo:ProjectInfoProvider) {
