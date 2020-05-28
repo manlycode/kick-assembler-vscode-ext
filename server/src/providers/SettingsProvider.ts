@@ -36,6 +36,8 @@ export interface Settings {
     assemblerJar: string
     javaRuntime: string;
     javaOptions: string;
+    javaPlugins: string[];
+    javaPluginSystemProperties: string[];
     valid: boolean;
     emulatorRuntime: string;
     emulatorOptions: string;
@@ -109,6 +111,11 @@ export default class SettingsProvider extends Provider {
                 this.getConnection().window.showWarningMessage(`KickAssembler Library Path "${settings.assemblerLibraryPaths[i]}" does not exist. Ignoring.`);
             }
         }
+        for(let i=0, il=settings.javaPlugins.length; i < il; i++){
+            if (!fs.existsSync(settings.javaPlugins[i])) {
+                this.getConnection().window.showWarningMessage(`Java Plugin "${settings.javaPlugins[i]}" does not exist. Ignoring.`);
+            }
+        }        
 
         try {
 

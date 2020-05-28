@@ -66,9 +66,16 @@ export class Assembler {
 
         let javaOptions:string [] = [];
 
+        var cpSeparator:string = process.platform == "win32" ? ';' : ':';
+        var cpPlugins:string[] = settings.javaPlugins;
+        var cpPluginParameters:string[] = settings.javaPluginSystemProperties;
+        cpPluginParameters = cpPluginParameters.map(p => '-D' + p);
+
         javaOptions.push(
-            "-jar",
-            settings.assemblerJar
+            "-cp",
+            '"' + cpPlugins.join(cpSeparator) + cpSeparator + settings.assemblerJar + '"',
+            ...cpPluginParameters,
+            'kickass.KickAssembler'
         );
 
         /*
