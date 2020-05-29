@@ -111,7 +111,7 @@
 					"items": {
 						"type": "string"
 					},
-					"description": "Full classpath of your Java plugins."
+					"description": "Full classpath to your Java plugins."
 				},
 				"kickassembler.javaPluginSystemProperties": {
 					"type": "array",
