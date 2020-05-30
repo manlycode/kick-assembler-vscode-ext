@@ -106,6 +106,20 @@
 					"default": "java.exe",
 					"description": "Full path to your Java runtime."
 				},
+				"kickassembler.javaPlugins": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Full classpath to your Java plugins."
+				},
+				"kickassembler.javaPluginSystemProperties": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Individual properties/values used by your plugins. For example KICKASS_CRUNCHER_CACHE=true"
+				},
 				"kickassembler.javaAllowFileCreation": {
 					"type": "boolean",
 					"default": false,

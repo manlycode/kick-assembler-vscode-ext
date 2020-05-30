@@ -85,9 +85,16 @@ export class CommandBuild {
         this.output.clear();
         this.output.show(true);
 
+        var cpSeparator:string = process.platform == "win32" ? ';' : ':';
+        var cpPlugins:string[] = this.configuration.get("javaPlugins");
+        var cpPluginParameters:string[] = this.configuration.get("javaPluginSystemProperties");
+        cpPluginParameters = cpPluginParameters.map(p => '-D' + p);
+
         let javaOptions = [
-            "-jar", 
-            assemblerJar, 
+            "-cp", 
+            '"' + cpPlugins.join(cpSeparator) + cpSeparator + assemblerJar + '"',
+            ...cpPluginParameters,
+            'kickass.KickAssembler', 
             sourceFile.fsPath, 
             "-o", 
             outputFile, 
