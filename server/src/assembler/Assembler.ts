@@ -73,7 +73,7 @@ export class Assembler {
 
         javaOptions.push(
             "-cp",
-            '"' + cpPlugins.join(cpSeparator) + cpSeparator + settings.assemblerJar + '"',
+            '"'+ cpSeparator + cpPlugins.join(cpSeparator) + cpSeparator + settings.assemblerJar + '"',
             ...cpPluginParameters,
             'kickass.KickAssembler'
         );
