@@ -92,7 +92,7 @@ export class CommandBuild {
 
         let javaOptions = [
             "-cp", 
-            '"'+ cpSeparator + cpPlugins.join(cpSeparator) + cpSeparator + assemblerJar + '"',
+            cpPlugins.join(cpSeparator) + cpSeparator + assemblerJar,
             ...cpPluginParameters,
             'kickass.KickAssembler', 
             sourceFile.fsPath, 
