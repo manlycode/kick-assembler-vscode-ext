@@ -105,7 +105,7 @@ export const Directives:Directive[] = [
 		name: '.encoding',
 		example: '.encoding "screencode_upper"',
 		description: 'Sets the character encoding.',
-		snippet: ' "${1|petscii_mixed,petscii_upper,screencode_mixed,screencode_upper|}"\n'
+		snippet: ' "${1|ascii,petscii_mixed,petscii_upper,screencode_mixed,screencode_upper|}"\n'
 	},
 	{
 		name: '.enum',
