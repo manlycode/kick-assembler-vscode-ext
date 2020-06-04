@@ -120,6 +120,10 @@ Work with external code libraries in your project, and then ensure they are adde
 
 ![](/images/library-paths.png)
 
+Support for Plugins
+
+![](/images/java-plugins.png)
+
 
 ## TODO
 See [the Roadmap](/ROADMAP.md)

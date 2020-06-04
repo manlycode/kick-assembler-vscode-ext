@@ -1,11 +1,13 @@
 # Release Notes
-## v0.4.6
+## v0.4.7
 
 And a big thank you to everyone using the extension. Your feedback, ideas and bug reports are making this tool better every day.
 
 This release we have a few new things to tell you about. 
 
-This is a small release to handle the newest version of KickAssembler 5.13. There was a small problem with some imported files not beeing found which was causing the extension to fail. @Lubber added an enhancement to the NAMESPACE functionality to include symbols that might be part of a NAMESPACE in several different locations.
+Another update that brings support up to version 5.16 of Kick Assembler. Ascii encoding support has also been included. One other suprise is the addition of support for Java Plugins. You can add plugins using the Preferences interface.
+
+![](/images/java-plugins.png)
 
 For a full list of changes, please see the projects [History](HISTORY.md) file.
 

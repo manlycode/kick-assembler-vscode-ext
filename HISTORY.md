@@ -2,6 +2,12 @@
 ## Kick Assembler Visual Studio Code Extension for C64
 ### History Of Changes
 
+## v0.4.7
+### Changes
+[kick 5.16 version check](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/74)
+[Issue 38](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/38)
+[support for ascii encoding](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/75)
+
 ## v0.4.6
 ### Changes
 + [Collect symbol namespaces from .namespace if they have the same name to avoid multiple same symbols and suggestions](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests?scope=all&utf8=%E2%9C%93&state=all)
