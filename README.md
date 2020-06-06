@@ -146,7 +146,7 @@ I would also like to recognize [Thomas Conté]() for his work on the original [v
 Bug reports, fixes, and other changes are welcomed. The [repository](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext) is on [GitLab](https://gitlab.com), and issues and pull requests are accepted. Check the [contribute](CONTRIBUTE.md) file on information of what the project needs, and how to run the extension locally for development and testing
 
 ### Requirements
-* [Java Runtime](https://java.com/en/download/)
+* [Java Runtime (openjdk)](http://jdk.java.net/14/)
 * [Kick Assembler](http://www.theweb.dk/KickAssembler/Main.html#frontpage)
 * [VICE](http://vice-emu.sourceforge.net/index.html#download)
 * [C64Debugger](https://sourceforge.net/projects/c64-debugger/files/latest/download)
