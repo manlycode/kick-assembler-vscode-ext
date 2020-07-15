@@ -82,7 +82,7 @@ export class CommandBuild {
         var source: string = PathUtils.GetPathFromFilename(sourceFile.path);
         var scheme: string = "";
 
-        if (sourceFile.scheme != null) {
+        if (sourceFile.scheme != null && sourceFile.scheme != 'file') {
             scheme = sourceFile.scheme + ":";
         }
 
