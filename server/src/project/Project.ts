@@ -147,7 +147,7 @@ export default class Project {
 
         /*
             when the current file is not in the
-            list of files to be compile, we
+            list of files to be compiled, we
             try to assemble again but this
             time ignoring the master
         */

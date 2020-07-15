@@ -79,7 +79,14 @@ export class CommandBuild {
         let symbolDir:string = ClientUtils.GetOutputPath();
 
         // get the path of the source
-        var sourcePath: string = PathUtils.GetPathFromFilename(sourceFile.fsPath);
+        var source: string = PathUtils.GetPathFromFilename(sourceFile.path);
+        var scheme: string = "";
+
+        if (sourceFile.scheme != null) {
+            scheme = sourceFile.scheme + ":";
+        }
+
+        var sourcePath: string = path.join(scheme, source);
 
         // create new output channel
         this.output.clear();
