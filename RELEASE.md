@@ -1,13 +1,11 @@
 # Release Notes
-## v0.4.7
+## v0.4.8
 
 And a big thank you to everyone using the extension. Your feedback, ideas and bug reports are making this tool better every day.
 
-This release we have a few new things to tell you about. 
-
-Another update that brings support up to version 5.16 of Kick Assembler. Ascii encoding support has also been included. One other suprise is the addition of support for Java Plugins. You can add plugins using the Preferences interface.
-
-![](/images/java-plugins.png)
+```
+This release fixes a bug in Windows when the source code was located on a different drive other than c: it would fail building because the source could not be found. Thanks to Ian C and Lee H for helping diagnose the problem.
+```
 
 For a full list of changes, please see the projects [History](HISTORY.md) file.
 

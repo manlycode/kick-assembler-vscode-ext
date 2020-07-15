@@ -3,6 +3,10 @@
 ### History Of Changes
 
 ## v0.4.7
+### Fixed
+[Issue 63](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/63)
+
+## v0.4.7
 ### Changes
 [kick 5.16 version check](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/74)
 [Issue 38](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/38)

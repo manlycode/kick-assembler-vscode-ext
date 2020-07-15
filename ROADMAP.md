@@ -5,7 +5,6 @@ This extension is a work in progress, there is much left to be done.
 ### In Progress
 * [plugin support](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/issues/38)
 
-
 ### Backburner
 * [rename provider](https://code.visualstudio.com/api/references/vscode-api#languages.registerRenameProvider)
 * hot load into VICE emulator
