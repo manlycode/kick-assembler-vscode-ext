@@ -2,15 +2,22 @@
 ## Kick Assembler Visual Studio Code Extension for C64
 ### History Of Changes
 
-## v0.4.7
+## v0.4.9
+### Changes
++ [removed keepWorkFiles setting ](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/67)
+### Fixed
++ [Issue 66](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/66)
+
+## v0.4.8
 ### Fixed
 [Issue 63](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/63)
 
 ## v0.4.7
 ### Changes
 [kick 5.16 version check](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/74)
-[Issue 38](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/38)
 [support for ascii encoding](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/merge_requests/75)
+### Fixed
+[Issue 38](https://gitlab.com/retro-coder/commodore/kick-assembler-vscode-ext/-/issues/38)
 
 ## v0.4.6
 ### Changes

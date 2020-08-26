@@ -25,7 +25,7 @@ import Uri from "vscode-uri";
 
 import { Settings } from "../providers/SettingsProvider";
 import { AssemblerInfo } from "./AssemblerInfo";
-import { writeFileSync, readFileSync, unlinkSync } from "fs";
+import { writeFileSync, readFileSync } from "fs";
 import { spawnSync } from "child_process";
 
 export interface AssemblerResults {
@@ -160,12 +160,6 @@ export class Assembler {
         assemblerResults.stdout = java.stdout.toString();
         assemblerResults.stderr = java.stderr.toString();
         assemblerResults.status = java.status;
-
-        //  remove work files if requested
-        if (!settings.keepWorkFiles) {
-            unlinkSync(tmpAsmInfo);
-            unlinkSync(tmpSource)
-        }
 
         return assemblerResults;
     }

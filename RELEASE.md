@@ -1,10 +1,14 @@
 # Release Notes
-## v0.4.8
+## v0.4.9
 
 And a big thank you to everyone using the extension. Your feedback, ideas and bug reports are making this tool better every day.
 
 ```
-This release fixes a bug in Windows when the source code was located on a different drive other than c: it would fail building because the source could not be found. Thanks to Ian C and Lee H for helping diagnose the problem.
+Not much but a few bug fixes to improve the QOL for everyone.
+
+Autocompletion was a little wonky and would show other completion options even when the first trigger character had no matches.
+
+We also removed the "keepWorkFiles" setting as this was the cause of a lot of issues for anyone who was using services like DropBox, Google Drive etc. The work files would sometimes be removed out of sync from the current file being compiled. You can hide the files using the vscode "files.exclude" setting instead.
 ```
 
 For a full list of changes, please see the projects [History](HISTORY.md) file.

@@ -267,6 +267,14 @@ export default class CompletionProvider extends Provider {
 			var prevToken:string = "";
 			var prevSymbolType:SymbolType;
 
+			/**
+			 * when the trigger is larger than one character then we
+			 * no longer want to send anything
+			 */
+			if (this.triggerToken.length > 1) {
+				prevToken = "none";
+			}
+
 			if(tokensLeft) {
 				var lastToken = tokensLeft[tokensLeft.length - 1].toLowerCase();
 				const instructionMatch = KickLanguage.Instructions.find((instruction) => {
